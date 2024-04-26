@@ -1028,7 +1028,7 @@ class MainActivity : AppCompatActivity() {
     // percentage
     private fun Number.percent(): Number {
         // remove last Char '%'
-        val number =  "$this".subSequence(0, "$this".lastIndex)
+        val number =  this.toString().subSequence(0, this.toString().lastIndex)
         return number.toNumber().div(100)
     }
 
@@ -1092,22 +1092,18 @@ class MainActivity : AppCompatActivity() {
             number = number.replace(Regex("\\."), ",")
             val decimalPoint = number.indexOf(",")
             val postDecimalPoint = number.subSequence(decimalPoint + 1)
-            // format to integer if all digits after the decimal point are '0'
+            // return as integer if all digits after the decimal point are '0'
             if(postDecimalPoint.all { char -> char == '0' }) {
-                number = number.subSequence(0,decimalPoint)
+                return number.subSequence(0, decimalPoint)
             }
-            // remove all unnecessary '0' after the decimal point at the end
-            else {
-                var index = postDecimalPoint.lastIndex
-                // remove last Char in number until the last digit after the decimal point is not '0'
-                while(index >= 0 && postDecimalPoint[index] == '0') { // todo does nothing -> fix
-                    index--
-                    number = number.subSequence(0, number.lastIndex)
-                }
-            }
-            // round to a maximum of 10 decimal places
+
+            // is double: round to a maximum of 10 decimal places
             if(postDecimalPoint.length > 10) {
                 number = String.format("%.10f", number.toNumber())
+            }
+            // if there are unnecessary '0' at the end after the decimal point, remove them
+            while(number[number.lastIndex] == '0') {
+                number = number.subSequence(0, number.lastIndex)
             }
         }
         // number is in Int format or in Double format with a non-zero decimal-value

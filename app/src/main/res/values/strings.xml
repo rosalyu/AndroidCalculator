@@ -16,6 +16,7 @@
     <string name="div">÷</string>
     <string name="prc">%</string>
     <string name="com">,</string>
+    <string name="dot">.</string>
     <string name="eq">=</string>
     <string name="powButtonText">xʸ</string>
     <string name="pow">^</string>
