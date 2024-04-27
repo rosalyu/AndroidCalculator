@@ -54,33 +54,23 @@ class MainActivity : AppCompatActivity() {
         setListener(R.id.button8)
         setListener(R.id.button9)
 
-        // todo modify like setListener()
+        // todo do not notify user about division by zero if 5 / 0,0... he might type a non-zero digit
+        //  (notify only when equals button pressed)
         findViewById<Button>(R.id.button0).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isEmpty()) {
-                    tvCalculation.text = "0"
-                    tvResult.text = "0"
+                val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
+                val (calculationText, resultText) = when {
+                    lastChar == null -> "0" to "0"
+                    lastChar in setOf(')', '%') -> "${tvCalculation.text}×0" to tvCalculation.text.calculate()
+                    lastChar == '÷' -> "${tvCalculation.text}0" to ""
+                    (tvCalculation.text == "0") ||
+                            (tvCalculation.text.length > 1 && lastChar == '0'
+                                    && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
+                                    tvCalculation.text.numberHasComma()))) -> tvCalculation.text to tvResult.text
+                    else -> "${tvCalculation.text}0" to "${tvCalculation.text}0".calculate()
                 }
-                else if (tvCalculation.text[tvCalculation.text.lastIndex] == ')'
-                    || tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
-                    tvCalculation.text = tvCalculation.text.append("×0")
-                    tvResult.text = tvCalculation.text.calculate()
-                }
-                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '÷') {
-                    tvCalculation.text = tvCalculation.text.append("0")
-                    tvResult.text = ""
-                }
-                // if last Char is already a '0' and the first digit of a number, do no not add another one
-                else if ((tvCalculation.text.length == 1 && tvCalculation.text[0] == '0') ||
-                    (tvCalculation.text.length > 1 && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
-                    && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
-                            tvCalculation.text.numberHasComma())))) {
-                    Unit
-                }
-                else {
-                    tvCalculation.text = tvCalculation.text.append("0")
-                    tvResult.text = tvCalculation.text.calculate()
-                }
+                tvCalculation.text = calculationText
+                tvResult.text = resultText
             }
         }
 
