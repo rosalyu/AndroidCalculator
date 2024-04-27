@@ -3,12 +3,10 @@ package com.example.calculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import java.lang.ArithmeticException
-import kotlin.math.min
 import kotlin.math.pow
 import kotlin.text.StringBuilder
 
@@ -501,7 +499,7 @@ class MainActivity : AppCompatActivity() {
             //Log.d("startIndex", "${startIndex}")
             //Log.d("endIndex", "${endIndex}")
 
-            val innerExpression = (tokenList.subListExtension(startIndex + 1, endIndex) as ArrayList)
+            val innerExpression = tokenList.subListExtension(startIndex + 1, endIndex)
             // Toast.makeText(this@MainActivity, "inner: ${innerExpression}", Toast.LENGTH_SHORT).show()
 
             val resultList = ArrayList<CharSequence>().apply {
@@ -771,7 +769,7 @@ class MainActivity : AppCompatActivity() {
         return subList
     }
 
-    // custon extension function for ArrayList<CharSequence> class
+    // custom extension function for ArrayList<CharSequence> class
     // -> returns a subList that contains all elements starting from the startIndex until the endIndex (exclusive)
     private fun ArrayList<CharSequence>.subListExtension(startIndex: Int, endIndex: Int): ArrayList<CharSequence> {
         // if index is out of range, throws IllegalArgumentException
@@ -836,18 +834,11 @@ class MainActivity : AppCompatActivity() {
         return (this as Double) - (other as Double)
     }
 
-    // percentage
-    private fun Number.percent(): Number {
-        // remove last Char '%'
-        val number =  this.toString().subSequence(0, this.toString().lastIndex)
-        return number.toNumber().div(100)
-    }
-
     // merges tokens like "+""+n", "+""-n", "-""n" and "-""-n", which can occur after
     // recursively resolving brackets in calculate()
     private fun ArrayList<CharSequence>.mergePlusMinus(): ArrayList<CharSequence> {
         val tokenList = ArrayList<CharSequence>()
-        var tokensMultiplication = ArrayList<CharSequence>()
+        val tokensMultiplication = ArrayList<CharSequence>()
         var mergedValue: CharSequence
         for(index in this.indices) {
             if(index == 1 && this[0].isPlusMinus() && this[1].isNumeric() ||
