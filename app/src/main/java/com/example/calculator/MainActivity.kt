@@ -22,13 +22,12 @@ class MainActivity : AppCompatActivity() {
         val tvResult: TextView = findViewById(R.id.tvResult)
 
         // general function to set onClickListeners for the digit buttons 1 - 9
-        fun setListener(buttonId: Int) {
+        fun setListenerDigitsNonZero(buttonId: Int) {
             val buttonText = findViewById<Button>(buttonId).text
             findViewById<Button>(buttonId).setOnClickListener {
                 if (tvCalculation.text.length < maxAmountOfChars) {
                     val lastChar = if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
-
-                    val newText = when {
+                    val calculationText = when {
                         lastChar == null -> buttonText
                         lastChar in setOf(')', '%') -> "${tvCalculation.text}×${buttonText}"
                         lastChar == '0' && (tvCalculation.text.length == 1 || !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()
@@ -36,23 +35,15 @@ class MainActivity : AppCompatActivity() {
                             tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex).append(buttonText)
                         else -> "${tvCalculation.text}${buttonText}"
                     }
-
-                    tvCalculation.text = newText
-                    tvResult.text = newText.calculate()
+                    tvCalculation.text = calculationText
+                    tvResult.text = calculationText.calculate()
                 }
             }
         }
 
         // set all onClickListeners for the digit buttons 1 - 9
-        setListener(R.id.button1)
-        setListener(R.id.button2)
-        setListener(R.id.button3)
-        setListener(R.id.button4)
-        setListener(R.id.button5)
-        setListener(R.id.button6)
-        setListener(R.id.button7)
-        setListener(R.id.button8)
-        setListener(R.id.button9)
+        arrayOf(R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5,
+            R.id.button6, R.id.button7, R.id.button8, R.id.button9).forEach {setListenerDigitsNonZero(it)}
 
         // todo do not notify user about division by zero if 5 / 0,0... he might type a non-zero digit
         //  (notify only when equals button pressed)
@@ -64,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                     lastChar in setOf(')', '%') -> "${tvCalculation.text}×0" to tvCalculation.text.calculate()
                     lastChar == '÷' -> "${tvCalculation.text}0" to ""
                     (tvCalculation.text == "0") ||
-                            (tvCalculation.text.length > 1 && lastChar == '0'
+                            (lastChar == '0' && tvCalculation.text.length > 1
                                     && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
                                     tvCalculation.text.numberHasComma()))) -> tvCalculation.text to tvResult.text
                     else -> "${tvCalculation.text}0" to "${tvCalculation.text}0".calculate()
@@ -77,38 +68,15 @@ class MainActivity : AppCompatActivity() {
         // brackets button: ()
         findViewById<Button>(R.id.buttonBrackets).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                // if field is is empty, last Char is operator or "(", add "("
-                if (tvCalculation.text.isEmpty() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex].isOperator() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '('
-                ) {
-                    tvCalculation.text = tvCalculation.text.append("(")
-
-                }
-                // if last Char is a digit OR '%', append depending on bracketPicker()
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit()
-                    || tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
-                    if (tvCalculation.text.toString().bracketPicker() == "(") {
-                        tvCalculation.text = tvCalculation.text.append("×(")
-                    } else {
-                        tvCalculation.text = tvCalculation.text.append(")")
-                    }
-
-                }
-                // if last Char is ")", append depending on bracketPicker()
-                else if (tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    if (tvCalculation.text.toString().bracketPicker() == "(") {
-                        tvCalculation.text = tvCalculation.text.append("×(")
-                    } else {
-                        tvCalculation.text = tvCalculation.text.append(")")
-                        tvResult.text = tvCalculation.text.calculate()
-                    }
-                }
-                // comma: remove the comma because it is unused if bracket follows
-                else {
-                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    findViewById<Button>(R.id.buttonBrackets).performClick()
-                    tvResult.text = tvCalculation.text.calculate()
+                val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
+                tvCalculation.text = when {
+                    lastChar == null || lastChar == '(' || lastChar.isOperator() -> "${tvCalculation.text}("
+                    lastChar.isDigit() || lastChar == '%' || lastChar == ')' ->
+                        if(tvCalculation.text.bracketPicker() == "(") "${tvCalculation.text}×(" else "${tvCalculation.text})"
+                    // comma: remove the comma because it is unused if bracket follows
+                    else -> if(tvCalculation.text.bracketPicker() == "(")
+                        "${tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)}×("
+                    else "${tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)})"
                 }
             }
         }
