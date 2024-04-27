@@ -3,6 +3,7 @@ package com.example.calculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -21,21 +22,24 @@ class MainActivity : AppCompatActivity() {
 
         val tvCalculation: TextView = findViewById(R.id.tvCalculation)
         val tvResult: TextView = findViewById(R.id.tvResult)
+
  // todo do all digits like this by copying
         findViewById<Button>(R.id.button1).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && (tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "1"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
                             || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
                     tvCalculation.text = tvCalculation.text.append("×1")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
                     tvCalculation.text = tvCalculation.text.append("1")
                 } else {
                     tvCalculation.text = tvCalculation.text.append("1")
@@ -46,22 +50,23 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button2).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×2").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "2"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×2")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("2").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("2")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("2").toString()
+                    tvCalculation.text = tvCalculation.text.append("2")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -69,22 +74,23 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button3).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×3").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "3"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×3")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("3").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("3")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("3").toString()
+                    tvCalculation.text = tvCalculation.text.append("3")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -92,45 +98,47 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button4).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×4").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "4"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×4")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("4").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("4")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("4").toString()
+                    tvCalculation.text = tvCalculation.text.append("4")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
         }
-// todo for all digit buttons: put case isEmpty in the first if statement separately to not have to test it later in the else if-blocks
+
         findViewById<Button>(R.id.button5).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×5").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "5"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×5")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("5").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("5")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("5").toString()
+                    tvCalculation.text = tvCalculation.text.append("5")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -138,22 +146,23 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button6).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×6").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "6"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×6")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("6").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("6")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("6").toString()
+                    tvCalculation.text = tvCalculation.text.append("6")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -161,22 +170,23 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button7).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×7").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "7"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×7")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("7").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("7")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("7").toString()
+                    tvCalculation.text = tvCalculation.text.append("7")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -184,22 +194,23 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button8).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×8").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "8"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×8")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("8").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("8")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("8").toString()
+                    tvCalculation.text = tvCalculation.text.append("8")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -207,20 +218,23 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button9).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("×9").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "9"
+                }
+                else if ((tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                            || tvCalculation.text[tvCalculation.text.lastIndex] == '%')) {
+                    tvCalculation.text = tvCalculation.text.append("×9")
                 }
                 // if the last Char is '0' and is the first Char of a number, remove it
                 // and add the new digit, because numbers cannot have leading zeroes
-                else if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '0'
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '0'
                     && (tvCalculation.text.length == 1 ||
-                            !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() || tvCalculation.text.numberHasComma()))
+                            !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()  || tvCalculation.text.numberHasComma()))
                 ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("9").toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                    tvCalculation.text = tvCalculation.text.append("9")
                 } else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("9").toString()
+                    tvCalculation.text = tvCalculation.text.append("9")
                 }
                 tvResult.text = tvCalculation.text.calculate()
             }
@@ -228,14 +242,17 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.button0).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×0").toString()
+                if (tvCalculation.text.isEmpty()) {
+                    tvCalculation.text = "0"
+                    tvResult.text = "0"
+                }
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                    || tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
+                    tvCalculation.text = tvCalculation.text.append("×0")
                     tvResult.text = tvCalculation.text.calculate()
                 }
-                // if previous Char is '÷', just add '0', but do not calculate anything
-                if (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '÷') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("0").toString()
+                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '÷') {
+                    tvCalculation.text = tvCalculation.text.append("0")
                     tvResult.text = ""
                 }
                 // if last Char is already a '0' and the first digit of a number, do no not add another one
@@ -245,18 +262,10 @@ class MainActivity : AppCompatActivity() {
                             tvCalculation.text.numberHasComma())))) {
                     Unit
                 }
-                    // todo complete for all digits 1,03 if numberHasComma() append 3
-                // if previous Char is '%' append '×(0'
-                else if(tvCalculation.text.isNotEmpty() &&
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("×(0").toString()
-                }
                 else {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("0").toString()
+                    tvCalculation.text = tvCalculation.text.append("0")
                     tvResult.text = tvCalculation.text.calculate()
                 }
-
             }
         }
 
@@ -268,40 +277,31 @@ class MainActivity : AppCompatActivity() {
                     tvCalculation.text[tvCalculation.text.lastIndex].isOperator() ||
                     tvCalculation.text[tvCalculation.text.lastIndex] == '('
                 ) {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("(").toString()
+                    tvCalculation.text = tvCalculation.text.append("(")
 
                 }
                 // if last Char is a digit OR '%', append depending on bracketPicker()
                 else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit()
                     || tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
                     if (tvCalculation.text.toString().bracketPicker() == "(") {
-                        tvCalculation.text = StringBuilder(tvCalculation.text)
-                            .append("×(").toString()
+                        tvCalculation.text = tvCalculation.text.append("×(")
                     } else {
-                        tvCalculation.text = StringBuilder(tvCalculation.text)
-                            .append(")").toString()
+                        tvCalculation.text = tvCalculation.text.append(")")
                     }
 
                 }
                 // if last Char is ")", append depending on bracketPicker()
                 else if (tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
                     if (tvCalculation.text.toString().bracketPicker() == "(") {
-                        tvCalculation.text = StringBuilder(tvCalculation.text)
-                            .append("×(").toString()
+                        tvCalculation.text = tvCalculation.text.append("×(")
                     } else {
-                        tvCalculation.text = StringBuilder(tvCalculation.text)
-                            .append(")").toString()
+                        tvCalculation.text = tvCalculation.text.append(")")
                         tvResult.text = tvCalculation.text.calculate()
                     }
                 }
                 // comma: remove the comma because it is unused if bracket follows
                 else {
-                    tvCalculation.text = StringBuilder(
-                        tvCalculation.text.subSequence(
-                            0, tvCalculation.text.lastIndex
-                        )
-                    ).toString()
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
                     findViewById<Button>(R.id.buttonBrackets).performClick()
                     tvResult.text = tvCalculation.text.calculate()
                 }
@@ -319,8 +319,7 @@ class MainActivity : AppCompatActivity() {
                 else if (tvCalculation.text[tvCalculation.text.lastIndex] == '('
                     || tvCalculation.text[tvCalculation.text.lastIndex].isOperator()
                 ) {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("0,").toString()
+                    tvCalculation.text = tvCalculation.text.append("0,")
                 }
                 // if the last character is a digit:
                 else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit()) {
@@ -329,20 +328,18 @@ class MainActivity : AppCompatActivity() {
                     if (tvCalculation.text.numberHasComma()) {
                         Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
                     } else {
-                        tvCalculation.text = StringBuilder(tvCalculation.text)
-                            .append(",").toString()
+                        tvCalculation.text = tvCalculation.text.append(",")
                     }
                 }
                 // last Char is a closing bracket
                 else if (tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text)
-                        .append("×0,").toString()
+                    tvCalculation.text = tvCalculation.text.append("×0,")
                 }
                 // if last Char is a comma: do not add the next comma (else expression invalid)
 
             }
         }
-
+// todo finish replacing StringBuilder with tvCalculation.text.append()
         // power operator button: ^
         // -> expression is incomplete right after appending an operator so we don't update tvResult
         findViewById<Button>(R.id.buttonPow).setOnClickListener {
@@ -1115,6 +1112,7 @@ class MainActivity : AppCompatActivity() {
     private fun CharSequence.append(other: CharSequence): CharSequence {
         return "${this}${other}"
     }
+
 }
 
 
