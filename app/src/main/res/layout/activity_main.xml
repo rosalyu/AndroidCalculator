@@ -268,7 +268,6 @@
                 android:layout_margin="5dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/lightPink"
-                android:onClick="onDigitNonZero"
                 android:text="@string/one"
                 android:textColor="@color/darkPink"
                 android:textSize="40sp"
