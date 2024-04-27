@@ -3,6 +3,7 @@ package com.example.calculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.util.SparseArray
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -22,18 +23,17 @@ class MainActivity : AppCompatActivity() {
         val tvResult: TextView = findViewById(R.id.tvResult)
 
         // general function to set onClickListeners for the digit buttons 1 - 9
-        fun setListenerDigitsNonZero(buttonId: Int) {
-            val buttonText = findViewById<Button>(buttonId).text
-            findViewById<Button>(buttonId).setOnClickListener {
+        fun setListenerDigitsNonZero(button: Button) {
+            button.setOnClickListener {
                 if (tvCalculation.text.length < maxAmountOfChars) {
                     val lastChar = if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
                     val calculationText = when {
-                        lastChar == null -> buttonText
-                        lastChar in setOf(')', '%') -> "${tvCalculation.text}×${buttonText}"
+                        lastChar == null -> button.text
+                        lastChar in setOf(')', '%') -> "${tvCalculation.text}×${button.text}"
                         lastChar == '0' && (tvCalculation.text.length == 1 || !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()
                                 || tvCalculation.text.numberHasComma())) ->
-                            tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex).append(buttonText)
-                        else -> "${tvCalculation.text}${buttonText}"
+                            tvCalculation.text.dropLast(1).append(button.text)
+                        else -> "${tvCalculation.text}${button.text}"
                     }
                     tvCalculation.text = calculationText
                     tvResult.text = calculationText.calculate()
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         // set all onClickListeners for the digit buttons 1 - 9
         arrayOf(R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5,
-            R.id.button6, R.id.button7, R.id.button8, R.id.button9).forEach {setListenerDigitsNonZero(it)}
+            R.id.button6, R.id.button7, R.id.button8, R.id.button9).forEach { setListenerDigitsNonZero(findViewById(it)) }
 
         // todo do not notify user about division by zero if 5 / 0,0... he might type a non-zero digit
         //  (notify only when equals button pressed)
@@ -81,35 +81,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // todo make concise and efficient
         // comma button: ,
         findViewById<Button>(R.id.buttonCom).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                // if tvCalculation is empty and user types "," -> shows "0," (incomplete expression)
-                if (tvCalculation.text.isEmpty()) {
-                    tvCalculation.text = "0,"
-                }
-                // last Char is opening bracket '(' or an operator
-                else if (tvCalculation.text[tvCalculation.text.lastIndex] == '('
-                    || tvCalculation.text[tvCalculation.text.lastIndex].isOperator()
-                ) {
-                    tvCalculation.text = tvCalculation.text.append("0,")
-                }
-                // if the last character is a digit:
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit()) {
-                    // if the most recent number already contains a comma, notify user about
-                    // invalid expression, else append ','
-                    if (tvCalculation.text.numberHasComma()) {
-                        Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                    } else {
-                        tvCalculation.text = tvCalculation.text.append(",")
-                    }
-                }
-                // last Char is a closing bracket
-                else if (tvCalculation.text[tvCalculation.text.lastIndex] == ')') {
-                    tvCalculation.text = tvCalculation.text.append("×0,")
-                }
-                // if last Char is a comma: do not add the next comma (else expression invalid)
+                val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
+                if(!tvCalculation.text.numberHasComma() || lastChar == ',') {
+                    val (calculationText, resultText) = when {
+                        // if tvCalculation is empty and user types "," -> shows "0," (incomplete expression)
+                        lastChar == null -> "0," to "0"
+                        // last Char is opening bracket '(' or an operator
+                        lastChar == '(' || lastChar.isOperator() -> "${tvCalculation.text}0," to "${tvCalculation.text}0".calculate()
+                        lastChar.isDigit() -> "${tvCalculation.text}," to tvResult.text
+                        lastChar == ')' || lastChar == '%' -> "${tvCalculation.text}×0," to "${tvCalculation.text}×0".calculate()
+                        // if last Char is a comma do not add another one, but do not notify the user
+                        else -> tvCalculation.text to tvResult.text
+                    }
+                    // update the TextViews
+                    tvCalculation.text = calculationText
+                    tvResult.text = resultText
+                } else {
+                    // if the last number already contains a comma and it is not the last Char, do not
+                    // alter any text and notify the user
+                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 // todo finish replacing StringBuilder with tvCalculation.text.append()
