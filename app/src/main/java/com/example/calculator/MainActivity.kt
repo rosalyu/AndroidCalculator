@@ -3,7 +3,6 @@ package com.example.calculator
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.util.SparseArray
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
@@ -43,7 +42,8 @@ class MainActivity : AppCompatActivity() {
 
         // set all onClickListeners for the digit buttons 1 - 9
         arrayOf(R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5,
-            R.id.button6, R.id.button7, R.id.button8, R.id.button9).forEach { setListenerDigitsNonZero(findViewById(it)) }
+            R.id.button6, R.id.button7, R.id.button8, R.id.button9).forEach {
+                setListenerDigitsNonZero(findViewById(it)) }
 
         // todo do not notify user about division by zero if 5 / 0,0... he might type a non-zero digit
         //  (notify only when equals button pressed)
@@ -81,7 +81,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // todo make concise and efficient
         // comma button: ,
         findViewById<Button>(R.id.buttonCom).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
@@ -108,155 +107,74 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-// todo finish replacing StringBuilder with tvCalculation.text.append()
-        // power operator button: ^
-        // -> expression is incomplete right after appending an operator so we don't update tvResult
-        findViewById<Button>(R.id.buttonPow).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
-                // '^' cannot be the first Char of an expression or come after '(', notify the user with Toast
-                if (tvCalculation.text.isEmpty() || (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '(')) {
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the second last Char is a '(' with a '-' or '+' following, remove the last Char
-                // and notify the user about invalid expression
-                else if (tvCalculation.text.length >= 2 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '(' &&
-                    (tvCalculation.text[tvCalculation.text.lastIndex] == '-' ||
-                            tvCalculation.text[tvCalculation.text.lastIndex] == '+')
-                ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the last Char is an operator or a ',', replace it with '^('
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isOperator() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == ',') {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("^(")
-                }
-                // if the last Char is a digit, ')' or a '%', just append with '^('
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == ')' ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("^(")
-                }
 
+        // sets the onClickListeners of the buttons mul, div, pow, prc
+        fun setListenersMulDivPowPrc(button: Button) {
+            button.setOnClickListener {
+                if (tvCalculation.text.length < maxAmountOfChars) {
+                    var operator = if(button.text.length > 1) "^" else button.text  // pow is a special case
+                    // append "(" for future insertion in calculation view, excluding "%"
+                    if(operator == "^") { operator = operator.append("(") }
+                    val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
+
+                    // becomesInvalid -> keeps track of whether the expression becomes invalid after click action
+                    val (calculationText, becomesInvalid) = when {
+                        // invalid: operator cannot be the first Char of an expression or come after '('
+                        lastChar == null || lastChar == '(' -> tvCalculation.text to true
+                        // do nothing if lastChar is already the pressed button, can't have double operators
+                        lastChar == operator[0] -> tvCalculation.text to false
+                        // invalid: if the second last Char is a '(' with a '-' or '+' following, remove the last Char
+                        (lastChar == '+' || lastChar == '-') && tvCalculation.text.length > 1 &&
+                                tvCalculation.text[tvCalculation.text.lastIndex - 1] == '('
+                            -> tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex) to true
+                        // if the last Char is an operator or a ',', replace it with '[op]' ('[op](' for ^)
+                        lastChar.isOperator() || lastChar == ','
+                            -> "${tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)}${operator}" to false
+                        // if the last Char is a digit, ')' or a '%', just append with '[op]('
+                        else ->  "${tvCalculation.text}${operator}" to false
+                    }
+                    // notify the user about invalid expression
+                    if(becomesInvalid) { Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show() }
+                    tvCalculation.text = calculationText
+                    // expression is incomplete right after appending an operator so we don't update tvResult
+                }
             }
         }
+        // set the onClickListeners of the buttons mul, div, pow, prc
+        arrayOf(R.id.buttonMul, R.id.buttonDiv, R.id.buttonPow, R.id.buttonPrc).forEach { setListenersMulDivPowPrc(findViewById(it)) }
 
-        // percentage button: %
-        findViewById<Button>(R.id.buttonPrc).setOnClickListener {
+        // subtraction operator button: -  // todo combine add and sub Listeners (take this as template)
+        // -> expression is incomplete right after appending an operator so we don't update tvResult
+        findViewById<Button>(R.id.buttonSub).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
-                // '%' cannot be the first Char of an expression or come after '(', notify the user with Toast
-                if (tvCalculation.text.isEmpty() || (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '(')) {
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the second last Char is a '(' with a '-' or '+' following, remove the last Char
-                // and notify the user about invalid expression
-                else if (tvCalculation.text.length >= 2 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '(' &&
-                    (tvCalculation.text[tvCalculation.text.lastIndex] == '-' ||
-                            tvCalculation.text[tvCalculation.text.lastIndex] == '+')
+                // if the second last Char is a '(' with a '+' following, replace the last Char
+                if (tvCalculation.text.length >= 2 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '(' &&
+                    (tvCalculation.text[tvCalculation.text.lastIndex] == '+')
                 ) {
                     tvCalculation.text =
                         tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
+                    tvCalculation.text = StringBuilder(tvCalculation.text).append("-")
                 }
-                // if the last Char is an operator, replace it with '%'
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isOperator()) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("%")
+                // if '-' is the first Char or comes after another operator (not '-' or '%'), add a '(' before it
+                else if (tvCalculation.text.isEmpty() || (tvCalculation.text.isNotEmpty() &&
+                            tvCalculation.text[tvCalculation.text.lastIndex].isOperator()
+                            && tvCalculation.text[tvCalculation.text.lastIndex] != '-')
+                ) {
+                    tvCalculation.text = StringBuilder(tvCalculation.text).append("(-")
                 }
-                // if the last Char is a digit or a ')', just append with '%'
+                // if the last Char is a digit, a ')', '(' or '%', just append with '-'
                 else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == ')'
+                    tvCalculation.text[tvCalculation.text.lastIndex] == ')' ||
+                    tvCalculation.text[tvCalculation.text.lastIndex] == '(' ||
+                    tvCalculation.text[tvCalculation.text.lastIndex] == '%'
                 ) {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("%")
+                    tvCalculation.text = StringBuilder(tvCalculation.text).append("-")
                 }
                 // if last Char is a comma, remove the comma
                 else {
                     tvCalculation.text =
                         tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("%")
-                }
-            }
-            tvResult.text = tvCalculation.text.calculate()
-        }
-
-        // division operator button: ÷
-        // -> expression is incomplete right after appending an operator so we don't update tvResult
-        findViewById<Button>(R.id.buttonDiv).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
-                // '÷' cannot be the first Char of an expression or come after '(', notify the user with Toast
-                if (tvCalculation.text.isEmpty() || (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '(')) {
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the second last Char is a '(' with a '-' or '+' following, remove the last Char
-                // and notify the user about invalid expression
-                else if (tvCalculation.text.length >= 2 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '(' &&
-                    (tvCalculation.text[tvCalculation.text.lastIndex] == '-' ||
-                            tvCalculation.text[tvCalculation.text.lastIndex] == '+')
-                ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the last Char is an operator, replace it with '÷'
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isOperator()) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("÷")
-                }
-                // if the last Char is a digit, ')' or a '%', just append with '÷'
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == ')' ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("÷")
-                }
-                // if last Char is a comma, remove the comma
-                else {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("÷")
-                }
-            }
-        }
-
-        // multiplication operator button: ×
-        // -> expression is incomplete right after appending an operator so we don't update tvResult
-        findViewById<Button>(R.id.buttonMul).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
-                // '×' cannot be the first Char of an expression or come after '(', notify the user with Toast
-                if (tvCalculation.text.isEmpty() || (tvCalculation.text.isNotEmpty() && tvCalculation.text[tvCalculation.text.lastIndex] == '(')) {
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the second last Char is a '(' with a '-' or '+' following, remove the last Char
-                // and notify the user about invalid expression
-                else if (tvCalculation.text.length >= 2 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '(' &&
-                    (tvCalculation.text[tvCalculation.text.lastIndex] == '-' ||
-                            tvCalculation.text[tvCalculation.text.lastIndex] == '+')
-                ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show()
-                }
-                // if the last Char is an operator, replace it with '×'
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isOperator()) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("×")
-                }
-                // if the last Char is a digit, ')' or a '%', just append with '×'
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == ')' ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '%') {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("×")
-                }
-                // if last Char is a comma, remove the comma
-                else {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("×")
+                    tvCalculation.text = StringBuilder(tvCalculation.text).append("-")
                 }
             }
         }
@@ -299,42 +217,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // subtraction operator button: -
-        // -> expression is incomplete right after appending an operator so we don't update tvResult
-        findViewById<Button>(R.id.buttonSub).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
-                // if the second last Char is a '(' with a '+' following, replace the last Char
-                if (tvCalculation.text.length >= 2 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '(' &&
-                    (tvCalculation.text[tvCalculation.text.lastIndex] == '+')
-                ) {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("-")
-                }
-                // if '-' is the first Char or comes after another operator (not '-' or '%'), add a '(' before it
-                else if (tvCalculation.text.isEmpty() || (tvCalculation.text.isNotEmpty() &&
-                            tvCalculation.text[tvCalculation.text.lastIndex].isOperator()
-                            && tvCalculation.text[tvCalculation.text.lastIndex] != '-')
-                ) {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("(-")
-                }
-                // if the last Char is a digit, a ')', '(' or '%', just append with '-'
-                else if (tvCalculation.text[tvCalculation.text.lastIndex].isDigit() ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == ')' ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '(' ||
-                    tvCalculation.text[tvCalculation.text.lastIndex] == '%'
-                ) {
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("-")
-                }
-                // if last Char is a comma, remove the comma
-                else {
-                    tvCalculation.text =
-                        tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
-                    tvCalculation.text = StringBuilder(tvCalculation.text).append("-")
-                }
-            }
-        }
-
         // delete button: DEL
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
             if(tvCalculation.text.isNotEmpty()) {
@@ -361,11 +243,9 @@ class MainActivity : AppCompatActivity() {
                 tvResult.text = ""
             }
         }
-    //todo: always test if tvCalculation.text is empty before accessing any indices!
     }
 
     // TODO for pasting: test if valid expression regarding brackets and adjust expression
-    //  if needed -> also test for "-()+" parts
     // calculates the result of the expression by formatting, tokenizing it and calling
     // the recursive ArrayList<CharSequence>.calculate() function
     private fun CharSequence.calculate(): CharSequence {
