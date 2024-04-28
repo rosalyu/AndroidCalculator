@@ -112,9 +112,7 @@ class MainActivity : AppCompatActivity() {
         fun setListenersMulDivPowPrc(button: Button) {
             button.setOnClickListener {
                 if (tvCalculation.text.length < maxAmountOfChars) {
-                    var operator = if(button.text.length > 1) "^" else button.text  // pow is a special case
-                    // append "(" for future insertion in calculation view, excluding "%"
-                    if(operator == "^") { operator = operator.append("(") }
+                    var operator = if(button.text.length > 1) "^(" else button.text  // pow is a special case
                     val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
                     // becomesInvalid -> keeps track of whether the expression becomes invalid after click action
@@ -379,21 +377,24 @@ class MainActivity : AppCompatActivity() {
         while(tokenList.contains("×") || tokenList.contains("÷") || tokenList.contains("^")) {
             tokenList = newTokenList
 
-            // find index of next operand
-            val operatorIndex = tokenList.indexOfFirst { it == "×"
-                    || it == "÷" || it == "^" }
+            // find index of next operand, "^" has precedence
+            val operatorIndex = if(tokenList.contains("^")) {
+                tokenList.indexOfFirst{ it == "^" }
+            } else {tokenList.indexOfFirst { it == "×"
+                    || it == "÷" }
+            }
 
             // assumes that each operator is surrounded by numbers left and right
             val operand1 = tokenList.elementAt(operatorIndex - 1).toNumber()
             val operand2 = tokenList.elementAt(operatorIndex + 1).toNumber()
 
-            val result = if(tokenList.elementAt(operatorIndex) == "×") {
-                (operand1).mul(operand2)
+            val result = if(tokenList.elementAt(operatorIndex) == "^") {
+                (operand1).power(operand2)
             } else if(tokenList.elementAt(operatorIndex) == "÷"){
+                (operand1).mul(operand2)
+            } else {
                 // may throw exception, which is handled by callee
                 (operand1).div(operand2)
-            } else {
-                (operand1).power(operand2)
             }
 
             newTokenList.removeAt(operatorIndex - 1)
