@@ -136,7 +136,10 @@ class MainActivity : AppCompatActivity() {
                     // notify the user about invalid expression
                     if(becomesInvalid) { Toast.makeText(this, "Invalid expression", Toast.LENGTH_SHORT).show() }
                     tvCalculation.text = calculationText
-                    // expression is incomplete right after appending an operator so we don't update tvResult
+                    // only if adding "%" the result of the expression changes
+                    if(operator == "%") {
+                        tvResult.text = tvCalculation.text.calculate()
+                    }
                 }
             }
         }
