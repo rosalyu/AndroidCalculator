@@ -2,21 +2,21 @@ package com.example.calculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+//import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import java.lang.ArithmeticException
 import kotlin.math.pow
-import kotlin.text.StringBuilder
-
-// defines the maximum amount of Chars in the calculation TextView
-private const val maxAmountOfChars = 16
+//import kotlin.text.StringBuilder
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // defines the maximum amount of Chars in the calculation TextView
+        val maxAmountOfChars = 16
 
         val tvCalculation: TextView = findViewById(R.id.tvCalculation)
         val tvResult: TextView = findViewById(R.id.tvResult)
@@ -112,7 +112,7 @@ class MainActivity : AppCompatActivity() {
         fun setListenersMulDivPowPrc(button: Button) {
             button.setOnClickListener {
                 if (tvCalculation.text.length < maxAmountOfChars) {
-                    var operator = if(button.text.length > 1) "^(" else button.text  // pow is a special case
+                    val operator = if(button.text.length > 1) "^(" else button.text  // pow is a special case
                     val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
                     // becomesInvalid -> keeps track of whether the expression becomes invalid after click action
@@ -239,9 +239,13 @@ class MainActivity : AppCompatActivity() {
 
         // equals button: =
         findViewById<Button>(R.id.buttonEq).setOnClickListener {
-            if (tvCalculation.text.isNotEmpty()) {
+            /*if (tvCalculation.text.isNotEmpty()) {
                 tvCalculation.text = tvCalculation.text.calculate()
                 tvResult.text = ""
+            }*/
+            for(i in 0..1000000) {
+                findViewById<Button>(R.id.button1).performClick()
+                Thread.sleep(200)
             }
         }
     }
@@ -348,15 +352,9 @@ class MainActivity : AppCompatActivity() {
                     addAll(rightExpression)
                 }
             }
-
-            Log.d("leftExpression", leftExpression.joinToString { ", " })
-            Log.d("innerExpression", innerExpression.joinToString { ", " })
-            Log.d("rightExpression", rightExpression.joinToString { ", " })
-
-
-            //rightExpression.clear()
-            //innerExpression.clear()
-            //leftExpression.clear()
+            rightExpression.clear()
+            innerExpression.clear()
+            leftExpression.clear()
 
             // if resultList still contains brackets, keep resolving the brackets
             if(resultList.contains("(")) {
