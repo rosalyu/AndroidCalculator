@@ -30,12 +30,18 @@ class MainActivity : AppCompatActivity() {
                         lastChar == null -> button.text
                         lastChar in setOf(')', '%') -> "${tvCalculation.text}×${button.text}"
                         lastChar == '0' && (tvCalculation.text.length == 1 || !(tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit()
-                                || tvCalculation.text.numberHasComma())) ->
+                                || tvCalculation.text.numberHasCommaOrDot())) ->
                             tvCalculation.text.dropLast(1).append(button.text)
                         else -> "${tvCalculation.text}${button.text}"
                     }
                     tvCalculation.text = calculationText
-                    tvResult.text = calculationText.calculate()
+                    val result = calculationText.calculate()
+                    // check whether result is out of range
+                    if(result == "outOfRange") {
+                        tvResult.text = ""
+                    } else {
+                        tvResult.text = result
+                    }
                 }
             }
         }
@@ -57,11 +63,16 @@ class MainActivity : AppCompatActivity() {
                     (tvCalculation.text == "0") ||
                             (lastChar == '0' && tvCalculation.text.length > 1
                                     && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
-                                    tvCalculation.text.numberHasComma()))) -> tvCalculation.text to tvResult.text
+                                    tvCalculation.text.numberHasCommaOrDot()))) -> tvCalculation.text to tvResult.text
                     else -> "${tvCalculation.text}0" to "${tvCalculation.text}0".calculate()
                 }
                 tvCalculation.text = calculationText
-                tvResult.text = resultText
+                // check whether result is out of range
+                if(resultText == "outOfRange") {
+                    tvResult.text = ""
+                } else {
+                    tvResult.text = resultText
+                }
             }
         }
 
@@ -86,7 +97,7 @@ class MainActivity : AppCompatActivity() {
             if (tvCalculation.text.length < maxAmountOfChars) {
                 val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
-                if(!tvCalculation.text.numberHasComma() || lastChar == ',') {
+                if(!tvCalculation.text.numberHasCommaOrDot() || lastChar == ',') {
                     val (calculationText, resultText) = when {
                         // if tvCalculation is empty and user types "," -> shows "0," (incomplete expression)
                         lastChar == null -> "0," to "0"
@@ -99,7 +110,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     // update the TextViews
                     tvCalculation.text = calculationText
-                    tvResult.text = resultText
+                    // check whether result is out of range
+                    if(resultText == "outOfRange") {
+                        tvResult.text = ""
+                    } else {
+                        tvResult.text = resultText
+                    }
                 } else {
                     // if the last number already contains a comma and it is not the last Char, do not
                     // alter any text and notify the user
@@ -227,7 +243,13 @@ class MainActivity : AppCompatActivity() {
                         tvCalculation.text.lastIndex
                     )
                 ).toString()
-                tvResult.text = tvCalculation.text.calculate()
+                val result = tvCalculation.text.calculate()
+                // check whether result is out of range
+                if(result == "outOfRange") {
+                    tvResult.text = ""
+                } else {
+                    tvResult.text = result
+                }
             }
         }
 
@@ -239,51 +261,60 @@ class MainActivity : AppCompatActivity() {
 
         // equals button: =
         findViewById<Button>(R.id.buttonEq).setOnClickListener {
-            /*if (tvCalculation.text.isNotEmpty()) {
-                tvCalculation.text = tvCalculation.text.calculate()
+            if (tvCalculation.text.isNotEmpty()) {
+                val result = tvCalculation.text.calculate()
+                // if the result is out of range, empty everything and notify the user
+                if(result == "outOfRange") {
+                    tvCalculation.text = ""
+                    Toast.makeText(this, "Cannot calculate outside of the allowed range.", Toast.LENGTH_SHORT).show()
+                } else {
+                    tvCalculation.text = result
+                }
                 tvResult.text = ""
-            }*/
-            for(i in 0..1000000) {
-                findViewById<Button>(R.id.button1).performClick()
-                Thread.sleep(200)
             }
         }
     }
 
-    // TODO for pasting: test if valid expression regarding brackets and adjust expression
     // calculates the result of the expression by formatting, tokenizing it and calling
     // the recursive ArrayList<CharSequence>.calculate() function
+
+    // CAUTION: Can return a CharSequence representing a numerical result
+    // OR the label "outOfRange", which indicates that the result of the calculation
+    // (or a part of it) is too large or too small
+    // -> "outOfRange" results from a NumberFormatException thrown in toNumber() or any of the
+    // operator functions
     private fun CharSequence.calculate(): CharSequence {
-        //Toast.makeText(this@MainActivity, "e: ${this.formatExpression()}", Toast.LENGTH_SHORT) .show()
         val tokenList = this.formatExpression().tokenList()
-        // if ArrayList<CharSequence>.calculate() produces an ArithmeticException, set resultList as empty
-        val resultList = try {
-            tokenList.calculate(true)
+
+        var resultList: ArrayList<CharSequence>
+        try {
+            resultList = tokenList.calculate(true)
         } catch(e: ArithmeticException) {
-            ArrayList()
+            // division by zero makes the result view empty
+            resultList = ArrayList()
+        } catch(e: NumberFormatException) {
+            // returns a label so callee function can decide whether to notify the user or not
+            return "outOfRange"
         }
         return if(resultList.isEmpty()) {
             ""
         } else {
-            //Toast.makeText(this@MainActivity, "r: ${resultList[0]}", Toast.LENGTH_SHORT) .show()
-
             val result = resultList[0]
-            tokenList.clear()
+            resultList.clear()
             // if last expression is percentage
             if(result[result.lastIndex] == '%') {
                 return "${result.toNumber()}".formatNumber()
             }
             return result.formatNumber()
         }
-
     }
 
     // calculates result of formatted and tokenized expression  recursively
+    @Throws(NumberFormatException::class, ArithmeticException:: class)
     private fun ArrayList<CharSequence>.calculate(firstCall: Boolean): ArrayList<CharSequence> {
         var tokenList = this
 
         if (tokenList.isEmpty()) {
-            //Toast.makeText(this@MainActivity, "tokenList is empty", Toast.LENGTH_SHORT).show()
             return ArrayList()
         }
         // recursion end -> last element as result
@@ -332,11 +363,6 @@ class MainActivity : AppCompatActivity() {
 
             // expression parts "()" should already never occur!
             assert(startIndex + 1 != endIndex)
-
-            //Toast.makeText(this@MainActivity, "calculate: ${startIndex}", Toast.LENGTH_SHORT).show()
-
-            //Log.d("startIndex", "${startIndex}")
-            //Log.d("endIndex", "${endIndex}")
 
             val innerExpression = tokenList.subListExtension(startIndex + 1, endIndex)
             // Toast.makeText(this@MainActivity, "inner: ${innerExpression}", Toast.LENGTH_SHORT).show()
@@ -388,7 +414,7 @@ class MainActivity : AppCompatActivity() {
 
             val result = if(tokenList.elementAt(operatorIndex) == "^") {
                 (operand1).power(operand2)
-            } else if(tokenList.elementAt(operatorIndex) == "÷"){
+            } else if(tokenList.elementAt(operatorIndex) == "×"){
                 (operand1).mul(operand2)
             } else {
                 // may throw exception, which is handled by callee
@@ -421,19 +447,15 @@ class MainActivity : AppCompatActivity() {
             newTokenList.removeAt(operatorIndex - 1)
             newTokenList.add(operatorIndex - 1, "$result")
         }
-
-        //Toast.makeText(this@MainActivity, "returns: ${tokenList.forEach{ print("$it, ") } }", Toast.LENGTH_SHORT).show()
         return newTokenList
     }
 
     // returns true if CharSequence is a negative/positive integer/decimal, else false
-// caution: does not specify how 'E' and ',' or '.' can be positioned in the CharSequence
-// -> e.g. "4,E4" would return true todo
+    // caution: does not specify how 'E' and ',' or '.' can be positioned in the CharSequence
+    // -> e.g. "4,E4" would return true todo
     private fun CharSequence.isNumeric(): Boolean {
-        // CharSequence.none { ... } returns true if no Chars match the given predicate
         var commas = 0
         for(i in this.indices) {
-            println(this) //
             // first Char has to be a digit, '+' or '-'
             if(i == 0 && (this[i] == '-' || this[i] == '+' || this[i].isDigit())) {
                 continue
@@ -452,8 +474,6 @@ class MainActivity : AppCompatActivity() {
             }
             // Char is not a digit (or 'E' or 'E' + '-'), or it is a second comma -> false
             else if(!this[i].isDigit()) {
-                //println("2nd false")
-                //println("${this[i]}  ${this[i + 1]}")
                 return false
             }
         }
@@ -486,7 +506,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // helper function for ',' or '.': ensures a number has a maximum of one ',' or '.'
-    private fun CharSequence.numberHasComma(): Boolean {
+    private fun CharSequence.numberHasCommaOrDot(): Boolean {
         // c remains null if the sequence contains digits only
         var c: Char? = null
         // checks all Chars starting from the end until the first Char that is not a digit
@@ -510,8 +530,8 @@ class MainActivity : AppCompatActivity() {
         }
         var exprToFormat = this
         // remove last Char if it doesn't complete the expression
-        while(exprToFormat.isNotEmpty() && !(exprToFormat[exprToFormat.lastIndex] == ')' || exprToFormat[exprToFormat.lastIndex].isDigit() ||
-                    exprToFormat[exprToFormat.lastIndex] == '%')) {
+        while(exprToFormat.isNotEmpty() && !(exprToFormat.last() == ')' || exprToFormat.last().isDigit() ||
+                    exprToFormat.last() == '%')) {
             exprToFormat = exprToFormat.subSequence(0, exprToFormat.lastIndex)
         }
         // add the missing closing brackets if needed
@@ -523,6 +543,7 @@ class MainActivity : AppCompatActivity() {
 
     // helper function to convert CharSequence into Int variables
 // CAUTION: throws IllegalArgumentException if the CharSequence is not numeric
+    @Throws(NumberFormatException::class)
     private fun CharSequence.toNumber(): Number {
         var seq = this
         var number: Number
@@ -535,7 +556,7 @@ class MainActivity : AppCompatActivity() {
             seq = seq.replace(Regex(","), ".")
         }
         // if number is a percentage, remember it for later and remove the percentage
-        if(seq[seq.lastIndex] == '%') {
+        if(seq.last() == '%') {
             isPercentage = true
             seq = seq.subSequence(0, seq.lastIndex)
         }
@@ -547,8 +568,10 @@ class MainActivity : AppCompatActivity() {
             return Double.NaN
         }
         if(isPercentage) {
-            // todo avoid rounding
-            number = number.toDouble() / 100
+            val result = number.toDouble() / 100
+            // throws exception if result is infinity (distinction between pos./neg. infinity)
+            throwExceptionInfinity(result)
+            number = result
         }
         return number
     }
@@ -621,7 +644,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // custom subSequence() function
-// -> returns a subSequence that contains all Chars starting from the specified index
+    // -> returns a subSequence that contains all Chars starting from the specified index
     private fun CharSequence.subSequence(fromIndex: Int): CharSequence {
         // if index is out of range, throws IllegalArgumentException
         if (fromIndex !in this.indices) {
@@ -636,65 +659,83 @@ class MainActivity : AppCompatActivity() {
     }
 
     // multiplication
+    @Throws(NumberFormatException::class)
     private fun Number.mul(other: Number): Number {
-        return (this as Double) * (other as Double)
+        val result = (this as Double) * (other as Double)
+        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        throwExceptionInfinity(result)
+        return result
     }
 
     // division
+    @Throws(NumberFormatException::class, ArithmeticException::class)
     private fun Number.div(other: Number): Number {
         if(other.toDouble() == 0.0) {
-            Toast.makeText(this@MainActivity, "Cannot divide by zero", Toast.LENGTH_SHORT).show()
+            println("Cannot divide by zero")
             throw ArithmeticException("Cannot divide by zero in Number.div(other: Number)")
         }
-        return (this as Double) / (other as Double)
+        val result = (this as Double) / (other as Double)
+        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        throwExceptionInfinity(result)
+        return result
     }
 
-    // todo special case of the pow() function: if base is < 0 -> returns NaN
+    // todo special case of the pow() function: if base is < 0 and exp is not an Int -> returns NaN
     // exponentiation
+    @Throws(NumberFormatException::class)
     private fun Number.power(other: Number): Number {
         /*if((this as Double) < 0 && other.) { // todo decimal digit of other is 0
             //todo cast other to Int
             // todo make calculation or this < 0 correctly
             return (this as Double).pow(other as Int)
         }*/
-        return (this as Double).pow(other as Double)
+        val result = (this as Double).pow(other as Double)
+        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        throwExceptionInfinity(result)
+        return result
     }
 
     // addition
+    @Throws(NumberFormatException::class)
     private fun Number.add(other: Number): Number {
-        return (this as Double) + (other as Double)
+        val result = (this as Double) + (other as Double)
+        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        throwExceptionInfinity(result)
+        return result
     }
 
     // subtraction
+    @Throws(NumberFormatException::class)
     private fun Number.sub(other: Number): Number {
-        return (this as Double) - (other as Double)
+        val result = (this as Double) - (other as Double)
+        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        throwExceptionInfinity(result)
+        return result
     }
 
     // merges tokens like "+""+n", "+""-n", "-""n" and "-""-n", which can occur after
-    // recursively resolving brackets in calculate()
+    // recursively resolving brackets in the recursive calculate()
+
+    // CAUTION: relies on the fact that it is ONLY called by ArrayList<CharSequence>.calculate()
+    // because then CharSequence.calculate() can catch the potential NumberFormatException
+    @Throws(NumberFormatException::class)
     private fun ArrayList<CharSequence>.mergePlusMinus(): ArrayList<CharSequence> {
         val tokenList = ArrayList<CharSequence>()
-        val tokensMultiplication = ArrayList<CharSequence>()
         var mergedValue: CharSequence
         for(index in this.indices) {
-            if(index == 1 && this[0].isPlusMinus() && this[1].isNumeric() ||
-                index >= 2 && this[index - 2] == "(" && this[index - 1].isPlusMinus() && this[index].isNumeric()) {
-                tokensMultiplication.add("(")
-                tokensMultiplication.add("${this[index - 1]}1")
-                tokensMultiplication.add(")")
-                tokensMultiplication.add("×")
-                tokensMultiplication.add(this[index])
-                mergedValue = tokensMultiplication.calculate(true)[0]
-                tokensMultiplication.clear()
+            if(index == 1 && (this[0] == "-" || this[0] == "+") && this[1].isNumeric() ||
+                index >= 2 && this[index - 2] == "(" && (this[index - 1] == "-" || this[index - 1] == "+") && this[index].isNumeric()) {
+                // mul() can throw a NumberFormatException theoretically,
+                // but practically never will because we only multiply by +1 or -1
+                mergedValue = "${this[index - 1]}1".toNumber().mul(this[index].toNumber()).toString()
                 tokenList.removeAt(index - 1)
                 tokenList.add(mergedValue)
-
             } else {
                 tokenList.add(this[index])
             }
         }
         return tokenList
-    }
+    } // todo combine both merge functions
 
     // merges percentage Chars with a number after bracket resolution in calculate()
     private fun ArrayList<CharSequence>.mergePercentages(): ArrayList<CharSequence> {
@@ -712,23 +753,22 @@ class MainActivity : AppCompatActivity() {
         return tokenList
     }
 
-    // helper function for mergePlusMinus to determine the token type
-    // -> returns true if the CharSequence is "+" or "-"
-    private fun CharSequence.isPlusMinus(): Boolean {
-        return this == "+" || this == "-"
-    }
+    // formats the final result by removing unnecessary '0's  or at the end after the decimal point
+    // -> returns in double- or integer-format is possible
 
-    // formats the final result by removing unnecessary '0's at the end after the decimal point
-    // uniformly uses ',' in Double types
+    // Note:
+    // conversion from dot-format to comma-format of doubles avoided to avoid unnecessary conversions
+    // throughout recursive ArrayList<CharSequence>calculation() calls, instead the conversion of
+    // the final result to comma-format is executed in the callee CharSequence.calculate()
     private fun CharSequence.formatNumber(): CharSequence {
         if(!this.isNumeric()) {
             throw IllegalArgumentException("CharSequence.formatNumber(): this.isNumeric() has to return true")
         }
         var number = this
-        if(number.contains(',') || number.contains('.')) {
-            // replace '.' with ','
-            number = number.replace(Regex("\\."), ",")
-            val decimalPoint = number.indexOf(",")
+        if(number.numberHasCommaOrDot()) {
+            // replace ',' with  '.' for uniformity of calculation
+            number = number.replace(Regex(","), "\\.")
+            val decimalPoint = number.indexOf(".")
             val postDecimalPoint = number.subSequence(decimalPoint + 1)
             // return as integer if all digits after the decimal point are '0'
             if(postDecimalPoint.all { char -> char == '0' }) {
@@ -752,7 +792,12 @@ class MainActivity : AppCompatActivity() {
     private fun CharSequence.append(other: CharSequence): CharSequence {
         return "${this}${other}"
     }
-
+    // helper function throw NumberFormatException in case of infinity results
+    private fun throwExceptionInfinity(result: Double) {
+        if(result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY){
+            throw NumberFormatException("Calculation result is outside of allowed range")
+        }
+    }
 }
 
 
