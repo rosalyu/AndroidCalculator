@@ -299,9 +299,10 @@ class MainActivity : AppCompatActivity() {
         return if(resultList.isEmpty()) {
             ""
         } else {
-            val result = resultList[0]
+            // replace the dot with a comma if available
+            val result = resultList[0].replace(Regex("\\."), ",")
             resultList.clear()
-            // if last expression is percentage
+            // if last expression is percentage resolve percentages via toNumber
             if(result[result.lastIndex] == '%') {
                 return "${result.toNumber()}".formatNumber()
             }
