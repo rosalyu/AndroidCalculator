@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     tvCalculation.text = calculationText
                     val result = calculationText.calculate()
-                    // check whether result is out of range
-                    if(result == "outOfRange") {
+                    // check whether result is out of range or has a division by zero
+                    if(result == "outOfRange" || result == "divisionByZero") {
                         tvResult.text = ""
                     } else {
                         tvResult.text = result
@@ -56,19 +56,21 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.button0).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
                 val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
-                val (calculationText, resultText) = when {
-                    lastChar == null -> "0" to "0"
-                    lastChar in setOf(')', '%') -> "${tvCalculation.text}×0" to tvCalculation.text.calculate()
-                    lastChar == '÷' -> "${tvCalculation.text}0" to ""
+
+                val calculationText: CharSequence = when {
+                    lastChar == null -> "0"
+                    lastChar in setOf(')', '%') -> "${tvCalculation.text}×0" // todo is append() more efficient?
+                    // do nothing if a new zero is added with no number directly before it
                     (tvCalculation.text == "0") ||
                             (lastChar == '0' && tvCalculation.text.length > 1
                                     && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
-                                    tvCalculation.text.numberHasCommaOrDot()))) -> tvCalculation.text to tvResult.text
-                    else -> "${tvCalculation.text}0" to "${tvCalculation.text}0".calculate()
+                                    tvCalculation.text.numberHasCommaOrDot()))) -> tvCalculation.text
+                    else -> "${tvCalculation.text}0"
                 }
                 tvCalculation.text = calculationText
-                // check whether result is out of range
-                if(resultText == "outOfRange") {
+                val resultText = calculationText.calculate()
+                // check whether result is out of range or has a division by zero
+                if(resultText == "outOfRange" || resultText == "divisionByZero") {
                     tvResult.text = ""
                 } else {
                     tvResult.text = resultText
@@ -110,8 +112,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     // update the TextViews
                     tvCalculation.text = calculationText
-                    // check whether result is out of range
-                    if(resultText == "outOfRange") {
+                    // check whether result is out of range or has a division by zero
+                    if(resultText == "outOfRange" || resultText == "divisionByZero") {
                         tvResult.text = ""
                     } else {
                         tvResult.text = resultText
@@ -247,8 +249,8 @@ class MainActivity : AppCompatActivity() {
                     tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
                 }
                 val result = tvCalculation.text.calculate()
-                // check whether result is out of range
-                if(result == "outOfRange") {
+                // check whether result is out of range or has a division by zero
+                if(result == "outOfRange" || result == "divisionByZero") {
                     tvResult.text = ""
                 } else {
                     tvResult.text = result
@@ -270,6 +272,10 @@ class MainActivity : AppCompatActivity() {
                 if(result == "outOfRange") {
                     tvCalculation.text = ""
                     Toast.makeText(this, "Cannot calculate outside of the allowed range.", Toast.LENGTH_SHORT).show()
+                } else if(result == "divisionByZero") {
+                    tvCalculation.text = ""
+                    Toast.makeText(this, "Cannot divide by zero.", Toast.LENGTH_SHORT).show()
+
                 } else {
                     tvCalculation.text = result
                 }
@@ -292,8 +298,8 @@ class MainActivity : AppCompatActivity() {
         try {
             resultList = tokenList.calculate(true)
         } catch(e: ArithmeticException) {
-            // division by zero makes the result view empty
-            resultList = ArrayList()
+            // returns a label so callee function can decide whether to notify the user or not
+            return "divisionByZero"
         } catch(e: NumberFormatException) {
             // returns a label so callee function can decide whether to notify the user or not
             return "outOfRange"
@@ -676,7 +682,6 @@ class MainActivity : AppCompatActivity() {
     @Throws(NumberFormatException::class, ArithmeticException::class)
     private fun Number.div(other: Number): Number {
         if(other.toDouble() == 0.0) {
-            Toast.makeText(this@MainActivity, "Cannot divide by zero.", Toast.LENGTH_SHORT).show()
             throw ArithmeticException("Cannot divide by zero in Number.div(other: Number)")
         }
         val result = (this as Double) / (other as Double)
