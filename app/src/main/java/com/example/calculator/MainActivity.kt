@@ -237,12 +237,15 @@ class MainActivity : AppCompatActivity() {
         // delete button: DEL
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
             if(tvCalculation.text.isNotEmpty()) {
-                tvCalculation.text = StringBuilder(
-                    tvCalculation.text.subSequence(
-                        0,
-                        tvCalculation.text.lastIndex
-                    )
-                ).toString()
+                // if the last Chars are '^' and '(' following, remove both
+                if(tvCalculation.text.length > 1 && tvCalculation.text[tvCalculation.text.lastIndex - 1] == '^'
+                    && tvCalculation.text.last() == '(') {
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex - 1)
+                }
+                // else remove only the last Char
+                else {
+                    tvCalculation.text = tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)
+                }
                 val result = tvCalculation.text.calculate()
                 // check whether result is out of range
                 if(result == "outOfRange") {
@@ -285,7 +288,6 @@ class MainActivity : AppCompatActivity() {
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
         val tokenList = this.formatExpression().tokenList()
-
         var resultList: ArrayList<CharSequence>
         try {
             resultList = tokenList.calculate(true)
@@ -300,13 +302,13 @@ class MainActivity : AppCompatActivity() {
             ""
         } else {
             // replace the dot with a comma if available
-            val result = resultList[0].replace(Regex("\\."), ",")
+            var result = resultList[0]
             resultList.clear()
             // if last expression is percentage resolve percentages via toNumber
             if(result[result.lastIndex] == '%') {
-                return "${result.toNumber()}".formatNumber()
+                result = result.toNumber().toString()
             }
-            return result.formatNumber()
+            return result.formatNumber().replace(Regex("\\."), ",")
         }
     }
 
@@ -397,6 +399,7 @@ class MainActivity : AppCompatActivity() {
         // percentage has the highest precedence as a unary operator
         // (together with '+' and '-', which we already considered)
 
+        // todo put two while-loops together
         // multiplication, division exponentiation: same precedence (from left to right)
         val newTokenList: ArrayList<CharSequence> = tokenList
         while(tokenList.contains("×") || tokenList.contains("÷") || tokenList.contains("^")) {
@@ -585,12 +588,13 @@ class MainActivity : AppCompatActivity() {
 
         for (index in this.indices) {
             try {
-                // append current number, '+','-' or '%' sign
-                if ((index == 0 && (this[index] == '-' || this[index] == '+') && this[1].isDigit() ||
-                    index > 0 && this[index - 1] == '(' && (this[index] == '-' || this[index] == '+')
-                    && this[index + 1].isDigit())
-                    || this[index].isDigit() || this[index] == ',' || this[index] == '.' ||
-                    (index > 0 && this[index - 1].isDigit() && this[index] == '%')) {
+                // append current number, '+','-', 'E', ',' or '%' sign
+                if (this[index].isDigit() || this[index] == ',' ||
+                    ((this[0] == '-' || this[0] == '+') && this[1].isDigit()) ||
+                    index > 0 && ((index + 1 in indices && (this[index - 1] == '(' || this[index - 1] == 'E')
+                            && (this[index] == '-' || this[index] == '+') && this[index + 1].isDigit()) ||
+                    (this[index - 1].isDigit() && this[index] == '%') ||
+                    (this[index - 1].isDigit() && this[index] == 'E'))) {
                     number += this[index]
                 }
                 // add number to tokenList
@@ -672,7 +676,7 @@ class MainActivity : AppCompatActivity() {
     @Throws(NumberFormatException::class, ArithmeticException::class)
     private fun Number.div(other: Number): Number {
         if(other.toDouble() == 0.0) {
-            println("Cannot divide by zero")
+            Toast.makeText(this@MainActivity, "Cannot divide by zero.", Toast.LENGTH_SHORT).show()
             throw ArithmeticException("Cannot divide by zero in Number.div(other: Number)")
         }
         val result = (this as Double) / (other as Double)
