@@ -51,8 +51,7 @@ class MainActivity : AppCompatActivity() {
             R.id.button6, R.id.button7, R.id.button8, R.id.button9).forEach {
                 setListenerDigitsNonZero(findViewById(it)) }
 
-        // todo do not notify user about division by zero if 5 / 0,0... he might type a non-zero digit
-        //  (notify only when equals button pressed)
+        // zero button
         findViewById<Button>(R.id.button0).setOnClickListener {
             if (tvCalculation.text.length < maxAmountOfChars) {
                 val lastChar = if(tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
@@ -252,8 +251,8 @@ class MainActivity : AppCompatActivity() {
     // -> "outOfRange" results from a NumberFormatException thrown in toNumber() or any of the
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
-        val tokenList = this.formatExpression().tokenList()
-        var resultList: ArrayList<CharSequence>
+        val tokenList = this.tokenList()
+        val resultList: ArrayList<CharSequence>
         try {
             resultList = tokenList.calculate(true)
         } catch(e: ArithmeticException) {
@@ -318,26 +317,19 @@ class MainActivity : AppCompatActivity() {
                     break
                 }
             }
-
-            val leftExpression: ArrayList<CharSequence> =
-                if (startIndex > 0) {
-                    tokenList.subListExtension(0, startIndex)
-                } else { ArrayList() }
+            val leftExpression: ArrayList<CharSequence> = tokenList.subListExtension(0, startIndex)
 
             val rightExpression =
                 if (endIndex < tokenList.lastIndex) {
                     tokenList.subList(endIndex + 1)
                 } else { ArrayList() }
 
-            // expression parts "()" should already never occur!
-            assert(startIndex + 1 != endIndex)
-
             val innerExpression = tokenList.subListExtension(startIndex + 1, endIndex)
             // Toast.makeText(this@MainActivity, "inner: ${innerExpression}", Toast.LENGTH_SHORT).show()
 
             val resultList = ArrayList<CharSequence>().apply {
                 // no brackets here, but expression ends with an operator likely
-                if(leftExpression.isNotEmpty()) { // todo
+                if(leftExpression.isNotEmpty()) {
                     addAll(leftExpression)
                 }
                 addAll(innerExpression.calculate(false)) // more brackets may be there
@@ -350,7 +342,7 @@ class MainActivity : AppCompatActivity() {
             innerExpression.clear()
             leftExpression.clear()
 
-            // if resultList still contains brackets, keep resolving the brackets
+            // if resultList still contains brackets (that were not all nested), keep resolving the brackets
             if(resultList.contains("(")) {
                 return resultList.calculate(false)
             }
@@ -359,54 +351,39 @@ class MainActivity : AppCompatActivity() {
                 tokenList = resultList.mergePercentages().mergePlusMinus()
             }
         }
-        // operations, no more brackets (unary operators already calculated with retokenize() function)
-
+        // operations, no more brackets
         // percentage has the highest precedence as a unary operator
         // (together with '+' and '-', which we already considered)
 
-        // todo put two while-loops together
-        // multiplication, division exponentiation: same precedence (from left to right)
         val newTokenList: ArrayList<CharSequence> = tokenList
-        while(tokenList.contains("×") || tokenList.contains("÷") || tokenList.contains("^")) {
+        while(tokenList.contains("×") || tokenList.contains("÷") || tokenList.contains("^")
+            || newTokenList.contains("+") || newTokenList.contains("-")) {
+
             tokenList = newTokenList
-
-            // find index of next operand, "^" has precedence
-            val operatorIndex = if(tokenList.contains("^")) {
-                tokenList.indexOfFirst{ it == "^" }
-            } else {tokenList.indexOfFirst { it == "×"
-                    || it == "÷" }
+            val operatorIndex: Int
+            if(!(tokenList.contains("-") || tokenList.contains("+"))) {
+                // multiplication, division exponentiation: same precedence (from left to right)
+                operatorIndex = if(tokenList.contains("^")) { //"^" has highest precedence
+                    tokenList.indexOfFirst{ it == "^" }
+                } else {tokenList.indexOfFirst { it == "×"
+                        || it == "÷" }
+                }
             }
-
+            // add and sub (binary) have lower precedence
+            else {
+                operatorIndex = tokenList.indexOfFirst { it == "+" || it == "-" }
+            }
             // assumes that each operator is surrounded by numbers left and right
             val operand1 = tokenList.elementAt(operatorIndex - 1).toNumber()
             val operand2 = tokenList.elementAt(operatorIndex + 1).toNumber()
 
-            val result = if(tokenList.elementAt(operatorIndex) == "^") {
-                (operand1).power(operand2)
-            } else if(tokenList.elementAt(operatorIndex) == "×"){
-                (operand1).mul(operand2)
-            } else {
-                // may throw exception, which is handled by callee
-                (operand1).div(operand2)
-            }
-            // remove both operands and operator and insert result
-            repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
-            newTokenList.add(operatorIndex - 1, "$result")
-        }
-        tokenList = newTokenList
-        // addition and subtraction: same precedence
-        while(newTokenList.contains("+") || newTokenList.contains("-")) {
-            // find index of next operand
-            val operatorIndex = tokenList.indexOfFirst { it == "+" || it == "-" }
-
-            // assumes that each operator is surrounded by numbers left and right
-            val operand1 = tokenList.elementAt(operatorIndex - 1).toNumber()
-            val operand2 = tokenList.elementAt(operatorIndex + 1).toNumber()
-
-            val result = if(tokenList.elementAt(operatorIndex) == "+") {
-                (operand1).add(operand2)
-            } else {
-                (operand1).sub(operand2)
+            val result = when(tokenList.elementAt(operatorIndex)) {
+                "^" -> (operand1).power(operand2)
+                "×" -> (operand1).mul(operand2)
+                "÷" -> // may throw exception, which is handled by callee
+                    (operand1).div(operand2)
+                "+" -> (operand1).add(operand2)
+                else -> (operand1).sub(operand2)
             }
             // remove both operands and operator and insert result
             repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
@@ -535,41 +512,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     // converts a CharSequence expression into a list of CharSequence tokens
-    // assumes the CharSequence is already formatted
     private fun CharSequence.tokenList(): ArrayList<CharSequence> {
-        val tokenList = ArrayList<CharSequence>()
+        val oldList = this.formatExpression() // Only call on formatted expression
+        val newList = ArrayList<CharSequence>()
         var number = ""
 
-        for (index in this.indices) {
-            try {
-                // append current number, '+','-', 'E', ',' or '%' sign
-                if (this[index].isDigit() || this[index] == ',' ||
-                    ((this[0] == '-' || this[0] == '+') && this[1].isDigit()) ||
-                    index > 0 && ((index + 1 in indices && (this[index - 1] == '(' || this[index - 1] == 'E')
-                            && (this[index] == '-' || this[index] == '+') && this[index + 1].isDigit()) ||
-                    (this[index - 1].isDigit() && this[index] == '%') ||
-                    (this[index - 1].isDigit() && this[index] == 'E'))) {
-                    number += this[index]
+        for (index in oldList.indices) {
+            // append current number, '+','-', 'E', ',' or '%' sign
+            if (oldList[index].isDigit() || oldList[index] == ',' ||
+                ((oldList[0] == '-' || oldList[0] == '+') && oldList[1].isDigit()) ||
+                index > 0 && ((index + 1 in indices && (oldList[index - 1] == '(' || oldList[index - 1] == 'E')
+                        && (oldList[index] == '-' || oldList[index] == '+') && oldList[index + 1].isDigit()) ||
+                        (oldList[index - 1].isDigit() && (oldList[index] == '%' || oldList[index] == 'E')))) {
+                number += oldList[index]
+            }
+            // add number to tokenList
+            else {
+                if (number.isNotEmpty()) {
+                    newList.add(number)
+                    number = ""
                 }
-                // add number to tokenList
-                else {
-                    if (number.isNotEmpty()) {
-                        tokenList.add(number)
-                        number = ""
-                    }
-                    // add operator or bracket to tokenList
-                    tokenList.add(this[index].toString())
-                }
-            } catch (e: Exception) {
-                Toast.makeText(this@MainActivity,
-                    "tokenList() called on non-formatted expression", Toast.LENGTH_LONG).show()
-                return ArrayList()
+                // add operator or bracket to tokenList
+                newList.add(oldList[index].toString())
             }
         }
         if (number.isNotEmpty()) {
-            tokenList.add(number)
+            newList.add(number)
         }
-        return tokenList
+        return newList
     }
 
     // custom function for ArrayList<CharSequence> class
@@ -680,12 +650,13 @@ class MainActivity : AppCompatActivity() {
     private fun ArrayList<CharSequence>.mergePlusMinus(): ArrayList<CharSequence> {
         val tokenList = ArrayList<CharSequence>()
         var mergedValue: CharSequence
+        val unaryMinusSubFirst = (this[0] == "-" || this[0] == "+") && this[1].isNumeric()
         for(index in this.indices) {
-            if(index == 1 && (this[0] == "-" || this[0] == "+") && this[1].isNumeric() ||
-                index >= 2 && this[index - 2] == "(" && (this[index - 1] == "-" || this[index - 1] == "+") && this[index].isNumeric()) {
+            if(unaryMinusSubFirst || index >= 2 && this[index - 2] == "(" && (this[index - 1] == "-"
+                        || this[index - 1] == "+") && this[index].isNumeric()) {
                 // mul() can throw a NumberFormatException theoretically,
                 // but practically never will because we only multiply by +1 or -1
-                mergedValue = "${this[index - 1]}1".toNumber().mul(this[index].toNumber()).toString()
+                mergedValue = ("${this[index - 1]}1".toNumber() as Double * this[index].toNumber() as Double).toString()
                 tokenList.removeAt(index - 1)
                 tokenList.add(mergedValue)
             } else {
@@ -698,14 +669,14 @@ class MainActivity : AppCompatActivity() {
     // merges percentage Chars with a number after bracket resolution in calculate()
     private fun ArrayList<CharSequence>.mergePercentages(): ArrayList<CharSequence> {
         val tokenList: ArrayList<CharSequence> = ArrayList()
-        for(i in this.indices) {
+        for(index in this.indices) {
             // merge numbers with '%'
-            if(i > 0 && this[i] == "%" && this[i - 1].isNumeric()) {
-                tokenList.removeAt(i - 1)
-                tokenList.add("${this[i - 1]}${this[i]}")
+            if(index > 0 && this[index] == "%" && this[index - 1].isNumeric()) {
+                tokenList.removeAt(index - 1)
+                tokenList.add("${this[index - 1]}${this[index]}")
             }
             else {
-                tokenList.add(this[i])
+                tokenList.add(this[index])
             }
         }
         return tokenList
@@ -753,7 +724,7 @@ class MainActivity : AppCompatActivity() {
     @Throws(NumberFormatException::class)
     private fun throwExceptionInfinity(result: Double) {
         if(result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY){
-            throw NumberFormatException("Calculation result is outside of allowed range")
+            throw NumberFormatException()
         }
     }
 }
