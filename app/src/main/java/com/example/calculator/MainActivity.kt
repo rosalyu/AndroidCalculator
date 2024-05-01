@@ -520,7 +520,7 @@ class MainActivity : AppCompatActivity() {
         for (index in oldList.indices) {
             // append current number, '+','-', 'E', ',' or '%' sign
             if (oldList[index].isDigit() || oldList[index] == ',' ||
-                ((oldList[0] == '-' || oldList[0] == '+') && oldList[1].isDigit()) ||
+                (index == 0 && (oldList[0] == '-' || oldList[0] == '+') && oldList[1].isDigit()) ||
                 index > 0 && ((index + 1 in indices && (oldList[index - 1] == '(' || oldList[index - 1] == 'E')
                         && (oldList[index] == '-' || oldList[index] == '+') && oldList[index + 1].isDigit()) ||
                         (oldList[index - 1].isDigit() && (oldList[index] == '%' || oldList[index] == 'E')))) {
