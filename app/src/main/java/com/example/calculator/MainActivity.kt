@@ -16,6 +16,7 @@ class MainActivity : AppCompatActivity() {
         // defines the maximum amount of Chars in the calculation TextView
         val maxAmountOfChars = 16
 
+
         val tvCalculation: TextView = findViewById(R.id.tvCalculation)
         val tvResult: TextView = findViewById(R.id.tvResult)
 
