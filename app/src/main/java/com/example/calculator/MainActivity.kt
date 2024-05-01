@@ -242,6 +242,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     // calculates the result of the expression by formatting, tokenizing it and calling
     // the recursive ArrayList<CharSequence>.calculate() function
 
@@ -388,10 +389,8 @@ class MainActivity : AppCompatActivity() {
                 // may throw exception, which is handled by callee
                 (operand1).div(operand2)
             }
-
-            newTokenList.removeAt(operatorIndex - 1)
-            newTokenList.removeAt(operatorIndex - 1)
-            newTokenList.removeAt(operatorIndex - 1)
+            // remove both operands and operator and insert result
+            repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
             newTokenList.add(operatorIndex - 1, "$result")
         }
         tokenList = newTokenList
@@ -409,10 +408,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 (operand1).sub(operand2)
             }
-
-            newTokenList.removeAt(operatorIndex - 1)
-            newTokenList.removeAt(operatorIndex - 1)
-            newTokenList.removeAt(operatorIndex - 1)
+            // remove both operands and operator and insert result
+            repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
             newTokenList.add(operatorIndex - 1, "$result")
         }
         return newTokenList
@@ -435,9 +432,9 @@ class MainActivity : AppCompatActivity() {
                 continue
             }
             // '%', 'E', and '-' following 'E' are allowed
-            else if((i == this.lastIndex && this[i] == '%') ||
-                (i != this.lastIndex && i !=0 && this[i] == 'E') ||
-                (i != this.lastIndex && i !=0 && this[i] == '-' && this[i - 1] == 'E'))   {
+            else if((i == lastIndex && this[i] == '%') ||
+                (i != lastIndex && i !=0 && this[i] == 'E') ||
+                (i != lastIndex && i !=0 && this[i] == '-' && this[i - 1] == 'E'))   {
                 continue
             }
             // Char is not a digit (or 'E' or 'E' + '-'), or it is a second comma -> false
@@ -451,23 +448,16 @@ class MainActivity : AppCompatActivity() {
 
     // true if Char is an operator
     private fun Char.isOperator(): Boolean {
-        return this == '+' || this == '-' || this == '×'
-                || this == '÷' || this == '^'
+        return this == '+' || this == '-' || this == '×' || this == '÷' || this == '^'
     }
 
     // picks an opening or closing bracket based on the typed text in the calculation TextView
     // to append to the expression later if the user presses the bracket button
     private fun CharSequence.bracketPicker(): CharSequence {
         var count = 0
-        for (char in this) {
-            if (char == '(') {
-                count--
-            }
-            if (char == ')') {
-                count++
-            }
-        }
-        if (count == 0 || count < 0 && this[length - 1] == '(') {
+        forEach { char -> if(char == '(') count-- }
+        forEach { char -> if(char == ')') count++ }
+        if (count == 0 || count < 0 && this[lastIndex] == '(') {
             return "("
         }
         return ")"
@@ -475,19 +465,19 @@ class MainActivity : AppCompatActivity() {
 
     // helper function for ',' or '.': ensures a number has a maximum of one ',' or '.'
     private fun CharSequence.numberHasCommaOrDot(): Boolean {
-        // c remains null if the sequence contains digits only
-        var c: Char? = null
+        // char remains null if the sequence contains digits only
+        var char: Char? = null
         // checks all Chars starting from the end until the first Char that is not a digit
         for (i in this.lastIndex downTo 0) {
             if (this[i].isDigit()) {
                 continue
             } else {
                 // set first non-digit Char
-                c = this[i]
+                char = this[i]
                 break
             }
         }
-        return c == ',' || c == '.'
+        return char == ',' || char == '.'
     }
 
     // if needed, removes incomplete expression Chars at the end and adds missing closing brackets
@@ -572,7 +562,7 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@MainActivity,
-                    ".tokenList() called on not tokenized expression", Toast.LENGTH_LONG).show()
+                    "tokenList() called on non-formatted expression", Toast.LENGTH_LONG).show()
                 return ArrayList()
             }
         }
@@ -631,7 +621,7 @@ class MainActivity : AppCompatActivity() {
     @Throws(NumberFormatException::class)
     private fun Number.mul(other: Number): Number {
         val result = (this as Double) * (other as Double)
-        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        // throws exception if result is infinity
         throwExceptionInfinity(result)
         return result
     }
@@ -643,7 +633,7 @@ class MainActivity : AppCompatActivity() {
             throw ArithmeticException("Cannot divide by zero in Number.div(other: Number)")
         }
         val result = (this as Double) / (other as Double)
-        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        // throws exception if result is infinity
         throwExceptionInfinity(result)
         return result
     }
@@ -658,7 +648,7 @@ class MainActivity : AppCompatActivity() {
             return (this as Double).pow(other as Int)
         }*/
         val result = (this as Double).pow(other as Double)
-        // throws exception if result is infinity (distinction between pos./neg. infinity)
+        // throws exception if result is Infinity
         throwExceptionInfinity(result)
         return result
     }
@@ -683,7 +673,7 @@ class MainActivity : AppCompatActivity() {
 
     // merges tokens like "+""+n", "+""-n", "-""n" and "-""-n", which can occur after
     // recursively resolving brackets in the recursive calculate()
-
+    //
     // CAUTION: relies on the fact that it is ONLY called by ArrayList<CharSequence>.calculate()
     // because then CharSequence.calculate() can catch the potential NumberFormatException
     @Throws(NumberFormatException::class)
@@ -722,12 +712,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     // formats the final result by removing unnecessary '0's  or at the end after the decimal point
-    // -> returns in double- or integer-format is possible
-
+    // -> returns in double- or integer-format if possible
     // Note:
     // conversion from dot-format to comma-format of doubles avoided to avoid unnecessary conversions
-    // throughout recursive ArrayList<CharSequence>calculation() calls, instead the conversion of
-    // the final result to comma-format is executed in the callee CharSequence.calculate()
+    // throughout recursive ArrayList<CharSequence>calculation() calls. Instead the conversion of
+    // the final result to comma-format is executed in the caller CharSequence.calculate()
+    @Throws(java.lang.IllegalArgumentException::class)
     private fun CharSequence.formatNumber(): CharSequence {
         if(!this.isNumeric()) {
             throw IllegalArgumentException("CharSequence.formatNumber(): this.isNumeric() has to return true")
@@ -760,6 +750,7 @@ class MainActivity : AppCompatActivity() {
         return "${this}${other}"
     }
     // helper function throw NumberFormatException in case of infinity results
+    @Throws(NumberFormatException::class)
     private fun throwExceptionInfinity(result: Double) {
         if(result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY){
             throw NumberFormatException("Calculation result is outside of allowed range")
