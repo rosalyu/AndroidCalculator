@@ -2,13 +2,10 @@ package com.example.calculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintSet.Layout
 import java.lang.ArithmeticException
 import kotlin.math.pow
 
@@ -20,7 +17,6 @@ class MainActivity : AppCompatActivity() {
         // defines the maximum amount of Chars in the calculation TextView
         val maxAmountOfChars = 16
 
-        val mainLayout = findViewById<LinearLayout>(R.id.main_layout)
         val tvCalculation: TextView = findViewById(R.id.tvCalculation)
         val tvResult: TextView = findViewById(R.id.tvResult)
 
