@@ -25,5 +25,11 @@
     <string name="brcClose">)</string>
     <string name="clr">C</string>
     <string name="del">DEL </string>
+    <string name="themes">themes</string>
+    <string name="darkTheme">Dark Theme</string>
+    <string name="lightTheme">Dark Theme</string>
+    <string name="pinkTheme">Pink Theme</string>
+    <string name="blueTheme">Blue Theme</string>
+
 
 </resources>
