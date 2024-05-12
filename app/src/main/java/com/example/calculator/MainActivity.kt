@@ -397,14 +397,14 @@ class MainActivity : AppCompatActivity() {
             || newTokenList.contains("+") || newTokenList.contains("-")) {
 
             tokenList = newTokenList
-            val operatorIndex: Int = if(!(tokenList.contains("-") || tokenList.contains("+"))) {
+            val operatorIndex: Int = 
                 // multiplication, division exponentiation: same precedence (from left to right)
                 if(tokenList.contains("^")) { //"^" has highest precedence
                     tokenList.indexOfFirst{ it == "^" }
-                } else {tokenList.indexOfFirst { it == "×"
+                } else if(tokenList.contains("×") || tokenList.contains("÷")) {tokenList.indexOfFirst { it == "×"
                         || it == "÷" }
                 }
-            }
+            
             // add and sub (binary) have lower precedence
             else {
                 tokenList.indexOfFirst { it == "+" || it == "-" }
