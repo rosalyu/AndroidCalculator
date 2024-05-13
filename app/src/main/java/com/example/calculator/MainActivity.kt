@@ -15,16 +15,23 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // defines the maximum amount of Chars in the calculation TextView
-        val maxAmountOfChars = 16
+        val maxAmountOfChars = 18
+        val decreaseTextSizeFromCharAmount = 14
 
         val tvCalculation: TextView = findViewById(R.id.tvCalculation)
         val tvResult: TextView = findViewById(R.id.tvResult)
 
         // general function to set onClickListeners for the digit buttons 1 - 9
         fun setListenerDigitsNonZero(button: Button) {
-            button.setOnClickListener {
-                if (tvCalculation.text.length < maxAmountOfChars) {
-
+            button.setOnClickListener { // todo add textSize adjustments for all text altering buttons
+                if (tvCalculation.text.length > maxAmountOfChars) {
+                    Toast.makeText(this, "Cannot display more than $maxAmountOfChars characters.", Toast.LENGTH_SHORT).show()
+                }
+                else {
+                    if(tvCalculation.text.length >= decreaseTextSizeFromCharAmount) {
+                        tvCalculation.textSize = 32f
+                        tvResult.textSize = 47f
+                    }
                     val lastChar = if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
                     val calculationText = when {
                         lastChar == null -> button.text
@@ -39,9 +46,10 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
                     }
                     tvCalculation.text = calculationText
-                    val result = calculationText.calculate()
+                    // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
+                    val result = if(calculationText.isNumeric()) "" else calculationText.calculate()
                     // check whether result is out of range or has a division by zero
-                    if(result == "outOfRange" || result == "divisionByZero") {
+                    if(result.isEmpty() || result == "outOfRange" || result == "divisionByZero") {
                         tvResult.text = ""
                     } else {
                         tvResult.text = result
@@ -217,6 +225,7 @@ class MainActivity : AppCompatActivity() {
 
         // delete button: DEL
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
+
             if(tvCalculation.text.isNotEmpty()) {
                 // if the last Chars are '^' and '(' following, remove both, else remove only one last Char
                 tvCalculation.text = when {
@@ -234,13 +243,21 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     false
                 }
-                val result = if(tvCalculation.text.isNotEmpty() && !invalidExpression) tvCalculation.text.calculate() else ""
+                // if the calculation text is empty, invalid or already the result (numeric without a %-operator), set the result as empty
+                val result = if(tvCalculation.text.isEmpty() || invalidExpression ||
+                    (tvCalculation.text.isNumeric() && !tvCalculation.text.contains('%'))) "" else tvCalculation.text.calculate()
 
                 // check whether result is out of range or has a division by zero
-                if(result == "outOfRange" || result == "divisionByZero") {
+                if(result.isEmpty() || result == "outOfRange" || result == "divisionByZero") {
                     tvResult.text = ""
                 } else {
                     tvResult.text = result
+                }
+
+                // increase text size back to normal if there is enough space available
+                if(tvCalculation.text.length <= decreaseTextSizeFromCharAmount) {
+                    tvCalculation.textSize = 40f
+                    tvResult.textSize = 55f
                 }
             }
         }
@@ -301,6 +318,7 @@ class MainActivity : AppCompatActivity() {
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
         val tokenList = this.tokenList()
+
         val resultList: ArrayList<CharSequence>
         try {
             resultList = tokenList.calculate(true)

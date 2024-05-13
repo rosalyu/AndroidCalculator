@@ -2,6 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="backgroundColor">#196069</color>
-    <color name="buttonColor">#FB8FAC</color>
+    <color name="backgroundColor">#214C04</color>
+    <color name="buttonColor">#CBEF37</color>
 </resources>
