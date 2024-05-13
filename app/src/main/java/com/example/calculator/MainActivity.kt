@@ -2,8 +2,8 @@ package com.example.calculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import java.lang.ArithmeticException
@@ -255,11 +255,23 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.buttonEq).setOnClickListener {
             if (tvCalculation.text.isNotEmpty()) {
                 val result: CharSequence
+
+
+                val exponent = if(!tvCalculation.text.contains('E')) {
+                    null
+                } else if(tvCalculation.text.last() != 'E') {
+                    tvCalculation.text.subSequence(tvCalculation.text.indexOf('E') + 1)
+                }
+                else {
+                    ""
+                }
+                val invalid = exponent != null && (exponent.isEmpty() || (!exponent.isNumeric() || exponent.numberHasCommaOrDot()))
+
                 // invalid scientific number in calculation view
                 val invalidExpression =  tvCalculation.text.last() == 'E' || tvCalculation.text.length > 1
                         && (tvCalculation.text[tvCalculation.text.lastIndex - 1] == 'E')
                         && tvCalculation.text.last() == '-' || tvCalculation.text.last() == '+'
-                if(invalidExpression) {
+                if(invalid) {
                     result = ""
                     Toast.makeText(this, "InvalidExpression", Toast.LENGTH_SHORT).show()
                 } else {

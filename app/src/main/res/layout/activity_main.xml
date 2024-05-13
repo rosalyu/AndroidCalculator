@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.4"
-        android:background="@color/lightPink"
+        android:background="@color/backgroundColor"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -29,7 +29,7 @@
                 android:layout_marginTop="12sp"
                 android:layout_marginEnd="12dp"
                 android:text=""
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -47,7 +47,7 @@
                 android:layout_marginEnd="12dp"
                 android:layout_marginBottom="5dp"
                 android:text=""
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="55sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -64,10 +64,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|bottom"
                 android:layout_marginStart="4dp"
-                android:backgroundTint="@color/darkPink"
+                android:backgroundTint="@color/buttonColor"
                 android:gravity="start"
                 android:text="@string/themes"
-                android:textColor="@color/lightPink"
+                android:textColor="@color/backgroundColor"
                 android:textSize="17sp" />
 
             <TextView
@@ -82,12 +82,12 @@
                 android:layout_gravity="end|bottom"
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="3dp"
-                android:backgroundTint="@color/darkPink"
+                android:backgroundTint="@color/buttonColor"
                 android:gravity="end"
                 android:paddingTop="25dp"
                 android:paddingBottom="25dp"
                 android:text="@string/del"
-                android:textColor="@color/lightPink"
+                android:textColor="@color/backgroundColor"
                 android:textSize="25sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -100,7 +100,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.6"
-        android:background="@color/darkPink"
+        android:background="@color/buttonColor"
         android:orientation="vertical">
 
         <LinearLayout
@@ -115,9 +115,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/clr"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -127,9 +127,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/powButtonText"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -139,9 +139,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/prc"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -151,9 +151,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/div"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -170,9 +170,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/seven"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -182,9 +182,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/eight"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -194,9 +194,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/nine"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -206,9 +206,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/mul"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -225,9 +225,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/four"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -237,9 +237,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/five"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -249,9 +249,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/six"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -261,9 +261,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/sub"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -280,9 +280,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/one"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -292,9 +292,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/two"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -304,9 +304,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/three"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -316,9 +316,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/add"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -335,9 +335,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/brc"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -347,9 +347,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/zero"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -359,9 +359,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/com"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
 
@@ -371,9 +371,9 @@
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/lightPink"
+                android:backgroundTint="@color/backgroundColor"
                 android:text="@string/eq"
-                android:textColor="@color/darkPink"
+                android:textColor="@color/buttonColor"
                 android:textSize="40sp"
                 android:textStyle="bold" />
         </LinearLayout>

@@ -2,8 +2,6 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="lightPink">#FDD8F2</color>
-    <color name="darkPink">#EC2AA3</color>
-    <color name="backgroundBlue">#0F467D</color>
-    <color name="foregroundBlue">#2ABFEC</color>
+    <color name="backgroundColor">#196069</color>
+    <color name="buttonColor">#FB8FAC</color>
 </resources>
