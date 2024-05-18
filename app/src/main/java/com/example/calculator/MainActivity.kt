@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                     // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                     val result = if(calculationText.isNumeric()) "" else calculationText.calculate()
                     // check whether result is out of range or has a division by zero
-                    if(result.isEmpty() || result == "outOfRange" || result == "divisionByZero") {
+                    if(result.isEmpty() || result == "outOfRange" || result == "divisionByZero" || result == "imaginaryNumber") {
                         tvResult.text = ""
                     } else {
                         tvResult.text = result
@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity() {
                 tvCalculation.text = calculationText
                 val resultText = calculationText.calculate()
                 // check whether result is out of range or has a division by zero
-                if(resultText == "outOfRange" || resultText == "divisionByZero") {
+                if(resultText == "outOfRange" || resultText == "divisionByZero" || resultText == "imaginaryNumber") {
                     tvResult.text = ""
                 } else {
                     tvResult.text = resultText
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                     // update the TextViews
                     tvCalculation.text = calculationText
                     // check whether result is out of range or has a division by zero
-                    if(resultText == "outOfRange" || resultText == "divisionByZero") {
+                    if(resultText == "outOfRange" || resultText == "divisionByZero" || resultText == "imaginaryNumber") {
                         tvResult.text = ""
                     } else {
                         tvResult.text = resultText
@@ -248,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                     (tvCalculation.text.isNumeric() && !tvCalculation.text.contains('%'))) "" else tvCalculation.text.calculate()
 
                 // check whether result is out of range or has a division by zero
-                if(result.isEmpty() || result == "outOfRange" || result == "divisionByZero") {
+                if(result.isEmpty() || result == "outOfRange" || result == "divisionByZero" || result == "imaginaryNumber") {
                     tvResult.text = ""
                 } else {
                     tvResult.text = result
@@ -300,6 +300,7 @@ class MainActivity : AppCompatActivity() {
                     "outOfRange" -> apply { tvCalculation.text = ""
                         Toast.makeText(this, "Cannot calculate outside of the allowed range.", Toast.LENGTH_SHORT).show() }
                     "divisionByZero" ->  Toast.makeText(this, "Cannot divide by zero.", Toast.LENGTH_SHORT).show()
+                    "imaginaryNumber" ->  Toast.makeText(this, "An imaginary number results from exponentiation, which is not allowed.", Toast.LENGTH_SHORT).show()
                     else -> tvCalculation.text = result
                 }
                 tvResult.text = ""
@@ -325,6 +326,9 @@ class MainActivity : AppCompatActivity() {
         } catch(e: ArithmeticException) {
             // returns a label so caller function can decide whether to notify the user or not
             return "divisionByZero"
+        } catch(e: ClassNotFoundException) {
+            // returns a label so caller function can decide whether to notify the user or not
+            return "imaginaryNumber"
         } catch(e: NumberFormatException) {
             // returns a label so caller function can decide whether to notify the user or not
             return "outOfRange"
@@ -682,12 +686,15 @@ class MainActivity : AppCompatActivity() {
     // exponentiation
     @Throws(NumberFormatException::class)
     private fun Number.power(other: Number): Number {
-        /*if((this as Double) < 0 && other.) { // todo decimal digit of other is 0
-            //todo cast other to Int
-            // todo make calculation or this < 0 correctly
-            return (this as Double).pow(other as Int)
-        }*/
-        val result = (this as Double).pow(other as Double)
+        // if the base is negative and the exponent is not an integer, the result would be a complex
+        // number -> notify the user
+        if((this as Double) < 0 && other.toString().numberHasCommaOrDot() &&
+            // if all decimal places are 0, then the exponent is an Int and the exception is not thrown
+            !(other.toString().subSequence(other.toString().replace(',', '.').indexOf('.') + 1)
+                .all { it == '0' })) {
+            throw ClassNotFoundException("No support for complex numbers")
+        }
+        val result = this.pow(other as Double)
         // throws exception if result is Infinity
         throwExceptionInfinity(result)
         return result
@@ -720,9 +727,9 @@ class MainActivity : AppCompatActivity() {
     private fun ArrayList<CharSequence>.mergePlusMinus(): ArrayList<CharSequence> {
         val tokenList = ArrayList<CharSequence>()
         var mergedValue: CharSequence
-        val unaryMinusSubFirst = (this[0] == "-" || this[0] == "+") && this[1].isNumeric()
+        val unaryMinusPlusFirst = (this[0] == "-" || this[0] == "+") && this[1].isNumeric()
         for(index in this.indices) {
-            if(unaryMinusSubFirst || index >= 2 && this[index - 2] == "(" && (this[index - 1] == "-"
+            if((unaryMinusPlusFirst && index == 1) || index >= 2 && this[index - 2] == "(" && (this[index - 1] == "-"
                         || this[index - 1] == "+") && this[index].isNumeric()) {
                 // mul() can throw a NumberFormatException theoretically,
                 // but practically never will because we only multiply by +1 or -1
