@@ -589,7 +589,7 @@ class MainActivity : AppCompatActivity() {
         if(isPercentage) {
             val result = number.toDouble() / 100
             // throws exception if result is infinity (distinction between pos./neg. infinity)
-            throwExceptionInfinity(result)
+            throwExceptionIfInfinity(result)
             number = result
         }
         return number
@@ -680,7 +680,7 @@ class MainActivity : AppCompatActivity() {
     private fun Number.mul(other: Number): Number {
         val result = (this as Double) * (other as Double)
         // throws exception if result is infinity
-        throwExceptionInfinity(result)
+        throwExceptionIfInfinity(result)
         return result
     }
 
@@ -692,7 +692,7 @@ class MainActivity : AppCompatActivity() {
         }
         val result = (this as Double) / (other as Double)
         // throws exception if result is infinity
-        throwExceptionInfinity(result)
+        throwExceptionIfInfinity(result)
         return result
     }
 
@@ -710,7 +710,7 @@ class MainActivity : AppCompatActivity() {
         }
         val result = this.pow(other as Double)
         // throws exception if result is Infinity
-        throwExceptionInfinity(result)
+        throwExceptionIfInfinity(result)
         return result
     }
 
@@ -719,7 +719,7 @@ class MainActivity : AppCompatActivity() {
     private fun Number.add(other: Number): Number {
         val result = (this as Double) + (other as Double)
         // throws exception if result is infinity (distinction between pos./neg. infinity)
-        throwExceptionInfinity(result)
+        throwExceptionIfInfinity(result)
         return result
     }
 
@@ -728,7 +728,7 @@ class MainActivity : AppCompatActivity() {
     private fun Number.sub(other: Number): Number {
         val result = (this as Double) - (other as Double)
         // throws exception if result is infinity (distinction between pos./neg. infinity)
-        throwExceptionInfinity(result)
+        throwExceptionIfInfinity(result)
         return result
     }
 
@@ -781,28 +781,54 @@ class MainActivity : AppCompatActivity() {
     // the final result to comma-format is executed in the caller CharSequence.calculate()
     @Throws(java.lang.IllegalArgumentException::class)
     private fun CharSequence.formatNumber(): CharSequence {
+
         if(!this.isNumeric()) {
             throw IllegalArgumentException("CharSequence.formatNumber(): this.isNumeric() has to return true")
         }
         var number = this
-        if(number.numberHasCommaOrDot()) {
+        var exponent: CharSequence? = null // remains null if the number has no comma
+
+        if(number.numberHasCommaOrDot() || number.lastNumberHasExponent()) {
             // replace ',' with  '.' for uniformity of calculation
             number = number.replace(Regex(","), "\\.")
+
+            // if the number is in scientific notation, remove the exponent for rounding the base later
+            // and remember the exponent to add it at the end, if there is no scientific notation, save exponent as null
+            exponent = if(number.contains('E')) number.subSequence(number.indexOf('E')) else null
+            if(exponent != null) {
+                // remove exponent
+                number = number.subSequence(0, number.indexOf('E'))
+            }
+
             val decimalPoint = number.indexOf(".")
             val postDecimalPoint = number.subSequence(decimalPoint + 1)
+
             // return as integer if all digits after the decimal point are '0'
-            if(postDecimalPoint.all { char -> char == '0' }) {
+            if(exponent == null && postDecimalPoint.all { char -> char == '0' }) {
                 return number.subSequence(0, decimalPoint)
             }
+
             // is double: round to a maximum of 10 decimal places
             if(postDecimalPoint.length > 10) {
                 number = String.format("%.10f", number.toNumber())
             }
-            // if there are unnecessary '0' at the end after the decimal point, remove them
-            while(number[number.lastIndex] == '0') {
+
+            // if there are unnecessary '0' at the end after the decimal point or
+            // there are only zeros after the comma so the comma is redundant, remove them
+            while(number[number.lastIndex] == '0' || number[number.lastIndex] == '.') {
                 number = number.subSequence(0, number.lastIndex)
             }
+
         }
+        // if the number had an exponent, add it back
+        if(exponent != null) {
+            // add a ".0" if the new result is an Int
+            if(!number.contains('.')) {
+                number = number.append(".0")
+            }
+            number = number.append(exponent)
+        }
+
         // number is in Int format or in Double format with a non-zero decimal-value
         return number
     }
@@ -813,7 +839,7 @@ class MainActivity : AppCompatActivity() {
     }
     // helper function throw NumberFormatException in case of infinity results
     @Throws(NumberFormatException::class)
-    private fun throwExceptionInfinity(result: Double) {
+    private fun throwExceptionIfInfinity(result: Double) {
         if(result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY){
             throw NumberFormatException()
         }
