@@ -14,48 +14,43 @@
         android:layout_height="0dp"
         android:layout_weight="0.4"
         android:background="@color/backgroundColor"
-        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tvCalculation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginTop="12sp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="10"
+            android:text=""
+            android:textColor="@color/buttonColor"
+            android:textSize="40sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvCalculation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginTop="12sp"
-                android:layout_marginEnd="12dp"
-                android:text=""
-                android:textColor="@color/buttonColor"
-                android:textSize="40sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/tvResult"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="5dp"
-                android:text=""
-                android:textColor="@color/buttonColor"
-                android:textSize="55sp"
-                android:textStyle="bold" />
-        </FrameLayout>
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1"
+            android:text=""
+            android:textColor="@color/buttonColor"
+            android:textSize="55sp"
+            android:textStyle="bold" />
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
             android:orientation="horizontal">
 
             <Button
@@ -63,7 +58,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|bottom"
-                android:layout_marginStart="4dp"
                 android:backgroundTint="@color/buttonDarkColor"
                 android:gravity="start"
                 android:text="@string/themes"
@@ -79,9 +73,6 @@
                 android:id="@+id/buttonDel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"
                 android:backgroundTint="@color/buttonDarkColor"
                 android:gravity="end"
                 android:paddingTop="5dp"
