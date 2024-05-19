@@ -1,11 +1,15 @@
 package com.example.calculator
 
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import java.lang.ArithmeticException
 import java.util.Locale
 import kotlin.math.pow
@@ -16,19 +20,25 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // defines the maximum amount of Chars in the calculation TextView
-        val maxAmountOfChars = 18
+        val maxCharAmount = 18
         val decreaseTextSizeFromCharAmount = 14
 
         val tvCalculation: TextView = findViewById(R.id.tvCalculation)
         val tvResult: TextView = findViewById(R.id.tvResult)
 
+        // setting a vibrator to create vibrations when a button is pressed
+        val vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
+        val vibrationDurationMilliSec = 100L
+
         // general function to set onClickListeners for the digit buttons 1 - 9
         fun setListenerDigitsNonZero(button: Button) {
             button.setOnClickListener { // todo add textSize adjustments for all text altering buttons
-                if (tvCalculation.text.length > maxAmountOfChars) {
+                // set onClick vibration
+                vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+                if (tvCalculation.text.length > maxCharAmount) {
                     Toast.makeText(
                         this,
-                        "Cannot display more than $maxAmountOfChars characters.",
+                        "Cannot display more than $maxCharAmount characters.",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -71,7 +81,10 @@ class MainActivity : AppCompatActivity() {
 
         // zero button
         findViewById<Button>(R.id.button0).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+
+            if (tvCalculation.text.length < maxCharAmount) {
                 val lastChar =
                     if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
@@ -104,7 +117,10 @@ class MainActivity : AppCompatActivity() {
 
         // brackets button: ()
         findViewById<Button>(R.id.buttonBrackets).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+
+            if (tvCalculation.text.length < maxCharAmount) {
 
                 val lastChar =
                     if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
@@ -131,7 +147,10 @@ class MainActivity : AppCompatActivity() {
 
         // comma button: ,
         findViewById<Button>(R.id.buttonCom).setOnClickListener {
-            if (tvCalculation.text.length < maxAmountOfChars) {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+
+            if (tvCalculation.text.length < maxCharAmount) {
                 val lastChar =
                     if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
@@ -170,7 +189,10 @@ class MainActivity : AppCompatActivity() {
         // sets the onClickListeners of the buttons mul, div, pow, prc
         fun setListenersMulDivPowPrc(button: Button) {
             button.setOnClickListener {
-                if (tvCalculation.text.length < maxAmountOfChars) {
+                // set onClick vibration
+                vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+
+                if (tvCalculation.text.length < maxCharAmount) {
 
                     val operator =
                         if (button.text.length > 1) "^(" else button.text  // pow is a special case
@@ -236,8 +258,10 @@ class MainActivity : AppCompatActivity() {
             var invalidExponent = false
 
             button.setOnClickListener {
-                if (tvCalculation.text.length < maxAmountOfChars) {
+                // set onClick vibration
+                vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
 
+                if (tvCalculation.text.length < maxCharAmount) {
                     val lastChar =
                         if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
                     tvCalculation.text = when {
@@ -287,6 +311,8 @@ class MainActivity : AppCompatActivity() {
 
         // delete button: DEL
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
 
             if (tvCalculation.text.isNotEmpty()) {
                 // if the last Chars are '^' and '(' following, remove both, else remove only one last Char
@@ -327,12 +353,18 @@ class MainActivity : AppCompatActivity() {
 
         // clear button: C
         findViewById<Button>(R.id.buttonC).setOnClickListener {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+
             tvCalculation.text = ""
             tvResult.text = ""
         }
 
         // equals button: =
         findViewById<Button>(R.id.buttonEq).setOnClickListener {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+
             if (tvCalculation.text.isNotEmpty()) {
                 val result: CharSequence
 
