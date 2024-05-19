@@ -2,6 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="backgroundColor">#2F002E</color>
-    <color name="buttonColor">#D096FF</color>
+    <color name="backgroundColor">#000319</color>
+    <color name="digitColor">#B9FFAE</color>
+    <color name="CColor">#FB7579</color>
+    <color name="operatorColor">#84C8FB</color>
+    <color name="equalsColor">#FB76BB</color>
+    <color name="buttonColor">#13F3FF</color>
+    <color name="buttonDarkColor">#002E33</color>
 </resources>

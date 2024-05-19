@@ -24,7 +24,7 @@
     <string name="brcOpen">(</string>
     <string name="brcClose">)</string>
     <string name="clr">C</string>
-    <string name="del">DEL </string>
+    <string name="del">⬅</string>
     <string name="themes">themes</string>
     <string name="darkTheme">Dark Theme</string>
     <string name="lightTheme">Dark Theme</string>
