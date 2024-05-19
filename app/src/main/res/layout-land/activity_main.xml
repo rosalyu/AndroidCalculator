@@ -12,7 +12,7 @@
         android:id="@+id/buttonPanel"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0.1"
+        android:layout_weight="0"
         android:background="@color/buttonColor"
         android:orientation="vertical">
 
@@ -31,7 +31,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="C"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -43,7 +43,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/powButtonText"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -55,7 +55,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="%"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -67,7 +67,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/div"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -86,7 +86,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/seven"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -98,7 +98,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/eight"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -110,7 +110,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/nine"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -122,7 +122,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/mul"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -141,7 +141,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/four"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -153,7 +153,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/five"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -165,7 +165,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/six"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -177,7 +177,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/sub"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -196,7 +196,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/one"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -208,7 +208,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/two"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -220,7 +220,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/three"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -232,7 +232,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/add"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -251,7 +251,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/brc"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -263,7 +263,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/zero"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -275,7 +275,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/com"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
 
             <Button
@@ -287,7 +287,7 @@
                 android:backgroundTint="@color/backgroundColor"
                 android:text="@string/eq"
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
@@ -295,30 +295,17 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="0.9"
+        android:layout_weight="1"
         android:background="@color/backgroundColor"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/buttonDel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|top"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="3dp"
-            android:backgroundTint="@color/buttonColor"
-            android:gravity="end"
-            android:paddingTop="6dp"
-            android:paddingBottom="21dp"
-            android:text="@string/del"
-            android:textColor="@color/backgroundColor"
-            android:textSize="25sp"
-            android:textStyle="bold"/>
-
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
+            android:gravity="bottom"
             android:layout_weight="1">
 
             <TextView
@@ -328,10 +315,11 @@
                 android:layout_gravity="top|end"
                 android:layout_marginTop="12sp"
                 android:layout_marginEnd="12dp"
+                android:layout_weight="0.5"
                 android:text=""
                 android:textColor="@color/buttonColor"
                 android:textSize="40sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/tvResult"
@@ -344,19 +332,25 @@
                 android:textColor="@color/buttonColor"
                 android:textSize="55sp"
                 android:textStyle="bold" />
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/buttonDel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:backgroundTint="@color/buttonColor"
+            android:gravity="end"
+            android:paddingTop="6dp"
+            android:paddingBottom="21dp"
+            android:text="@string/del"
+            android:textColor="@color/backgroundColor"
+            android:textSize="25sp"
+            android:textStyle="bold"/>
+
+
 
     </LinearLayout>
 
