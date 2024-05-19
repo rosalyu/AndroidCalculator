@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import java.lang.ArithmeticException
+import java.util.Locale
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
@@ -789,34 +790,42 @@ class MainActivity : AppCompatActivity() {
         var exponent: CharSequence? = null // remains null if the number has no comma
 
         if(number.numberHasCommaOrDot() || number.lastNumberHasExponent()) {
+
+            Log.d("number", number.toString())
             // replace ',' with  '.' for uniformity of calculation
             number = number.replace(Regex(","), "\\.")
 
             // if the number is in scientific notation, remove the exponent for rounding the base later
             // and remember the exponent to add it at the end, if there is no scientific notation, save exponent as null
             exponent = if(number.contains('E')) number.subSequence(number.indexOf('E')) else null
+            Log.d("exponent", exponent.toString())
             if(exponent != null) {
                 // remove exponent
                 number = number.subSequence(0, number.indexOf('E'))
+                Log.d("base", number.toString())
             }
 
             val decimalPoint = number.indexOf(".")
             val postDecimalPoint = number.subSequence(decimalPoint + 1)
+            Log.d("postDecimalPoint", postDecimalPoint.toString())
 
             // return as integer if all digits after the decimal point are '0'
             if(exponent == null && postDecimalPoint.all { char -> char == '0' }) {
                 return number.subSequence(0, decimalPoint)
             }
+            Log.d("removedZeros", number.toString())
 
             // is double: round to a maximum of 10 decimal places
             if(postDecimalPoint.length > 10) {
-                number = String.format("%.10f", number.toNumber())
+                number = String.format(Locale.US, "%.10f", number.toNumber())
             }
+            Log.d("rounding", number.toString())
 
             // if there are unnecessary '0' at the end after the decimal point or
             // there are only zeros after the comma so the comma is redundant, remove them
             while(number[number.lastIndex] == '0' || number[number.lastIndex] == '.') {
                 number = number.subSequence(0, number.lastIndex)
+                Log.d("while", number.toString())
             }
 
         }
@@ -824,11 +833,14 @@ class MainActivity : AppCompatActivity() {
         if(exponent != null) {
             // add a ".0" if the new result is an Int
             if(!number.contains('.')) {
+                Log.d("noDot", number.toString())
                 number = number.append(".0")
+                Log.d("addedDot", number.toString())
             }
             number = number.append(exponent)
+            Log.d("addedExponent", number.toString())
         }
-
+        Log.d("return", number.toString())
         // number is in Int format or in Double format with a non-zero decimal-value
         return number
     }
