@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         // setting a vibrator to create vibrations when a button is pressed
         val vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
-        val vibrationDurationMilliSec = 10L // todo test via usb debugging which duration is best
+        val vibrationDurationMilliSec = 50L // todo test via usb debugging which duration is best
 
 
         // set the UI buttonPanel proportions
