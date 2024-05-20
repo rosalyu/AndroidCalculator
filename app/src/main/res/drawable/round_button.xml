@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval"
-    android:innerRadiusRatio="1">
-    <solid android:color="@color/buttonColor"/>
+    android:shape="oval">
+    <size android:width="60dp" android:height="60dp"/>
+    <solid android:color="@color/backgroundColor"/>
     <stroke android:color="@color/black"
         android:width="2dp"/>
 

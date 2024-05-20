@@ -1,14 +1,19 @@
 package com.example.calculator
 
+import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.DisplayMetrics
+import android.util.Log
 import android.widget.Button
+import android.widget.FrameLayout.LayoutParams
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import java.lang.ArithmeticException
 import java.util.Locale
@@ -29,6 +34,15 @@ class MainActivity : AppCompatActivity() {
         // setting a vibrator to create vibrations when a button is pressed
         val vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
         val vibrationDurationMilliSec = 100L
+
+
+        // set the UI buttonPanel proportions
+        // Check if the device is in portrait mode
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Define the height of the view based on the screen width
+            defineButtonPanelHeightPortrait()
+        }
+
 
         // general function to set onClickListeners for the digit buttons 1 - 9
         fun setListenerDigitsNonZero(button: Button) {
@@ -975,5 +989,37 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return result
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        // Check if the orientation is portrait
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Define the height of the view
+            defineButtonPanelHeightPortrait()
+            // land mode
+        } else {
+            // todo
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun defineButtonPanelHeightPortrait() {
+        // set the UI buttonPanel proportions
+        val buttonPanel = findViewById<ConstraintLayout>(R.id.buttonPanel)
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenWidth = displayMetrics.widthPixels
+
+        //Log.d("width", screenWidth.toString())
+        //Log.d("oldHeight", buttonPanel.height.toString())
+        // aspect ratio of 1.2 makes buttons in 4x5 grid circular
+        val adjustedHeight = screenWidth * 1.2
+        //Log.d("adjustedHeight", adjustedHeight.toString())
+        val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.height = adjustedHeight.toInt()
+        buttonPanel.layoutParams = layoutParams
+        //Log.d("newHeight", buttonPanel.height.toString())
     }
 }
