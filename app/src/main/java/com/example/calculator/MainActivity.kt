@@ -39,8 +39,12 @@ class MainActivity : AppCompatActivity() {
         // set the UI buttonPanel proportions
         // Check if the device is in portrait mode
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // Define the height of the view based on the screen width
+            // Define the height of the buttonPanel based on the screen width
             defineButtonPanelHeightPortrait()
+        } else {
+            // if app is started in land mode, define the width of the buttonPanel based on the current
+            // screen height
+            defineButtonPanelWidthLand()
         }
 
 
@@ -991,16 +995,17 @@ class MainActivity : AppCompatActivity() {
         return result
     }
 
+    // adjust width or height of the buttonPanel depending on the screen orientation
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
         // Check if the orientation is portrait
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // Define the height of the view
+            // Define the height of the buttonPanel
             defineButtonPanelHeightPortrait()
-            // land mode
         } else {
-            // todo
+            // land mode: define the width of the buttonPanel
+            defineButtonPanelWidthLand()
         }
     }
 
@@ -1019,6 +1024,25 @@ class MainActivity : AppCompatActivity() {
         //Log.d("adjustedHeight", adjustedHeight.toString())
         val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.height = adjustedHeight.toInt()
+        buttonPanel.layoutParams = layoutParams
+        //Log.d("newHeight", buttonPanel.height.toString())
+    }
+
+    @Suppress("DEPRECATION")
+    private fun defineButtonPanelWidthLand() {
+        // set the UI buttonPanel proportions
+        val buttonPanel = findViewById<ConstraintLayout>(R.id.buttonPanel)
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenHeight = displayMetrics.heightPixels
+
+        //Log.d("width", screenWidth.toString())
+        //Log.d("oldHeight", buttonPanel.height.toString())
+        // aspect ratio of 1.2 makes buttons in 4x5 grid circular
+        val adjustedWidth = screenHeight * 0.78
+        //Log.d("adjustedHeight", adjustedHeight.toString())
+        val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.width = adjustedWidth.toInt()
         buttonPanel.layoutParams = layoutParams
         //Log.d("newHeight", buttonPanel.height.toString())
     }
