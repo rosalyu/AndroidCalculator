@@ -466,7 +466,13 @@ class MainActivity : AppCompatActivity() {
             if (result[result.lastIndex] == '%') {
                 result = result.toNumber().toString()
             }
-            return result.formatNumber().replace(Regex("\\."), ",")
+            // format the result value (removes unnecessary decimal places, also rounding)
+            result = result.formatNumber()
+            // remove unary operators from 0 caused by prior calculations
+            if(result == "-0" || result == "+0") { // todo 0 / -6
+                result = result.subSequence(1) // remove first Char
+            }
+            return result.replace(Regex("\\."), ",")
         }
     }
 
