@@ -239,12 +239,13 @@ class MainActivity : AppCompatActivity() {
                         -> tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex) to true
                         // if the last Char is an operator or a ',', replace it with '[op]' ('[op](' for ^)
                         lastChar.isOperator() || lastChar == ','
-                        -> "${
-                            tvCalculation.text.subSequence(
-                                0,
-                                tvCalculation.text.lastIndex
-                            )
-                        }${operator}" to false
+                            // if there already is a '%' before the lastChar (which is an operator), do not add another one
+                        -> if(operator == "%" && tvCalculation.text.length > 2 && tvCalculation.text[tvCalculation.text.length - 2] == '%') {
+                            tvCalculation.text to true
+                        } else {
+                            // else just replace the old operator with the new one (note that '%' is not classified as an operator here)
+                            "${tvCalculation.text.subSequence(0, tvCalculation.text.lastIndex)}${operator}" to false
+                        }
                         // if the last Char is a digit, ')' or a '%', just append with '[op]('
                         else -> "${tvCalculation.text}${operator}" to false
                     }
@@ -253,10 +254,12 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
                     }
                     tvCalculation.text = calculationText
-                    // only if adding "%" the result of the expression changes (except if the last value is
-                    // an exponent part of the scientific notation, in which case "%" is was not appended)
+                    // only if adding "%" changes the result of the expression (except if the last value is
+                    // an exponent part of the scientific notation, in which case "%" was not appended)
                     if (operator == "%" && !tvCalculation.text.lastNumberHasExponent()) {
-                        tvResult.text = tvCalculation.text.calculate()
+                        val result = tvCalculation.text.calculate()
+                        // if the result is an imaginary number or causes an infinity value, do not display any result
+                        tvResult.text = if(result == "imaginaryNumber" || result == "outOfRange") "" else result
                     }
                 }
             }
@@ -585,6 +588,8 @@ class MainActivity : AppCompatActivity() {
             repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
             newTokenList.add(operatorIndex - 1, "$result")
         }
+
+        Log.d("result", newTokenList[0].toString())
         return newTokenList
     }
 
