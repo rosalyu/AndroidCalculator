@@ -1,7 +1,6 @@
 package com.example.calculator
 
 import android.content.res.Configuration
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -9,10 +8,8 @@ import android.os.Vibrator
 import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Button
-import android.widget.FrameLayout.LayoutParams
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import java.lang.ArithmeticException
@@ -1014,7 +1011,7 @@ class MainActivity : AppCompatActivity() {
 
     // returns true if the CharSequence (the expression) is already a single numerical value
     // and does not require calculation
-    fun CharSequence.isSingleNumericalValue(): Boolean {
+    private fun CharSequence.isSingleNumericalValue(): Boolean {
         var firstNumberFinished = false
         val currentNumber: StringBuilder = StringBuilder()
         for(index in indices) {
