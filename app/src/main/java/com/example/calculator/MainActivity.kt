@@ -20,20 +20,20 @@ class MainActivity : AppCompatActivity() {
     private var tvCalculation: TextView? = null
     private var tvResult: TextView? = null
 
+    // defines the maximum amount of Chars in the calculation TextView
+    private val maxCharAmount = 18
+    private val decreaseTextSizeFromCharAmount = 14
+
+    // setting a vibrator to create vibrations when a button is pressed
+    private val vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
+    private val vibrationDurationMilliSec = 50L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
-        // defines the maximum amount of Chars in the calculation TextView
-        val maxCharAmount = 18
-        val decreaseTextSizeFromCharAmount = 14
-
-        // setting a vibrator to create vibrations when a button is pressed
-        val vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
-        val vibrationDurationMilliSec = 50L // todo test via usb debugging which duration is best
-
 
         // set the UI buttonPanel proportions
         // Check if the device is in portrait mode
@@ -46,49 +46,6 @@ class MainActivity : AppCompatActivity() {
             defineButtonPanelWidthLand()
         }
 
-
-        // general function to set onClickListeners for the digit buttons 1 - 9
-        fun setListenerDigitsNonZero(button: Button) {
-            button.setOnClickListener { // todo add textSize adjustments for all text altering buttons
-                // set onClick vibration
-                vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
-                if (tvCalculation!!.text.length > maxCharAmount) {
-                    Toast.makeText(
-                        this,
-                        "Cannot display more than $maxCharAmount characters.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    if (tvCalculation!!.text.length >= decreaseTextSizeFromCharAmount) {
-                        tvCalculation!!.textSize = 32f
-                        tvResult!!.textSize = 47f
-                    }
-                    val lastChar =
-                        if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
-                    val calculationText = when {
-                        lastChar == null -> button.text
-                        lastChar in setOf(')', '%') -> "${tvCalculation!!.text}×${button.text}"
-                        lastChar == '0' && (tvCalculation!!.text.length == 1 ||
-                                !(tvCalculation!!.text[tvCalculation!!.text.lastIndex.minus(1)].isDigit()
-                                || tvCalculation!!.text.numberHasCommaOrDot()))
-                        -> tvCalculation!!.text.dropLast(1).append(button.text)
-
-                        else -> "${tvCalculation!!.text}${button.text}"
-                    }
-                    tvCalculation!!.text = calculationText
-                    // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
-                    val result =
-                        if (calculationText.isNumeric()) "" else calculationText.calculate()
-                    // check whether result is out of range or has a division by zero
-                    if (result.isEmpty() || result == "outOfRange" || result == "divisionByZero" || result == "imaginaryNumber") {
-                        tvResult!!.text = ""
-                    } else {
-                        tvResult!!.text = result
-                    }
-                }
-            }
-        }
-
         // set all onClickListeners for the digit buttons 1 - 9
         arrayOf(
             R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5,
@@ -98,6 +55,79 @@ class MainActivity : AppCompatActivity() {
         }
 
         // zero button
+        setListenerZero()
+
+        // brackets button: ()
+        setListenerBrackets()
+
+        // comma button: ,
+        setListenerComma()
+
+        // set the onClickListeners of the buttons mul, div, pow, prc
+        arrayOf(
+            R.id.buttonMul,
+            R.id.buttonDiv,
+            R.id.buttonPow,
+            R.id.buttonPrc
+        ).forEach { setListenersMulDivPowPrc(findViewById(it)) }
+
+        // setting listeners of add and sub
+        setListenersAddSub(findViewById(R.id.buttonAdd))
+        setListenersAddSub(findViewById(R.id.buttonSub))
+
+        // delete button: DEL
+        setListenerDel()
+
+        // clear button: C
+        setListenerClear()
+
+        // equals button: =
+        setListenerEquals()
+    }
+
+    // set action listeners of the buttons
+
+    // general function to set onClickListeners for the digit buttons 1 - 9
+    private fun setListenerDigitsNonZero(button: Button) {
+        button.setOnClickListener { // todo add textSize adjustments for all text altering buttons
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+            if (tvCalculation!!.text.length > maxCharAmount) {
+                Toast.makeText(
+                    this,
+                    "Cannot display more than $maxCharAmount characters.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                if (tvCalculation!!.text.length >= decreaseTextSizeFromCharAmount) {
+                    tvCalculation!!.textSize = 32f
+                    tvResult!!.textSize = 47f
+                }
+                val lastChar =
+                    if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
+                val calculationText = when {
+                    lastChar == null -> button.text
+                    lastChar in setOf(')', '%') -> "${tvCalculation!!.text}×${button.text}"
+                    lastChar == '0' && (tvCalculation!!.text.length == 1 ||
+                            !(tvCalculation!!.text[tvCalculation!!.text.lastIndex.minus(1)].isDigit()
+                                    || tvCalculation!!.text.numberHasCommaOrDot()))
+                    -> tvCalculation!!.text.dropLast(1).append(button.text)
+
+                    else -> "${tvCalculation!!.text}${button.text}"
+                }
+                tvCalculation!!.text = calculationText
+                // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
+                val result =
+                    if (calculationText.isNumeric()) "" else calculationText.calculate()
+
+                // set the content of result to tvResult.text if the result is valid
+                result.displayResultIfValid()
+            }
+        }
+    }
+
+    // sets the onClick listener for the zero button
+    private fun setListenerZero() {
         findViewById<Button>(R.id.button0).setOnClickListener {
             // set onClick vibration
             vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -124,16 +154,15 @@ class MainActivity : AppCompatActivity() {
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val resultText =
                     if (calculationText.isNumeric()) "" else calculationText.calculate()
-                // check whether result is out of range or has a division by zero
-                if (resultText.isEmpty() || resultText == "outOfRange" || resultText == "divisionByZero" || resultText == "imaginaryNumber") {
-                    tvResult!!.text = ""
-                } else {
-                    tvResult!!.text = resultText
-                }
+
+                // set the content of result to tvResult.text if the result is valid
+                resultText.displayResultIfValid()
             }
         }
+    }
 
-        // brackets button: ()
+    // sets the onClick listener for the brackets button
+    private fun setListenerBrackets() {
         findViewById<Button>(R.id.buttonBrackets).setOnClickListener {
             // set onClick vibration
             vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -162,8 +191,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-        // comma button: ,
+    // sets onClick listener for the comma button
+    private fun setListenerComma(){
         findViewById<Button>(R.id.buttonCom).setOnClickListener {
             // set onClick vibration
             vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -188,14 +219,12 @@ class MainActivity : AppCompatActivity() {
                     if (tvCalculation!!.text.lastNumberHasExponent()) {
                         Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
                     }
+                    // todo encapsulate in function for the digit buttons, comma
                     // update the TextViews
                     tvCalculation!!.text = calculationText
-                    // check whether result is out of range or has a division by zero
-                    if (resultText == "outOfRange" || resultText == "divisionByZero" || resultText == "imaginaryNumber") {
-                        tvResult!!.text = ""
-                    } else {
-                        tvResult!!.text = resultText
-                    }
+
+                    // set the content of result to tvResult.text if the result is valid
+                    resultText.displayResultIfValid()
                 } else {
                     // if the last number already contains a comma and it is not the last Char, do not
                     // alter any text and notify the user
@@ -203,140 +232,131 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-        // sets the onClickListeners of the buttons mul, div, pow, prc
-        fun setListenersMulDivPowPrc(button: Button) {
-            button.setOnClickListener {
-                // set onClick vibration
-                vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+    // sets the onClickListeners of the buttons mul, div, pow, prc
+    private fun setListenersMulDivPowPrc(button: Button) {
+        button.setOnClickListener {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
 
-                if (tvCalculation!!.text.length < maxCharAmount) {
+            if (tvCalculation!!.text.length < maxCharAmount) {
 
-                    val operator =
-                        if (button.text.length > 1) "^(" else button.text  // pow is a special case
-                    val lastChar =
-                        if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
+                val operator =
+                    if (button.text.length > 1) "^(" else button.text  // pow is a special case
+                val lastChar =
+                    if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
 
-                    // becomesInvalid -> keeps track of whether the expression becomes invalid after click action
-                    val (calculationText, becomesInvalid) = when {
-                        // invalid: operator cannot be the first Char of an expression or come after '('
-                        lastChar == null || lastChar == '(' -> tvCalculation!!.text to true
+                // becomesInvalid -> keeps track of whether the expression becomes invalid after click action
+                val (calculationText, becomesInvalid) = when {
+                    // invalid: operator cannot be the first Char of an expression or come after '('
+                    lastChar == null || lastChar == '(' -> tvCalculation!!.text to true
 
-                        tvCalculation!!.text.lastNumberHasExponent() ->
-                            // if the last value is part of a complete exponent in the scientific notation,
-                            // append normally but put the current expression in brackets
-                            if (lastChar.isDigit()) {
-                                "(${tvCalculation!!.text})$operator" to false
-                            } else {
-                                // if the last value is part of an incomplete exponent in the scientific notation, do not add anything
-                                tvCalculation!!.text to true
-                            }
-                        // do nothing if lastChar is already the pressed button, can't have double operators
-                        lastChar == operator[0] -> tvCalculation!!.text to false
-                        // invalid: if the second last Char is a '(' with a '-' or '+' following, remove the last Char
-                        (lastChar == '+' || lastChar == '-') && tvCalculation!!.text.length > 1 &&
-                                tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '('
-                        -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex) to true
-                        // if the last Char is an operator or a ',', replace it with '[op]' ('[op](' for ^)
-                        lastChar.isOperator() || lastChar == ','
-                            // if there already is a '%' before the lastChar (which is an operator), do not add another one
-                        -> if(operator == "%" && tvCalculation!!.text.length > 2 && tvCalculation!!.text[tvCalculation!!.text.length - 2] == '%') {
-                            tvCalculation!!.text to true
+                    tvCalculation!!.text.lastNumberHasExponent() ->
+                        // if the last value is part of a complete exponent in the scientific notation,
+                        // append normally but put the current expression in brackets
+                        if (lastChar.isDigit()) {
+                            "(${tvCalculation!!.text})$operator" to false
                         } else {
-                            // else just replace the old operator with the new one (note that '%' is not classified as an operator here)
-                            "${tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex)}${operator}" to false
+                            // if the last value is part of an incomplete exponent in the scientific notation, do not add anything
+                            tvCalculation!!.text to true
                         }
-                        // if the last Char is a digit, ')' or a '%', just append with '[op]('
-                        else -> "${tvCalculation!!.text}${operator}" to false
+                    // do nothing if lastChar is already the pressed button, can't have double operators
+                    lastChar == operator[0] -> tvCalculation!!.text to false
+                    // invalid: if the second last Char is a '(' with a '-' or '+' following, remove the last Char
+                    (lastChar == '+' || lastChar == '-') && tvCalculation!!.text.length > 1 &&
+                            tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '('
+                    -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex) to true
+                    // if the last Char is an operator or a ',', replace it with '[op]' ('[op](' for ^)
+                    lastChar.isOperator() || lastChar == ','
+                        // if there already is a '%' before the lastChar (which is an operator), do not add another one
+                    -> if(operator == "%" && tvCalculation!!.text.length > 2 && tvCalculation!!.text[tvCalculation!!.text.length - 2] == '%') {
+                        tvCalculation!!.text to true
+                    } else {
+                        // else just replace the old operator with the new one (note that '%' is not classified as an operator here)
+                        "${tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex)}${operator}" to false
                     }
-                    // notify the user about invalid expression
-                    if (becomesInvalid) {
-                        Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
-                    }
-                    tvCalculation!!.text = calculationText
-                    // (only "%" changes the result of the expression, and requires the result view to refresh)
-                    // only performs a calculation if the expression is not a single numerical value
-                    // (there is something to calculate), this can be the case if '%' has not been appended
-                    // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
-                    // a '('
-                    // todo alter the if condition to manage whether a result is displayed or not
-                    if (operator == "%" && (tvCalculation!!.text.last() == '%' || (!tvCalculation!!.text.isSingleNumericalValue() &&
-                                tvCalculation!!.text.last() != '%'))) {
-                        val result = tvCalculation!!.text.calculate()
+                    // if the last Char is a digit, ')' or a '%', just append with '[op]('
+                    else -> "${tvCalculation!!.text}${operator}" to false
+                }
+                // notify the user about invalid expression
+                if (becomesInvalid) {
+                    Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
+                }
+                tvCalculation!!.text = calculationText
+                // (only "%" changes the result of the expression, and requires the result view to refresh)
+                // only performs a calculation if the expression is not a single numerical value
+                // (there is something to calculate), this can be the case if '%' has not been appended
+                // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
+                // a '('
+                if (operator == "%" && (tvCalculation!!.text.last() == '%' || (!tvCalculation!!.text.isSingleNumericalValue() &&
+                            tvCalculation!!.text.last() != '%'))) {
+                    val result = tvCalculation!!.text.calculate()
 
-                        // if the result is an imaginary number or causes an infinity value, do not display any result
-                        tvResult!!.text = if(result == "imaginaryNumber" || result == "outOfRange") "" else result
-                    }
+                    // if the result is an imaginary number or causes an infinity value, do not display any result
+                    result.displayResultIfValid()
                 }
             }
         }
-        // set the onClickListeners of the buttons mul, div, pow, prc
-        arrayOf(
-            R.id.buttonMul,
-            R.id.buttonDiv,
-            R.id.buttonPow,
-            R.id.buttonPrc
-        ).forEach { setListenersMulDivPowPrc(findViewById(it)) }
+    }
 
-        // function to set the listeners for the add and sub buttons
-        fun setListenersAddSub(button: Button) {
-            val thisOperator = button.text
-            val otherOperator = if (button.text == "+") "-" else "+"
-            var invalidExponent = false
+    // function to set the listeners for the add and sub buttons
+    private fun setListenersAddSub(button: Button) {
+        val thisOperator = button.text
+        val otherOperator = if (button.text == "+") "-" else "+"
+        var invalidExponent = false
 
-            button.setOnClickListener {
-                // set onClick vibration
-                vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+        button.setOnClickListener {
+            // set onClick vibration
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
 
-                if (tvCalculation!!.text.length < maxCharAmount) {
-                    val lastChar =
-                        if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
-                    tvCalculation!!.text = when {
-                        lastChar == null -> "($thisOperator"
+            if (tvCalculation!!.text.length < maxCharAmount) {
+                val lastChar =
+                    if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
+                tvCalculation!!.text = when {
+                    lastChar == null -> "($thisOperator"
 
-                        tvCalculation!!.text.lastNumberHasExponent() ->
-                            // if the last value is part of a complete exponent in the scientific notation,
-                            // append normally but put the current expression in brackets
-                            if (lastChar.isDigit()) {
-                                "(${tvCalculation!!.text})$thisOperator"
-                            }
-                            // only append after 'E' if this operator is '-'
-                            else if (lastChar == 'E' && thisOperator == "-") {
-                                "${tvCalculation!!.text}-"
-                            } else {
-                                // else, do not add anything
-                                tvCalculation!!.text.apply {
-                                    invalidExponent = true
-                                } // todo use this in other code parts
-                            }
+                    tvCalculation!!.text.lastNumberHasExponent() ->
+                        // if the last value is part of a complete exponent in the scientific notation,
+                        // append normally but put the current expression in brackets
+                        if (lastChar.isDigit()) {
+                            "(${tvCalculation!!.text})$thisOperator"
+                        }
+                        // only append after 'E' if this operator is '-'
+                        else if (lastChar == 'E' && thisOperator == "-") {
+                            "${tvCalculation!!.text}-"
+                        } else {
+                            // else, do not add anything
+                            tvCalculation!!.text.apply {
+                                invalidExponent = true
+                            } // todo use this in other code parts
+                        }
 
-                        // if [thisOperator] is the first Char or comes after another operator (not [thisOperator] or '%'), add a '(' before it
-                        ((thisOperator == "-" && lastChar.isOperator()
-                                && lastChar != thisOperator[0])) -> tvCalculation!!.text.append("($thisOperator")
+                    // if [thisOperator] is the first Char or comes after another operator (not [thisOperator] or '%'), add a '(' before it
+                    ((thisOperator == "-" && lastChar.isOperator()
+                            && lastChar != thisOperator[0])) -> tvCalculation!!.text.append("($thisOperator")
 
-                        // if the second last Char is a '(' with a [otherOperator] following, replace the last Char
-                        (tvCalculation!!.text.length >= 2) && (tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '(') &&
-                                (tvCalculation!!.text.last() == otherOperator[0])
-                        -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex)
-                            .append(thisOperator)
-                        // if the last Char is a digit, a ')', '(' or '%', just append with [thisOperator]
-                        lastChar.isDigit() || lastChar == ')' || lastChar == '(' || lastChar == '%'
-                        -> tvCalculation!!.text.append(thisOperator)
-                        // if last Char is a comma, remove the comma, or for plus: last operator gets replaced
-                        else -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex)
-                            .append(thisOperator)
-                    }
-                    if (invalidExponent) {
-                        Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
-                    }
+                    // if the second last Char is a '(' with a [otherOperator] following, replace the last Char
+                    (tvCalculation!!.text.length >= 2) && (tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '(') &&
+                            (tvCalculation!!.text.last() == otherOperator[0])
+                    -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex)
+                        .append(thisOperator)
+                    // if the last Char is a digit, a ')', '(' or '%', just append with [thisOperator]
+                    lastChar.isDigit() || lastChar == ')' || lastChar == '(' || lastChar == '%'
+                    -> tvCalculation!!.text.append(thisOperator)
+                    // if last Char is a comma, remove the comma, or for plus: last operator gets replaced
+                    else -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex)
+                        .append(thisOperator)
+                }
+                if (invalidExponent) {
+                    Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        // setting listeners of add and sub
-        setListenersAddSub(findViewById(R.id.buttonAdd))
-        setListenersAddSub(findViewById(R.id.buttonSub))
+    }
 
-        // delete button: DEL
+    // sets onClick listener for the DEL button
+    private fun setListenerDel(){
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
             // set onClick vibration
             vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -363,12 +383,8 @@ class MainActivity : AppCompatActivity() {
                     (tvCalculation!!.text.isNumeric() && !tvCalculation!!.text.contains('%'))
                 ) "" else tvCalculation!!.text.calculate()
 
-                // check whether result is out of range or has a division by zero
-                if (result.isEmpty() || result == "outOfRange" || result == "divisionByZero" || result == "imaginaryNumber") {
-                    tvResult!!.text = ""
-                } else {
-                    tvResult!!.text = result
-                }
+                // set the content of result to tvResult.text if the result is valid
+                result.displayResultIfValid()
 
                 // increase text size back to normal if there is enough space available
                 if (tvCalculation!!.text.length <= decreaseTextSizeFromCharAmount) {
@@ -377,8 +393,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
 
-        // clear button: C
+    // sets onClick listener for the clear button (C)
+    private fun setListenerClear(){
         findViewById<Button>(R.id.buttonC).setOnClickListener {
             // set onClick vibration
             vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -386,8 +404,10 @@ class MainActivity : AppCompatActivity() {
             tvCalculation!!.text = ""
             tvResult!!.text = ""
         }
+    }
 
-        // equals button: =
+    // set onClick listener for the equals button (=)
+    private fun setListenerEquals(){
         findViewById<Button>(R.id.buttonEq).setOnClickListener {
             // set onClick vibration
             vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
@@ -437,6 +457,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // sets tvResult.text to the result (this) if the result is valid
+    private fun CharSequence.displayResultIfValid(){
+        if (this.isEmpty() || this == "outOfRange" || this == "divisionByZero" || this == "imaginaryNumber") {
+            tvResult!!.text = ""
+        } else {
+            tvResult!!.text = this
+        }
+    }
 
     // calculates the result of the expression by formatting, tokenizing it and calling
     // the recursive ArrayList<CharSequence>.calculate() function
@@ -694,7 +722,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // helper function to convert CharSequence into Int variables
-// CAUTION: throws IllegalArgumentException if the CharSequence is not numeric
+    // CAUTION: throws IllegalArgumentException if the CharSequence is not numeric
     @Throws(NumberFormatException::class)
     private fun CharSequence.toNumber(): Number {
         var seq = this
