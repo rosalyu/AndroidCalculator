@@ -20,13 +20,13 @@ class MainActivity : AppCompatActivity() {
     private var tvCalculation: TextView? = null
     private var tvResult: TextView? = null
 
+    // setting a vibrator to create vibrations when a button is pressed
+    private var vibrator: Vibrator? = null
+    private val vibrationDurationMilliSec = 50L
+
     // defines the maximum amount of Chars in the calculation TextView
     private val maxCharAmount = 18
     private val decreaseTextSizeFromCharAmount = 14
-
-    // setting a vibrator to create vibrations when a button is pressed
-    private val vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
-    private val vibrationDurationMilliSec = 50L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
+        vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
 
         // set the UI buttonPanel proportions
         // Check if the device is in portrait mode
@@ -85,7 +86,8 @@ class MainActivity : AppCompatActivity() {
         setListenerEquals()
     }
 
-    // set action listeners of the buttons
+
+    // set action listeners of the buttons:
 
     // general function to set onClickListeners for the digit buttons 1 - 9
     private fun setListenerDigitsNonZero(button: Button) {
