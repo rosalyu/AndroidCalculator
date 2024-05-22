@@ -473,7 +473,7 @@ class MainActivity : AppCompatActivity() {
             result = result.formatNumber()
             // remove unary operators from 0 caused by prior calculations
             if(result == "-0" || result == "+0") {
-                result = result.subSequence(1) // remove first Char
+                result = "0" // remove first Char
             }
             return result.replace(Regex("\\."), ",")
         }
