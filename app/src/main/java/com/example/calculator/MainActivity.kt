@@ -254,10 +254,16 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
                     }
                     tvCalculation.text = calculationText
-                    // only if adding "%" changes the result of the expression (except if the last value is
-                    // an exponent part of the scientific notation, in which case "%" was not appended)
-                    if (operator == "%" && !tvCalculation.text.lastNumberHasExponent()) {
+                    // (only "%" changes the result of the expression, and requires the result view to refresh)
+                    // only performs a calculation if the expression is not a single numerical value
+                    // (there is something to calculate), this can be the case if '%' has not been appended
+                    // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
+                    // a '('
+                    // todo alter the if condition to manage whether a result is displayed or not
+                    if (operator == "%" && (tvCalculation.text.last() == '%' || (!tvCalculation.text.isSingleNumericalValue() &&
+                                tvCalculation.text.last() != '%'))) {
                         val result = tvCalculation.text.calculate()
+
                         // if the result is an imaginary number or causes an infinity value, do not display any result
                         tvResult.text = if(result == "imaginaryNumber" || result == "outOfRange") "" else result
                     }
@@ -469,7 +475,7 @@ class MainActivity : AppCompatActivity() {
             // format the result value (removes unnecessary decimal places, also rounding)
             result = result.formatNumber()
             // remove unary operators from 0 caused by prior calculations
-            if(result == "-0" || result == "+0") { // todo 0 / -6
+            if(result == "-0" || result == "+0") {
                 result = result.subSequence(1) // remove first Char
             }
             return result.replace(Regex("\\."), ",")
@@ -1004,6 +1010,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return result
+    }
+
+    // returns true if the CharSequence (the expression) is already a single numerical value
+    // and does not require calculation
+    fun CharSequence.isSingleNumericalValue(): Boolean {
+        var firstNumberFinished = false
+        val currentNumber: StringBuilder = StringBuilder()
+        for(index in indices) {
+            if(this[index].isDigit()) {
+                if(firstNumberFinished) {
+                    return false
+                }
+                currentNumber.append(this[index])
+            } else {
+                if(currentNumber.isNotEmpty()) {
+                    firstNumberFinished = true
+                }
+            }
+        }
+        return true
     }
 
     // adjust width or height of the buttonPanel depending on the screen orientation
