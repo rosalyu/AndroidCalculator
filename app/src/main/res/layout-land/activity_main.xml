@@ -47,7 +47,7 @@
                 android:contentDescription="@string/clr"
                 android:text="@string/clr"
                 android:textColor="@color/CColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -62,7 +62,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/powButtonText"
                 android:textColor="@color/operatorColor"
-                android:textSize="30sp"
+                android:textSize="26sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -77,7 +77,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/prc"
                 android:textColor="@color/operatorColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -92,7 +92,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/div"
                 android:textColor="@color/operatorColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -120,7 +120,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/seven"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -135,7 +135,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/eight"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -150,7 +150,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/nine"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -165,7 +165,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/mul"
                 android:textColor="@color/operatorColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -189,7 +189,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/four"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -207,7 +207,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/five"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -222,7 +222,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/six"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -237,7 +237,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/sub"
                 android:textColor="@color/operatorColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -265,7 +265,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/one"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -280,7 +280,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/two"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -295,7 +295,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/three"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -310,7 +310,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/add"
                 android:textColor="@color/operatorColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -339,7 +339,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/brc"
                 android:textColor="@color/operatorColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -354,7 +354,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/zero"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -369,7 +369,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/com"
                 android:textColor="@color/digitColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -384,7 +384,7 @@
                 android:background="@drawable/round_button"
                 android:text="@string/eq"
                 android:textColor="@color/equalsColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -419,7 +419,7 @@
                 android:layout_weight="0.5"
                 android:text=""
                 android:textColor="@color/buttonColor"
-                android:textSize="40sp"
+                android:textSize="36sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -431,7 +431,7 @@
                 android:layout_marginBottom="5dp"
                 android:text=""
                 android:textColor="@color/buttonColor"
-                android:textSize="55sp"
+                android:textSize="50sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -453,7 +453,7 @@
                 android:gravity="start"
                 android:text="@string/themes"
                 android:textColor="@color/digitColor"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -470,7 +470,7 @@
                 android:paddingBottom="18dp"
                 android:text="@string/del"
                 android:textColor="@color/digitColor"
-                android:textSize="45sp"
+                android:textSize="40sp"
                 android:textStyle="bold"/>
         </LinearLayout>
 
