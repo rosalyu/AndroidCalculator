@@ -2,7 +2,6 @@ package com.example.calculator
 
 import android.content.res.Configuration
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -11,10 +10,9 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import java.lang.ArithmeticException
 import java.util.Locale
 import kotlin.math.pow
 
@@ -28,14 +26,10 @@ class MainActivity : AppCompatActivity() {
 
     // defines the maximum amount of Chars in the calculation TextView
     private val maxCharAmount = 18
-    private val decreaseTextSizeFromCharAmount = 14
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("onCreate", "")
         setContentView(R.layout.activity_main)
-
-        Log.d("setContent", "")
 
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
@@ -98,13 +92,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerDigitsNonZero(button: Button) {
         button.setOnClickListener { // todo add textSize adjustments for all text altering buttons
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.length > maxCharAmount) {
                 Toast.makeText(
@@ -140,13 +128,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerZero() {
         findViewById<Button>(R.id.button0).setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.length < maxCharAmount) {
                 val lastChar =
@@ -181,13 +163,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerBrackets() {
         findViewById<Button>(R.id.buttonBrackets).setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.length < maxCharAmount) {
 
@@ -219,13 +195,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerComma(){
         findViewById<Button>(R.id.buttonCom).setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.length < maxCharAmount) {
                 val lastChar =
@@ -266,13 +236,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenersMulDivPowPrc(button: Button) {
         button.setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.length < maxCharAmount) {
 
@@ -342,13 +306,7 @@ class MainActivity : AppCompatActivity() {
 
         button.setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.length < maxCharAmount) {
                 val lastChar =
@@ -399,13 +357,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerDel(){
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.isNotEmpty()) {
                 // if the last Chars are '^' and '(' following, remove both, else remove only one last Char
@@ -439,13 +391,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerClear(){
         findViewById<Button>(R.id.buttonC).setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             tvCalculation!!.text = ""
             tvResult!!.text = ""
@@ -456,13 +402,7 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerEquals(){
         findViewById<Button>(R.id.buttonEq).setOnClickListener {
             // set onClick vibration
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                // For API level 26 and above
-                vibrator?.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.DEFAULT_AMPLITUDE));
-            } else {
-                // For below API level 26
-                vibrator?.vibrate(100); // Vibrate for 100 milliseconds
-            }
+            vibrate()
 
             if (tvCalculation!!.text.isNotEmpty()) {
                 val result: CharSequence
@@ -1183,5 +1123,15 @@ class MainActivity : AppCompatActivity() {
         layoutParams.width = adjustedWidth.toInt()
         buttonPanel.layoutParams = layoutParams
         //Log.d("newHeight", buttonPanel.height.toString())
+    }
+
+    private fun vibrate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // For API level 26 and above
+            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            // For below API level 26
+            vibrator?.vibrate(vibrationDurationMilliSec)
+        }
     }
 }
