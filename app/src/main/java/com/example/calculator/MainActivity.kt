@@ -1,24 +1,27 @@
 package com.example.calculator
 
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import java.util.Locale
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
     private var tvCalculation: TextView? = null
     private var tvResult: TextView? = null
+    private var buttonPanel: ConstraintLayout? = null
 
     // setting a vibrator to create vibrations when a button is pressed
     private var vibrator: Vibrator? = null
@@ -31,8 +34,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // removes the action bar from the top
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        supportActionBar?.hide()
+
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
+        buttonPanel = findViewById(R.id.buttonPanel)
+
         vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
 
         // set the UI buttonPanel proportions
@@ -1087,6 +1096,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // gets the amount of button rows in the current layout
+    // used for calculating the ratio of the buttonPanel
+    private fun getButtonRowsAmount(): Int {
+        return buttonPanel?.childCount ?: -1
+    }
+
+    // gets the amount of button rows in the current layout
+    // used for calculating the ratio of the buttonPanel
+    private fun getButtonColumnsAmount(): Int {
+        val row = buttonPanel?.children?.first() as ViewGroup?
+        return row?.childCount ?: -1
+    }
+
     @Suppress("DEPRECATION")
     private fun defineButtonPanelHeightPortrait() {
         // set the UI buttonPanel proportions
@@ -1098,10 +1120,10 @@ class MainActivity : AppCompatActivity() {
         //Log.d("width", screenWidth.toString())
         //Log.d("oldHeight", buttonPanel.height.toString())
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        val adjustedHeight = screenWidth * 1.2
+        val adjustedHeight = screenWidth * getButtonRowsAmount() / getButtonColumnsAmount()
         //Log.d("adjustedHeight", adjustedHeight.toString())
         val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.height = adjustedHeight.toInt()
+        layoutParams.height = adjustedHeight
         buttonPanel.layoutParams = layoutParams
         //Log.d("newHeight", buttonPanel.height.toString())
     }
@@ -1117,21 +1139,16 @@ class MainActivity : AppCompatActivity() {
         //Log.d("width", screenWidth.toString())
         //Log.d("oldHeight", buttonPanel.height.toString())
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        val adjustedWidth = screenHeight * 0.76
+        val adjustedWidth = screenHeight * getButtonColumnsAmount() / getButtonRowsAmount()
         //Log.d("adjustedHeight", adjustedHeight.toString())
         val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.width = adjustedWidth.toInt()
+        layoutParams.width = adjustedWidth
         buttonPanel.layoutParams = layoutParams
         //Log.d("newHeight", buttonPanel.height.toString())
     }
 
     private fun vibrate() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // For API level 26 and above
-            vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            // For below API level 26
-            vibrator?.vibrate(vibrationDurationMilliSec)
-        }
+        // For API level 26 and above
+        vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
     }
 }
