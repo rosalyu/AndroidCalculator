@@ -300,7 +300,8 @@ class MainActivity : AppCompatActivity() {
                 // (there is something to calculate), this can be the case if '%' has not been appended
                 // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
                 // a '('
-                if (operator == "%" && (tvCalculation!!.text.last() == '%' || (!tvCalculation!!.text.isSingleNumericalValue() &&
+
+                if (tvCalculation!!.text.isNotEmpty() && operator == "%" && (tvCalculation!!.text.last() == '%' || (!tvCalculation!!.text.isSingleNumericalValue() &&
                             tvCalculation!!.text.last() != '%'))) {
                     val result = tvCalculation!!.text.calculate()
 
