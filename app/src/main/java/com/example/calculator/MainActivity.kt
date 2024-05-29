@@ -1,6 +1,7 @@
 package com.example.calculator
 
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -92,6 +93,9 @@ class MainActivity : AppCompatActivity() {
 
         // equals button: =
         setListenerEquals()
+
+        // themes button
+        setListenerThemes()
     }
 
 
@@ -122,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
                     else -> "${tvCalculation!!.text}${button.text}"
                 }
-                tvCalculation!!.text = calculationText
+                tvCalculation!!.text = calculationText.addThousandSeparators()
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val result =
                     if (calculationText.isNumeric()) "" else calculationText.calculate()
@@ -451,10 +455,16 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    else -> tvCalculation!!.text = result
+                    else -> tvCalculation!!.text = result.addThousandSeparators()
                 }
                 tvResult!!.text = ""
             }
+        }
+    }
+
+    private fun setListenerThemes() {
+        findViewById<Button>(R.id.buttonThemes).setOnClickListener {
+            buttonPanel?.setBackgroundColor(Color.rgb(255, 0,0))
         }
     }
 
@@ -463,8 +473,40 @@ class MainActivity : AppCompatActivity() {
         if (this.isEmpty() || this == "outOfRange" || this == "divisionByZero" || this == "imaginaryNumber") {
             tvResult!!.text = ""
         } else {
-            tvResult!!.text = this
+            tvResult!!.text = this.addThousandSeparators()
         }
+    }
+
+    // groups three digits separated by a dot in a CharSequence expression
+    private fun CharSequence.addThousandSeparators(): CharSequence {
+        var separatorsAddedString = StringBuilder()
+        val seqToAddSeparators = this.removeThousandSeparators()
+        var digitCounter = 0
+
+        for(index in seqToAddSeparators.lastIndex downTo 0) {
+            separatorsAddedString = separatorsAddedString.insert(0, seqToAddSeparators[index])
+            if(seqToAddSeparators[index].isDigit()) {
+                digitCounter++
+                if(digitCounter == 3 && index != 0 && seqToAddSeparators[index - 1].isDigit()) {
+                    separatorsAddedString = separatorsAddedString.insert(0, '.')
+                    digitCounter = 0
+                }
+            } else {
+                digitCounter = 0
+            }
+        }
+        return separatorsAddedString
+    }
+
+    // remove the added thousand separators to process the result in the calculation view (with equals)
+    private fun CharSequence.removeThousandSeparators(): CharSequence {
+        var removedSeparatorsString = StringBuilder()
+        for(index in indices) {
+            if(this[index] != '.') {
+                removedSeparatorsString.append(this[index])
+            }
+        }
+        return removedSeparatorsString
     }
 
     // calculates the result of the expression by formatting, tokenizing it and calling
@@ -476,7 +518,7 @@ class MainActivity : AppCompatActivity() {
     // -> "outOfRange" results from a NumberFormatException thrown in toNumber() or any of the
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
-        val tokenList = this.tokenList()
+        val tokenList = this.removeThousandSeparators().tokenList()
 
         val resultList: ArrayList<CharSequence>
         try {
