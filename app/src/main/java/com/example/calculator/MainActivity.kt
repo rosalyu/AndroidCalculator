@@ -127,6 +127,7 @@ class MainActivity : AppCompatActivity() {
                     else -> "${tvCalculation!!.text}${button.text}"
                 }
                 tvCalculation!!.text = calculationText.addThousandSeparators()
+
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val result =
                     if (calculationText.isNumeric()) "" else calculationText.calculate()
@@ -161,7 +162,7 @@ class MainActivity : AppCompatActivity() {
 
                     else -> "${tvCalculation!!.text}0"
                 }
-                tvCalculation!!.text = calculationText
+                tvCalculation!!.text = calculationText.addThousandSeparators()
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val resultText =
                     if (calculationText.isNumeric()) "" else calculationText.calculate()
@@ -378,9 +379,9 @@ class MainActivity : AppCompatActivity() {
                 tvCalculation!!.text = when {
                     tvCalculation!!.text.length > 1 && tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '^'
                             && tvCalculation!!.text.last() == '('
-                    -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex - 1)
+                    -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex - 1).refreshThousandSeparators()
                     // else remove only the last Char
-                    else -> tvCalculation!!.text.dropLast(1)
+                    else -> tvCalculation!!.text.dropLast(1).refreshThousandSeparators()
                 }
                 // invalid scientific number in calculation view
                 val invalidExpression = if (tvCalculation!!.text.isNotEmpty()) {
@@ -396,7 +397,9 @@ class MainActivity : AppCompatActivity() {
                 ) "" else tvCalculation!!.text.calculate()
 
                 // set the content of result to tvResult.text if the result is valid
+                Log.d("before displayResultIfValid()", tvCalculation!!.text.toString())
                 result.displayResultIfValid()
+                Log.d("after displayResultIfValid()", tvCalculation!!.text.toString())
             }
         }
     }
@@ -478,25 +481,52 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // todo ensure it is never called on an empty CharSequence
     // groups three digits separated by a dot in a CharSequence expression
     private fun CharSequence.addThousandSeparators(): CharSequence {
-        var separatorsAddedString = StringBuilder()
-        val seqToAddSeparators = this.removeThousandSeparators()
-        var digitCounter = 0
+        var separatorsAddedToken = StringBuilder()
 
-        for(index in seqToAddSeparators.lastIndex downTo 0) {
-            separatorsAddedString = separatorsAddedString.insert(0, seqToAddSeparators[index])
-            if(seqToAddSeparators[index].isDigit()) {
+        // only the last token is altered here because this function is called each time a digit is added,
+        // so the previous tokens already have separators
+        val tokenList = tokenList()
+        // last token to add separators to
+        var lastToken = tokenList.last()
+
+        // if the last token cannot contain thousand separators, return the CharSequence, unchanged
+        if(!lastToken.isNumeric()) {
+            return this
+        }
+        // remove the last token to replace it later with  added separators
+        tokenList.removeLast()
+
+        var digitCounter = 0
+        var hasComma = false
+        var commaWithDecimalPart = "" as CharSequence
+
+        if(lastToken.contains(',')) {
+            hasComma = true
+            commaWithDecimalPart = lastToken.subSequence(lastToken.indexOf(','))
+            lastToken = lastToken.subSequence(0, lastToken.indexOf(','))
+        }
+
+        for(index in lastToken.lastIndex downTo 0) {
+            separatorsAddedToken = separatorsAddedToken.insert(0, lastToken[index])
+            if(lastToken[index].isDigit()) {
                 digitCounter++
-                if(digitCounter == 3 && index != 0 && seqToAddSeparators[index - 1].isDigit()) {
-                    separatorsAddedString = separatorsAddedString.insert(0, '.')
+                if(digitCounter == 3 && index != 0 && lastToken[index - 1].isDigit()) {
+                    separatorsAddedToken = separatorsAddedToken.insert(0, '.')
                     digitCounter = 0
                 }
             } else {
                 digitCounter = 0
             }
         }
-        return separatorsAddedString
+        if(hasComma) {
+            separatorsAddedToken.append(commaWithDecimalPart)
+        }
+        tokenList.add(separatorsAddedToken)
+
+        return tokenList.joinToString("")
     }
 
     // remove the added thousand separators to process the result in the calculation view (with equals)
@@ -510,6 +540,11 @@ class MainActivity : AppCompatActivity() {
         return removedSeparatorsString
     }
 
+    // removes and adds the thousand separators correctly
+    private fun CharSequence.refreshThousandSeparators(): CharSequence {
+        return removeThousandSeparators().addThousandSeparators()
+    }
+
     // calculates the result of the expression by formatting, tokenizing it and calling
     // the recursive ArrayList<CharSequence>.calculate() function
 
@@ -519,7 +554,7 @@ class MainActivity : AppCompatActivity() {
     // -> "outOfRange" results from a NumberFormatException thrown in toNumber() or any of the
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
-        val tokenList = this.removeThousandSeparators().tokenList()
+        val tokenList = tokenList()
 
         val resultList: ArrayList<CharSequence>
         try {
@@ -803,7 +838,8 @@ class MainActivity : AppCompatActivity() {
     // converts a CharSequence expression into a list of CharSequence tokens
     @Throws(IllegalArgumentException::class)
     private fun CharSequence.tokenList(): ArrayList<CharSequence> {
-        val oldList = this.formatExpression() // Only call on formatted expression
+        // Only call on formatted expression and without thousand separators
+        val oldList = this.formatExpression().removeThousandSeparators()
         val newList = ArrayList<CharSequence>()
         var number = ""
 
