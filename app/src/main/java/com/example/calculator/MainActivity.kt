@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
 
                     else -> "${tvCalculation!!.text}${button.text}"
                 }
-                Log.d("tvCalculation!!.text", tvCalculation!!.text.toString())
+                Log.d("calculationText", calculationText.toString())
                 // only refreshes the last token so the previous ones have no separators (since calculation)
                 tvCalculation!!.text = calculationText.refreshThousandSeparators()
 
@@ -490,10 +490,18 @@ class MainActivity : AppCompatActivity() {
         // so the previous tokens already have separators
         val tokenList = this.tokenList()
         Log.d("tokenList old", tokenList.toString())
-        // last token to add separators to
-        var lastToken = tokenList.last() //it is separating at dot, but they should have been removed
-        Log.d("lastToken", lastToken.toString())
-        tokenList.removeLast()
+
+        var lastToken: CharSequence
+        try {
+            // last token to add separators to
+            lastToken = tokenList.last()
+            Log.d("lastToken", lastToken.toString())
+            tokenList.removeLast()
+        }
+        // NoSuchElementException thrown if tokenList is empty
+        catch(e: NoSuchElementException) {
+            return ""
+        }
 
         // if the last token cannot contain thousand separators, return the CharSequence, unchanged
         if(!lastToken.isNumeric()) {
@@ -820,6 +828,7 @@ class MainActivity : AppCompatActivity() {
     // CAUTION: throws IllegalArgumentException if the CharSequence is not numeric
     @Throws(NumberFormatException::class)
     private fun CharSequence.toNumber(): Number {
+        Log.d("this in toNumber()", this.toString())
         var seq = this
         var number: Number
         var isPercentage = false
@@ -843,7 +852,9 @@ class MainActivity : AppCompatActivity() {
             return Double.NaN
         }
         if (isPercentage) {
+            Log.d("number", number.toString())
             val result = number.toDouble() / 100
+            Log.d("result", result.toString())
             // throws exception if result is infinity (distinction between pos./neg. infinity)
             throwExceptionIfInfinity(result)
             number = result
