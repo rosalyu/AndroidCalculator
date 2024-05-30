@@ -126,9 +126,10 @@ class MainActivity : AppCompatActivity() {
 
                     else -> "${tvCalculation!!.text}${button.text}"
                 }
-                Log.d("calculationText", calculationText.toString())
-                // only refreshes the last token so the previous ones have no separators (since calculation)
-                tvCalculation!!.text = calculationText.refreshThousandSeparators()
+                //Log.d("calculationText button", calculationText.toString())
+                //Log.d("tokenListWithoutSep", calculationText.tokenList().joinToString())
+                // only adds separators to the last token because the previous ones have separators (since calculation)
+                tvCalculation!!.text = calculationText.refreshThousandSeparatorsLastToken()
 
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val result =
@@ -164,7 +165,8 @@ class MainActivity : AppCompatActivity() {
 
                     else -> "${tvCalculation!!.text}0"
                 }
-                tvCalculation!!.text = calculationText.refreshThousandSeparators()
+                // only adds separators to the last token because the previous ones have separators (since calculation)
+                tvCalculation!!.text = calculationText.refreshThousandSeparatorsLastToken()
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val resultText =
                     if (calculationText.isNumeric()) "" else calculationText.calculate()
@@ -381,9 +383,9 @@ class MainActivity : AppCompatActivity() {
                 tvCalculation!!.text = when {
                     tvCalculation!!.text.length > 1 && tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '^'
                             && tvCalculation!!.text.last() == '('
-                    -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex - 1).refreshThousandSeparators()
+                    -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex - 1).refreshThousandSeparatorsLastToken()
                     // else remove only the last Char
-                    else -> tvCalculation!!.text.dropLast(1).refreshThousandSeparators()
+                    else -> tvCalculation!!.text.dropLast(1).refreshThousandSeparatorsLastToken()
                 }
                 // invalid scientific number in calculation view
                 val invalidExpression = if (tvCalculation!!.text.isNotEmpty()) {
@@ -459,7 +461,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    else -> tvCalculation!!.text = result.addThousandSeparators()
+                    else -> tvCalculation!!.text = result.refreshThousandSeparatorsLastToken()
                 }
                 tvResult!!.text = ""
             }
@@ -477,25 +479,22 @@ class MainActivity : AppCompatActivity() {
         if (this.isEmpty() || this == "outOfRange" || this == "divisionByZero" || this == "imaginaryNumber") {
             tvResult!!.text = ""
         } else {
-            tvResult!!.text = this.addThousandSeparators()
+            tvResult!!.text = this.refreshThousandSeparatorsLastToken()
         }
     }
 
-    // todo ensure it is never called on an empty CharSequence
     // groups three digits separated by a dot in a CharSequence expression
-    private fun CharSequence.addThousandSeparators(): CharSequence {
+    private fun CharSequence.addThousandSeparatorsLastToken(): String {
         var separatorsAddedToken = StringBuilder()
 
         // only the last token is altered here because this function is called each time a digit is added,
         // so the previous tokens already have separators
         val tokenList = this.tokenList()
-        Log.d("tokenList old", tokenList.toString())
 
         var lastToken: CharSequence
         try {
             // last token to add separators to
             lastToken = tokenList.last()
-            Log.d("lastToken", lastToken.toString())
             tokenList.removeLast()
         }
         // NoSuchElementException thrown if tokenList is empty
@@ -505,7 +504,7 @@ class MainActivity : AppCompatActivity() {
 
         // if the last token cannot contain thousand separators, return the CharSequence, unchanged
         if(!lastToken.isNumeric()) {
-            return this
+            return this.toString()
         }
 
         var digitCounter = 0
@@ -533,27 +532,60 @@ class MainActivity : AppCompatActivity() {
         if(hasComma) {
             separatorsAddedToken.append(commaWithDecimalPart)
         }
-        Log.d("tokenListDots", tokenList.toString())
         tokenList.add(separatorsAddedToken)
-        Log.d("tokenListDots", tokenList.toString())
 
         return tokenList.joinToString("")
     }
 
     // remove the added thousand separators to process the result in the calculation view (with equals)
-    private fun CharSequence.removeThousandSeparators(): String {
-        val removedSeparatorsString = StringBuilder()
-        for(index in indices) {
-            if(this[index] != '.') {
+    private fun CharSequence.removeThousandSeparatorsLastToken(): String {
+        //val removedSeparatorsString = StringBuilder()
+
+        // only the last token is altered here because this function is called each time a digit is added,
+        // so the previous tokens already have separators
+        val tokenList = this.tokenList()
+        //Log.d("tokenList() result", tokenList.toString())
+
+        var lastToken: CharSequence
+        try {
+            // last token to add separators to
+            lastToken = tokenList.last()
+            tokenList.removeLast()
+        }
+        // NoSuchElementException thrown if tokenList is empty
+        catch(e: NoSuchElementException) {
+            return ""
+        }
+
+        // if the last token cannot contain thousand separators, return the CharSequence, unchanged
+        // todo clear if isNumeric() has to return true for numbers with thousand separators
+        if(!lastToken.isNumeric()) {
+            return this.toString()
+        }
+
+        /*for(index in lastToken.indices) {
+            if(lastToken[index] != '.') {
                 removedSeparatorsString.append(this[index])
             }
-        }
-        return removedSeparatorsString.toString()
+        }*/
+        lastToken = lastToken.filter { it != '.' }
+        tokenList.add(lastToken)
+
+        return tokenList.joinToString("")
     }
 
     // removes and adds the thousand separators correctly
-    private fun CharSequence.refreshThousandSeparators(): CharSequence {
-        return removeThousandSeparators().addThousandSeparators()
+    private fun CharSequence.refreshThousandSeparatorsLastToken(): String {
+        return removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken()
+    }
+
+    // removes all thousand separators for calculation
+    private fun ArrayList<CharSequence>.removeThousandSeparatorsAll(): ArrayList<CharSequence> {
+        val dotsRemovedList = ArrayList<CharSequence>()
+        //Log.d("BEFORE", this.joinToString())
+        this.forEach { seq -> dotsRemovedList.add(seq.filter{ it != '.'}.toString()) }
+        //Log.d("AFTER", dotsRemovedList.joinToString())
+        return dotsRemovedList
     }
 
     // calculates the result of the expression by formatting, tokenizing it and calling
@@ -565,10 +597,12 @@ class MainActivity : AppCompatActivity() {
     // -> "outOfRange" results from a NumberFormatException thrown in toNumber() or any of the
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
-        var tokenList = tokenList()
-
+        Log.d("before", tokenList().joinToString())
         // remove the thousand separators for the calculation
-        tokenList = tokenList.map { it.removeThousandSeparators() } as ArrayList<CharSequence>
+        // todo remove all dots before calling toNumber()
+        var tokenList = tokenList().removeThousandSeparatorsAll()
+
+        Log.d("after", tokenList.joinToString())
 
         val resultList: ArrayList<CharSequence>
         try {
@@ -608,6 +642,7 @@ class MainActivity : AppCompatActivity() {
     @Throws(NumberFormatException::class, ArithmeticException::class)
     private fun ArrayList<CharSequence>.calculate(firstCall: Boolean): ArrayList<CharSequence> {
         var tokenList = this
+        Log.d("tokenListCalc", tokenList.joinToString())
 
         if (tokenList.isEmpty()) {
             return ArrayList()
@@ -621,13 +656,14 @@ class MainActivity : AppCompatActivity() {
             tokenList = tokenList.mergePercentages().mergePlusMinus()
         }
 
-        tokenList.forEach { element ->
+        // test for StringBuilder
+       /*tokenList.forEach { element ->
             Log.d("elementType", element::class.java.name)
             Log.d("elementValue", element.toString())
         }
 
         Log.d("tokenList", tokenList.joinToString())
-        Log.d("containsBr", tokenList.any { it.toString() == "(" }.toString())
+        Log.d("containsBr", tokenList.any { it.toString() == "(" }.toString())*/
 
         // resolve the brackets
         if (tokenList.contains("(")) {
@@ -824,11 +860,10 @@ class MainActivity : AppCompatActivity() {
         return exprToFormat
     }
 
-    // helper function to convert CharSequence into Int variables
+    // helper function to convert CharSequence into Double or Int values
     // CAUTION: throws IllegalArgumentException if the CharSequence is not numeric
     @Throws(NumberFormatException::class)
     private fun CharSequence.toNumber(): Number {
-        Log.d("this in toNumber()", this.toString())
         var seq = this
         var number: Number
         var isPercentage = false
@@ -852,9 +887,7 @@ class MainActivity : AppCompatActivity() {
             return Double.NaN
         }
         if (isPercentage) {
-            Log.d("number", number.toString())
             val result = number.toDouble() / 100
-            Log.d("result", result.toString())
             // throws exception if result is infinity (distinction between pos./neg. infinity)
             throwExceptionIfInfinity(result)
             number = result
@@ -867,21 +900,22 @@ class MainActivity : AppCompatActivity() {
     @Throws(IllegalArgumentException::class)
     private fun CharSequence.tokenList(): ArrayList<CharSequence> {
         // Only call on formatted expression and without thousand separators
-        val oldList = this.formatExpression()
+        val expression = this.formatExpression()
+        Log.d("expression", expression.toString())
 
         val newList = ArrayList<CharSequence>()
         var number = ""
 
-        for (index in oldList.indices) {
+        for (index in expression.indices) {
             // append current number, '+','-', 'E', ',' or '%' sign or the thousand separator '.'
-            if (oldList[index].isDigit() || oldList[index] == ',' ||
-                (index == 0 && (oldList[0] == '-' || oldList[0] == '+') && oldList[1].isDigit()) ||
-                index > 0 && ((index + 1 in indices && (oldList[index - 1] == '(' || oldList[index - 1] == 'E')
-                        && (oldList[index] == '-' || oldList[index] == '+') && oldList[index + 1].isDigit()) ||
-                        (oldList[index - 1].isDigit() && (oldList[index] == '%' || oldList[index] == 'E')))
-                || oldList[index] == '.'
+            if (expression[index].isDigit() || expression[index] == ',' ||
+                (index == 0 && (expression[0] == '-' || expression[0] == '+') && expression[1].isDigit()) ||
+                index > 0 && ((index + 1 in indices && (expression[index - 1] == '(' || expression[index - 1] == 'E')
+                        && (expression[index] == '-' || expression[index] == '+') && expression[index + 1].isDigit()) ||
+                        (expression[index - 1].isDigit() && (expression[index] == '%' || expression[index] == 'E')))
+                || expression[index] == '.'
             ) {
-                number += oldList[index]
+                number += expression[index]
             }
             // add number to tokenList
             else {
@@ -893,13 +927,13 @@ class MainActivity : AppCompatActivity() {
                     number = ""
                 }
                 // add operator or bracket to tokenList
-                newList.add(oldList[index].toString())
+                newList.add(expression[index].toString())
             }
         }
         if (number.isNotEmpty()) {
             newList.add(number)
         }
-        Log.d("tokenListResult", newList.toString())
+        Log.d("newList", newList.joinToString())
         return newList
     }
 
