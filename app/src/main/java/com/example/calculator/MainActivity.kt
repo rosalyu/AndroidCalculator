@@ -35,10 +35,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // removes the action bar from the top
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        supportActionBar?.hide()
-
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
         buttonPanel = findViewById(R.id.buttonPanel)
@@ -47,14 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         // set the UI buttonPanel proportions
         // Check if the device is in portrait mode
-        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // Define the height of the buttonPanel based on the screen width
-            defineButtonPanelHeightPortrait()
-        } else {
-            // if app is started in land mode, define the width of the buttonPanel based on the current
-            // screen height
-            defineButtonPanelWidthLand()
-        }
+        onConfigurationChanged(resources.configuration)
 
         // set all onClickListeners for the digit buttons 1 - 9
         arrayOf(
@@ -116,7 +105,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val lastChar =
                     if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
-                val calculationText = when {
+                var calculationText = when {
                     lastChar == null -> button.text
                     lastChar in setOf(')', '%') -> "${tvCalculation.text}×${button.text}"
                     lastChar == '0' && (tvCalculation.text.length == 1 ||
@@ -127,14 +116,17 @@ class MainActivity : AppCompatActivity() {
                     else -> "${tvCalculation.text}${button.text}"
                 }
                 //Log.d("calculationText button", calculationText.toString())
-                Log.d("refresh", calculationText.tokenList().joinToString())
+                //Log.d("refresh", calculationText.toString())
                 // only adds separators to the last token because the previous ones have separators (since calculation)
-                tvCalculation.text = calculationText.refreshThousandSeparatorsLastToken()
-                Log.d("refreshed", calculationText.tokenList().joinToString())
+                calculationText = calculationText.refreshThousandSeparatorsLastToken()
+                tvCalculation.text  = calculationText
+
+                //Log.d("refresh", calculationText.toString())
+                //Log.d("refreshed", "1.111.1111".removeThousandSeparatorsLastToken().toString())
 
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val result =
-                    if (calculationText.isNumeric()) "" else calculationText.calculate()
+                    if (calculationText.removeThousandSeparatorsLastToken().isNumeric()) "" else calculationText.calculate()
 
                 // set the content of result to tvResult.text if the result is valid
                 result.displayResultIfValid()
@@ -491,7 +483,7 @@ class MainActivity : AppCompatActivity() {
         // only the last token is altered here because this function is called each time a digit is added,
         // so the previous tokens already have separators
         val tokenList = this.tokenList()
-        Log.d("tokenList() result", tokenList.toString())
+        //Log.d("tokenList() result", tokenList.toString())
 
         var lastToken: CharSequence
         try {
@@ -536,6 +528,7 @@ class MainActivity : AppCompatActivity() {
         }
         tokenList.add(separatorsAddedToken)
 
+        //Log.d("tokenList added", tokenList.joinToString())
         return tokenList.joinToString("")
     }
 
@@ -559,22 +552,17 @@ class MainActivity : AppCompatActivity() {
             return ""
         }
 
-        // if the last token cannot contain thousand separators, return the CharSequence, unchanged
-        // todo clear if isNumeric() has to return true for numbers with thousand separators
-        if(!lastToken.isNumeric()) {
-            return this.toString()
-        }
-
         lastToken = lastToken.filter { it != '.' }
         tokenList.add(lastToken)
 
+        //Log.d("tokenList removed", tokenList.joinToString())
         return tokenList.joinToString("")
     }
 
     // removes and adds the thousand separators correctly
     private fun CharSequence.refreshThousandSeparatorsLastToken(): String {
         //Log.d("BEFORE", this.toString())
-        //Log.d("AFTER", removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken().toString())
+        //Log.d("AFTER", removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken())
         return removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken()
     }
 
@@ -596,7 +584,7 @@ class MainActivity : AppCompatActivity() {
     // -> "outOfRange" results from a NumberFormatException thrown in toNumber() or any of the
     // operator functions
     private fun CharSequence.calculate(): CharSequence {
-        Log.d("before", tokenList().joinToString())
+        //Log.d("before", tokenList().joinToString())
         // remove the thousand separators for the calculation
         // todo remove all dots before calling toNumber()
         val tokenList = tokenList().removeThousandSeparatorsAll()
@@ -667,16 +655,12 @@ class MainActivity : AppCompatActivity() {
         // resolve the brackets
         if (tokenList.contains("(")) {
 
-            var startIndex = 0
-            for (index in tokenList.indices) {
-                if (tokenList[index] == "(") {
-                    startIndex = index
-                    break
-                }
-            }
+            val startIndex = tokenList.indexOf("(")
+
             // calculates index of the closing bracket that corresponds to the opening bracket at startIndex
             var endIndex = tokenList.lastIndex
             var bracketCounter = -1
+
             for (index in (startIndex + 1)..tokenList.lastIndex) {
                 if (tokenList[index] == "(") {
                     bracketCounter--
@@ -688,6 +672,7 @@ class MainActivity : AppCompatActivity() {
                     break
                 }
             }
+
             val leftExpression: ArrayList<CharSequence> = tokenList.subListExtension(0, startIndex)
 
             val rightExpression =
@@ -698,7 +683,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
             val innerExpression = tokenList.subListExtension(startIndex + 1, endIndex)
-            // Toast.makeText(this@MainActivity, "inner: ${innerExpression}", Toast.LENGTH_SHORT).show()
 
             val resultList = ArrayList<CharSequence>().apply {
                 // no brackets here, but expression ends with an operator likely
@@ -960,8 +944,12 @@ class MainActivity : AppCompatActivity() {
     ): ArrayList<CharSequence> {
         // if index is out of range, throws IllegalArgumentException
         if (startIndex !in this.indices || endIndex !in this.indices) {
+            Log.d("startIndex", startIndex.toString())
+            Log.d("endIndex", endIndex.toString())
+            Log.d("this.indices", indices.joinToString())
+
             throw IllegalArgumentException(
-                "fromIndex in ArrayList<CharSequence>.subList(fromIndex: Int) is out of bounds"
+                "indices in ArrayList<CharSequence>.subList(startIndex: Int, endIndex: Int) out of bounds"
             )
         }
         val subList = ArrayList<CharSequence>()
@@ -1236,6 +1224,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             // land mode: define the width of the buttonPanel
             defineButtonPanelWidthLand()
+            // removes the action bar from the top in land mode
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            supportActionBar?.hide()
         }
     }
 
