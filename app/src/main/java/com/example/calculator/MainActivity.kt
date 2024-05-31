@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                     lastChar in setOf(')', '%') -> "${tvCalculation.text}×${button.text}"
                     lastChar == '0' && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex.minus(1)].isDigit()
-                                    || tvCalculation.text.numberHas(',')))
+                                    || tvCalculation.text.firstNonDigitCharFromEnd(',')))
                     -> tvCalculation.text.dropLast(1).append(button.text)
 
                     else -> "${tvCalculation.text}${button.text}"
@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                     (tvCalculation.text == "0") ||
                             (lastChar == '0' && tvCalculation.text.length > 1
                                     && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
-                                    tvCalculation.text.numberHas(',')))) -> tvCalculation.text
+                                    tvCalculation.text.firstNonDigitCharFromEnd(',')))) -> tvCalculation.text
 
                     else -> "${tvCalculation.text}0"
                 }
@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity() {
                 val lastChar =
                     if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
-                if (!tvCalculation.text.numberHas(',')) {
+                if (!tvCalculation.text.firstNonDigitCharFromEnd(',')) {
                     val (calculationText, resultText) = when {
                         // if tvCalculation!! is empty and user types "," -> shows "0," (incomplete expression)
                         lastChar == null -> "0," to "0"
@@ -463,11 +463,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setListenerThemes() {
         findViewById<Button>(R.id.buttonThemes).setOnClickListener {
+            // todo
             buttonPanel.setBackgroundColor(Color.rgb(255, 0,0))
         }
     }
 
-    // sets tvResult.text to the result (this) if the result is valid
+    // sets tvResult.text to the result (this) if the result is valid and refreshes the thousand separators
     private fun CharSequence.displayResultIfValid(){
         if (this.isEmpty() || this == "outOfRange" || this == "divisionByZero" || this == "imaginaryNumber") {
             tvResult.text = ""
@@ -613,7 +614,7 @@ class MainActivity : AppCompatActivity() {
             resultList.clear()
             // if last expression is percentage resolve percentages via toNumber
             if (result[result.lastIndex] == '%') {
-                result = result.toNumber().toString()
+                result = result.toDouble().toString()
             }
             // format the result value (removes unnecessary decimal places, also rounding)
             result = result.formatNumber()
@@ -734,17 +735,17 @@ class MainActivity : AppCompatActivity() {
                     tokenList.indexOfFirst { it == "+" || it == "-" }
                 }
             // assumes that each operator is surrounded by numbers left and right
-            val operand1 = tokenList.elementAt(operatorIndex - 1).toNumber()
-            val operand2 = tokenList.elementAt(operatorIndex + 1).toNumber()
+            val operand1 = tokenList.elementAt(operatorIndex - 1).toDouble()
+            val operand2 = tokenList.elementAt(operatorIndex + 1).toDouble()
 
             val result = when (tokenList.elementAt(operatorIndex)) {
-                "^" -> (operand1).power(operand2)
-                "×" -> (operand1).mul(operand2)
+                "^" -> (operand1).powerThrowsException(operand2)
+                "×" -> (operand1).mulThrowsException(operand2)
                 "÷" -> // may throw exception, which is handled by callee
-                    (operand1).div(operand2)
+                    (operand1).divThrowsException(operand2)
 
-                "+" -> (operand1).add(operand2)
-                else -> (operand1).sub(operand2)
+                "+" -> (operand1).addThrowsException(operand2)
+                else -> (operand1).subThrowsException(operand2)
             }
             // remove both operands and operator and insert result
             repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
@@ -806,7 +807,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // helper function for ',' or '.': ensures a number has a maximum of one ',' or '.'
-    private fun CharSequence.numberHas(commaOrDot: Char): Boolean {
+    private fun CharSequence.firstNonDigitCharFromEnd(commaOrDot: Char): Boolean {
         // char remains null if the sequence contains digits only
         var char: Char? = null
         // checks all Chars starting from the end until the first Char that is not a digit
@@ -840,15 +841,15 @@ class MainActivity : AppCompatActivity() {
         while (exprToFormat.contains('(') && exprToFormat.bracketPicker() == ")") {
             exprToFormat = exprToFormat.append(")")
         }
-        return exprToFormat
+        return exprToFormat.toString()
     }
 
     // helper function to convert CharSequence into Double or Int values
     // CAUTION: throws IllegalArgumentException if the CharSequence is not numeric
     @Throws(NumberFormatException::class)
-    private fun CharSequence.toNumber(): Number {
+    private fun CharSequence.toDouble(): Double {
         var seq = this
-        var number: Number
+        var number: Double
         var isPercentage = false
         if (!seq.isNumeric()) {
             throw IllegalArgumentException("CharSequence.toNumber() cannot be called on a non-numeric CharSequence")
@@ -864,13 +865,13 @@ class MainActivity : AppCompatActivity() {
         }
         // returns Double
         if (seq.toString().toDoubleOrNull() != null) {
-            number = seq.toString().toDoubleOrNull() as Number
+            number = seq.toString().toDoubleOrNull() ?: Double.NaN
         } else {
             // will never be reached because seq.isNumeric() must be true (see above)
             return Double.NaN
         }
         if (isPercentage) {
-            val result = number.toDouble() / 100
+            val result = number / 100
             // throws exception if result is infinity (distinction between pos./neg. infinity)
             throwExceptionIfInfinity(result)
             number = result
@@ -977,8 +978,8 @@ class MainActivity : AppCompatActivity() {
 
     // multiplication
     @Throws(NumberFormatException::class)
-    private fun Number.mul(other: Number): Number {
-        val result = (this as Double) * (other as Double)
+    private fun Double.mulThrowsException(other: Double): Double {
+        val result = this * other
         // throws exception if result is infinity
         throwExceptionIfInfinity(result)
         return result
@@ -986,30 +987,26 @@ class MainActivity : AppCompatActivity() {
 
     // division
     @Throws(NumberFormatException::class, ArithmeticException::class)
-    private fun Number.div(other: Number): Number {
-        if (other.toDouble() == 0.0) {
+    private fun Double.divThrowsException(other: Double): Double {
+        if (other == 0.0) {
             throw ArithmeticException("Cannot divide by zero in Number.div(other: Number)")
         }
-        val result = (this as Double) / (other as Double)
+        val result = this / other
         // throws exception if result is infinity
         throwExceptionIfInfinity(result)
         return result
     }
 
-    // todo special case of the pow() function: if base is < 0 and exp is not an Int -> returns NaN
     // exponentiation
     @Throws(NumberFormatException::class)
-    private fun Number.power(other: Number): Number {
+    private fun Double.powerThrowsException(other: Double): Double {
         // if the base is negative and the exponent is not an integer, the result would be a complex
         // number -> notify the user
-        if ((this as Double) < 0 && other.toString().numberHas('.') &&
-            // if all decimal places are 0, then the exponent is an Int and the exception is not thrown
-            !(other.toString().subSequence(other.toString().replace(',', '.').indexOf('.') + 1)
-                .all { it == '0' })
-        ) {
+        if (this < 0 && other - other.toInt() != 0.0) {
+            // special case of the pow() function: if base is < 0 and exp is not an Int -> returns NaN
             throw ClassNotFoundException("No support for complex numbers")
         }
-        val result = this.pow(other as Double)
+        val result = this.pow(other)
         // throws exception if result is Infinity
         throwExceptionIfInfinity(result)
         return result
@@ -1017,8 +1014,8 @@ class MainActivity : AppCompatActivity() {
 
     // addition
     @Throws(NumberFormatException::class)
-    private fun Number.add(other: Number): Number {
-        val result = (this as Double) + (other as Double)
+    private fun Double.addThrowsException(other: Double): Double {
+        val result = this + other
         // throws exception if result is infinity (distinction between pos./neg. infinity)
         throwExceptionIfInfinity(result)
         return result
@@ -1026,9 +1023,9 @@ class MainActivity : AppCompatActivity() {
 
     // subtraction
     @Throws(NumberFormatException::class)
-    private fun Number.sub(other: Number): Number {
-        val result = (this as Double) - (other as Double)
-        // throws exception if result is infinity (distinction between pos./neg. infinity)
+    private fun Double.subThrowsException(other: Double): Double {
+        val result = this - other
+        // throws exception if result is infinity (distinction toNumber between pos./neg. infinity)
         throwExceptionIfInfinity(result)
         return result
     }
@@ -1050,11 +1047,11 @@ class MainActivity : AppCompatActivity() {
                 // mul() can throw a NumberFormatException theoretically,
                 // but practically never will because we only multiply by +1 or -1
                 mergedValue =
-                    ("${this[index - 1]}1".toNumber() as Double * this[index].toNumber() as Double).toString()
+                    ("${this[index - 1]}1".toDouble() * this[index].toDouble()).toString()
                 tokenList.removeAt(index - 1)
-                tokenList.add(mergedValue)
+                tokenList.add(mergedValue.toString())
             } else {
-                tokenList.add(this[index])
+                tokenList.add(this[index].toString())
             }
         }
         return tokenList
@@ -1069,7 +1066,7 @@ class MainActivity : AppCompatActivity() {
                 tokenList.removeAt(index - 1)
                 tokenList.add("${this[index - 1]}${this[index]}")
             } else {
-                tokenList.add(this[index])
+                tokenList.add(this[index].toString())
             }
         }
         return tokenList
@@ -1090,7 +1087,7 @@ class MainActivity : AppCompatActivity() {
         var number = this
         var exponent: CharSequence? = null // remains null if the number has no comma
 
-        if (number.numberHas(',') || number.numberHas('.') || number.lastNumberHasExponent()) {
+        if (number.firstNonDigitCharFromEnd(',') || number.firstNonDigitCharFromEnd('.') || number.lastNumberHasExponent()) {
 
             // replace ',' with  '.' for uniformity of calculation
             number = number.replace(Regex(","), "\\.")
@@ -1108,13 +1105,13 @@ class MainActivity : AppCompatActivity() {
 
             // return as integer if all digits after the decimal point are '0'
             if (exponent == null && postDecimalPoint.all { char -> char == '0' }) {
-                return number.subSequence(0, decimalPoint)
+                return number.subSequence(0, decimalPoint).toString()
             }
 
             // is double: round to a maximum of 10 decimal places
             if (postDecimalPoint.length > 10) {
                 // Locale.US ensures there is a dot in the number and no commas
-                number = String.format(Locale.US, "%.10f", number.toNumber())
+                number = String.format(Locale.US, "%.10f", number.toDouble())
             }
 
             // if there are unnecessary '0' at the end after the decimal point or
@@ -1133,7 +1130,7 @@ class MainActivity : AppCompatActivity() {
             number = number.append(exponent)
         }
         // number is in Int format or in Double format with a non-zero decimal-value
-        return number
+        return number.toString()
     }
 
     // helper function to append a CharSequence to another CharSequence
