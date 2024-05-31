@@ -17,7 +17,6 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import java.util.Locale
-import java.util.concurrent.CountDownLatch
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
@@ -111,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                     lastChar in setOf(')', '%') -> "${tvCalculation.text}×${button.text}"
                     lastChar == '0' && (tvCalculation.text.length == 1 ||
                             !(tvCalculation.text[tvCalculation.text.lastIndex.minus(1)].isDigit()
-                                    || tvCalculation.text.numberHasCommaOrDot()))
+                                    || tvCalculation.text.numberHas(',')))
                     -> tvCalculation.text.dropLast(1).append(button.text)
 
                     else -> "${tvCalculation.text}${button.text}"
@@ -155,7 +154,7 @@ class MainActivity : AppCompatActivity() {
                     (tvCalculation.text == "0") ||
                             (lastChar == '0' && tvCalculation.text.length > 1
                                     && !((tvCalculation.text[tvCalculation.text.lastIndex - 1].isDigit() ||
-                                    tvCalculation.text.numberHasCommaOrDot()))) -> tvCalculation.text
+                                    tvCalculation.text.numberHas(',')))) -> tvCalculation.text
 
                     else -> "${tvCalculation.text}0"
                 }
@@ -213,7 +212,7 @@ class MainActivity : AppCompatActivity() {
                 val lastChar =
                     if (tvCalculation.text.isNotEmpty()) tvCalculation.text.last() else null
 
-                if (!tvCalculation.text.numberHasCommaOrDot()) {
+                if (!tvCalculation.text.numberHas(',')) {
                     val (calculationText, resultText) = when {
                         // if tvCalculation!! is empty and user types "," -> shows "0," (incomplete expression)
                         lastChar == null -> "0," to "0"
@@ -807,7 +806,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // helper function for ',' or '.': ensures a number has a maximum of one ',' or '.'
-    private fun CharSequence.numberHasCommaOrDot(): Boolean {
+    private fun CharSequence.numberHas(commaOrDot: Char): Boolean {
         // char remains null if the sequence contains digits only
         var char: Char? = null
         // checks all Chars starting from the end until the first Char that is not a digit
@@ -820,7 +819,7 @@ class MainActivity : AppCompatActivity() {
                 break
             }
         }
-        return char == ',' || char == '.'
+        return char == commaOrDot
     }
 
     // if needed, removes incomplete expression Chars at the end and adds missing closing brackets
@@ -1003,7 +1002,7 @@ class MainActivity : AppCompatActivity() {
     private fun Number.power(other: Number): Number {
         // if the base is negative and the exponent is not an integer, the result would be a complex
         // number -> notify the user
-        if ((this as Double) < 0 && other.toString().numberHasCommaOrDot() &&
+        if ((this as Double) < 0 && other.toString().numberHas('.') &&
             // if all decimal places are 0, then the exponent is an Int and the exception is not thrown
             !(other.toString().subSequence(other.toString().replace(',', '.').indexOf('.') + 1)
                 .all { it == '0' })
@@ -1091,7 +1090,7 @@ class MainActivity : AppCompatActivity() {
         var number = this
         var exponent: CharSequence? = null // remains null if the number has no comma
 
-        if (number.numberHasCommaOrDot() || number.lastNumberHasExponent()) {
+        if (number.numberHas(',') || number.numberHas('.') || number.lastNumberHasExponent()) {
 
             // replace ',' with  '.' for uniformity of calculation
             number = number.replace(Regex(","), "\\.")
