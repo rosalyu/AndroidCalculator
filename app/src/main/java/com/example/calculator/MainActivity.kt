@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import java.util.Locale
+import java.util.concurrent.CountDownLatch
 import kotlin.math.pow
 
 class MainActivity : AppCompatActivity() {
@@ -482,7 +483,7 @@ class MainActivity : AppCompatActivity() {
 
         // only the last token is altered here because this function is called each time a digit is added,
         // so the previous tokens already have separators
-        val tokenList = this.tokenList()
+        val tokenList = this.tokenList(false)
         //Log.d("tokenList() result", tokenList.toString())
 
         var lastToken: CharSequence
@@ -538,7 +539,7 @@ class MainActivity : AppCompatActivity() {
 
         // only the last token is altered here because this function is called each time a digit is added,
         // so the previous tokens already have separators
-        val tokenList = this.tokenList()
+        val tokenList = this.tokenList(false)
         //Log.d("tokenList() result", tokenList.toString())
 
         var lastToken: CharSequence
@@ -587,7 +588,7 @@ class MainActivity : AppCompatActivity() {
         //Log.d("before", tokenList().joinToString())
         // remove the thousand separators for the calculation
         // todo remove all dots before calling toNumber()
-        val tokenList = tokenList().removeThousandSeparatorsAll()
+        val tokenList = tokenList(true).removeThousandSeparatorsAll()
 
         Log.d("after", tokenList.joinToString())
 
@@ -881,9 +882,9 @@ class MainActivity : AppCompatActivity() {
     // converts a CharSequence expression into a list of CharSequence tokens
     // CAUTION: contains thousand separators '.', which need to be removed before calculation
     @Throws(IllegalArgumentException::class)
-    private fun CharSequence.tokenList(): ArrayList<CharSequence> {
+    private fun CharSequence.tokenList(formatExpression: Boolean): ArrayList<CharSequence> {
         // Only call on formatted expression and without thousand separators
-        val expression = this.formatExpression()
+        val expression = if (formatExpression) this.formatExpression() else this
         Log.d("expression", expression.toString())
 
         val newList = ArrayList<CharSequence>()
