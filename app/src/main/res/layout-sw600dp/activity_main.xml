@@ -18,7 +18,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/calculationPanel"
-        android:background="@color/buttonColor"
+        android:background="@color/buttonPanel_defaultTheme"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,7 +46,7 @@
                 android:background="@drawable/round_button"
                 android:contentDescription="@string/clr"
                 android:text="@string/clr"
-                android:textColor="@color/CColor"
+                android:textColor="@color/C_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -61,7 +61,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/powButtonText"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="48sp"
                 />
 
@@ -76,7 +76,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/prc"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -91,7 +91,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/div"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="55sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -119,7 +119,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/seven"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -134,7 +134,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/eight"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -149,7 +149,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/nine"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -164,7 +164,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/mul"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="55sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -188,7 +188,7 @@
                 android:layout_margin="5dp"
                 android:background="@drawable/round_button"
                 android:text="@string/four"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button5"
@@ -206,7 +206,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/five"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -221,7 +221,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/six"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -236,7 +236,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/sub"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="55sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -264,7 +264,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/one"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -279,7 +279,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/two"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -294,7 +294,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/three"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -309,7 +309,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/add"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="55sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -338,7 +338,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/brc"
-                android:textColor="@color/operatorColor"
+                android:textColor="@color/operators_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -353,7 +353,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/zero"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -368,7 +368,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/com"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="55sp"
                 />
 
@@ -383,7 +383,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/round_button"
                 android:text="@string/eq"
-                android:textColor="@color/equalsColor"
+                android:textColor="@color/equals_defaultTheme"
                 android:textSize="55sp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -397,7 +397,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/buttonPanel"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/backgroundColor"
+        android:background="@color/background_defaultTheme"
         android:layout_gravity="center_horizontal"
         android:orientation="vertical">
 
@@ -418,7 +418,7 @@
                 android:layout_marginEnd="12dp"
                 android:layout_weight="0.5"
                 android:text=""
-                android:textColor="@color/buttonColor"
+                android:textColor="@color/buttonPanel_defaultTheme"
                 android:textSize="70sp"
                 android:textStyle="bold"/>
 
@@ -430,7 +430,7 @@
                 android:layout_marginEnd="12dp"
                 android:layout_marginBottom="5dp"
                 android:text=""
-                android:textColor="@color/buttonColor"
+                android:textColor="@color/buttonPanel_defaultTheme"
                 android:textSize="70sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -449,10 +449,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start|bottom"
-                android:backgroundTint="@color/buttonDarkColor"
+                android:backgroundTint="@color/background_defaultTheme"
                 android:gravity="start"
                 android:text="@string/themes"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="35sp" />
 
             <TextView
@@ -464,12 +464,12 @@
                 android:id="@+id/buttonDel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/buttonDarkColor"
+                android:backgroundTint="@color/background_defaultTheme"
                 android:gravity="end"
                 android:paddingTop="1dp"
                 android:paddingBottom="18dp"
                 android:text="@string/del"
-                android:textColor="@color/digitColor"
+                android:textColor="@color/digits_defaultTheme"
                 android:textSize="70sp"
                 android:textStyle="bold"/>
         </LinearLayout>

@@ -17,7 +17,7 @@ class RecyclerViewAdapter(private val context: Context, private val data: List<C
         viewType: Int
     ): RecyclerViewAdapter.ViewHolder {
         // create ViewHolder
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.theme_list_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.theme_list_item, parent, false)
         return ViewHolder(view)
     }
 

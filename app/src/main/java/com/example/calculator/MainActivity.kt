@@ -1,7 +1,9 @@
 package com.example.calculator
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -13,27 +15,58 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import java.util.Locale
 import kotlin.math.pow
+import kotlin.properties.Delegates
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var tvCalculation: TextView
     private lateinit var tvResult: TextView
     private lateinit var buttonPanel: ConstraintLayout
 
-    // setting a vibrator to create vibrations when a button is pressed
+    // setting a vibrator to create buttonColor vibrations when a button is pressed
     private var vibrator: Vibrator? = null
     private val vibrationDurationMilliSec = 50L
+
+    private lateinit var sharedPreferences: SharedPreferences
+    private var themeId: Int? = null
 
     // defines the maximum amount of Chars in the calculation TextView
     private val maxCharAmount = 18
 
+    // only runs once to set the default theme
+    init {
+        themeId = R.style.Theme_Default
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+        Log.d("onCreate", "")
+
+        sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
+
+        // not the first creation of the activity
+        if(savedInstanceState != null) {
+            themeId = savedInstanceState.getInt("themeId")
+        }
+
+        //Log.d("themeIdIsSaved", themeIdIsSaved.toString())
+        Log.d("themeId onCreate", themeId.toString())
+
+
+        //theme.applyStyle(themeId!!, true)
+        setTheme(themeId!!)
+        setSavedTheme(themeId!!)
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
+
 
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
@@ -450,7 +483,7 @@ class MainActivity : AppCompatActivity() {
 
                     "imaginaryNumber" -> Toast.makeText(
                         this,
-                        "Imaginary numbers which are not allowed.",
+                        "Imaginary numbers are not allowed.",
                         Toast.LENGTH_SHORT
                     ).show()
 
@@ -464,7 +497,10 @@ class MainActivity : AppCompatActivity() {
     private fun setListenerThemes() {
         findViewById<Button>(R.id.buttonThemes).setOnClickListener {
             // todo
-            buttonPanel.setBackgroundColor(Color.rgb(255, 0,0))
+            Log.d("themes clicked", "")
+            themeId = R.style.Theme_Lavender
+            Log.d("theme set to", themeId.toString())
+            recreate()
         }
     }
 
@@ -1197,6 +1233,8 @@ class MainActivity : AppCompatActivity() {
         // Saves the state of the calculation and result texts
         outState.putString("calculationText", tvCalculation.text.toString())
         outState.putString("resultText", tvResult.text.toString())
+        outState.putInt("themeId", themeId!!)
+        Log.d("themeId saved", themeId.toString())
     }
 
     // Called after onStart() when the activity is restored,
@@ -1207,6 +1245,8 @@ class MainActivity : AppCompatActivity() {
         // Restores the state of the calculation and result texts
         tvCalculation.text = savedInstanceState.getString("calculationText")
         tvResult.text = savedInstanceState.getString("resultText")
+        //themeId = savedInstanceState.getInt("themeId")
+        //Log.d("themeId restored", themeId.toString())
     }
 
 
@@ -1282,4 +1322,12 @@ class MainActivity : AppCompatActivity() {
         // For API level 26 and above
         vibrator?.vibrate(VibrationEffect.createOneShot(vibrationDurationMilliSec, VibrationEffect.DEFAULT_AMPLITUDE))
     }
+
+    // saves themes
+    private fun setSavedTheme(themeId: Int) {
+        val editor = sharedPreferences.edit()
+        editor.putInt("current_theme", themeId).apply()
+        editor.commit()
+    }
+
 }

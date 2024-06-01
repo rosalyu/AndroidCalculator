@@ -1,10 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Calculator" parent="Theme.AppCompat.Light.NoActionBar">
+
+    <!-- Base application theme Theme.AppCompat.Light.NoActionBar -->
+    <style name="Theme.Default" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/buttonColor</item>
-        <item name="colorPrimaryDark">@color/backgroundColor</item>
-        <item name="colorAccent">@color/digitColor</item>
+        <item name="backgroundColor">@color/background_defaultTheme</item>
+        <item name="digitColor">@color/digits_defaultTheme</item>
+        <item name="CColor">@color/C_defaultTheme</item>
+        <item name="operatorColor">@color/operators_defaultTheme</item>
+        <item name="equalsColor">@color/equals_defaultTheme</item>
+        <item name="buttonPanelColor">@color/buttonPanel_defaultTheme</item>
+        <item name="expressionColor">@color/expression_defaultTheme</item>
+        <item name="buttonBorderColor">@color/buttonBorders_defaultTheme</item>
     </style>
+
+    <!-- Lavender theme -->
+    <style name="Theme.Lavender" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="backgroundColor">@color/background_lavenderTheme</item>
+        <item name="digitColor">@color/digits_lavenderTheme</item>
+        <item name="CColor">@color/C_lavenderTheme</item>
+        <item name="operatorColor">@color/operators_lavenderTheme</item>
+        <item name="equalsColor">@color/equals_lavenderTheme</item>
+        <item name="buttonPanelColor">@color/buttonPanel_lavenderTheme</item>
+        <item name="expressionColor">@color/expression_lavenderTheme</item>
+        <item name="buttonBorderColor">@color/buttonBorders_lavenderTheme</item>
+    </style>
+
 </resources>
+
 
