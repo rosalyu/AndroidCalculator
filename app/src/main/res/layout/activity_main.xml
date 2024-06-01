@@ -30,7 +30,7 @@
             android:layout_marginEnd="12dp"
             android:layout_weight="10"
             android:text=""
-            android:textColor="?attr/buttonPanelColor"
+            android:textColor="?attr/expressionColor"
             android:textSize="40sp"
             android:textStyle="bold" />
 
@@ -43,7 +43,7 @@
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
             android:text=""
-            android:textColor="?attr/buttonPanelColor"
+            android:textColor="?attr/expressionColor"
             android:textSize="55sp"
             android:textStyle="bold" />
 
@@ -89,6 +89,14 @@
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        app:layout_constraintTop_toBottomOf="@id/calculationPanel"
+        app:layout_constraintBottom_toTopOf="@id/buttonPanel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="?attr/buttonsColor"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonPanel"

@@ -4,12 +4,14 @@
 
     <!-- Base application theme Theme.AppCompat.Light.NoActionBar -->
     <style name="Theme.Default" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!-- android:colorPrimaryDark is the color of the action bar -->
+        <item name="android:colorPrimaryDark">@color/background_defaultTheme</item>
         <item name="backgroundColor">@color/background_defaultTheme</item>
         <item name="digitColor">@color/digits_defaultTheme</item>
         <item name="CColor">@color/C_defaultTheme</item>
         <item name="operatorColor">@color/operators_defaultTheme</item>
         <item name="equalsColor">@color/equals_defaultTheme</item>
+        <item name="buttonsColor">@color/buttons_defaultTheme</item>
         <item name="buttonPanelColor">@color/buttonPanel_defaultTheme</item>
         <item name="expressionColor">@color/expression_defaultTheme</item>
         <item name="buttonBorderColor">@color/buttonBorders_defaultTheme</item>
@@ -17,12 +19,14 @@
 
     <!-- Lavender theme -->
     <style name="Theme.Lavender" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!-- android:colorPrimaryDark is the color of the action bar -->
+        <item name="android:colorPrimaryDark">@color/background_defaultTheme</item>
         <item name="backgroundColor">@color/background_lavenderTheme</item>
         <item name="digitColor">@color/digits_lavenderTheme</item>
         <item name="CColor">@color/C_lavenderTheme</item>
         <item name="operatorColor">@color/operators_lavenderTheme</item>
         <item name="equalsColor">@color/equals_lavenderTheme</item>
+        <item name="buttonsColor">@color/buttons_lavenderTheme</item>
         <item name="buttonPanelColor">@color/buttonPanel_lavenderTheme</item>
         <item name="expressionColor">@color/expression_lavenderTheme</item>
         <item name="buttonBorderColor">@color/buttonBorders_lavenderTheme</item>

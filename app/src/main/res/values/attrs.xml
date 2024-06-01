@@ -7,6 +7,7 @@
         <attr name="CColor" format="color" />
         <attr name="operatorColor" format="color" />
         <attr name="equalsColor" format="color" />
+        <attr name="buttonsColor" format="color" />
         <attr name="buttonPanelColor" format="color" />
         <attr name="expressionColor" format="color" />
         <attr name="buttonBorderColor" format="color" />

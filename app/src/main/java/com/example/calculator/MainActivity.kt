@@ -1,7 +1,6 @@
 package com.example.calculator
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
@@ -15,13 +14,11 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import java.util.Locale
 import kotlin.math.pow
-import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity() {
@@ -1245,8 +1242,8 @@ class MainActivity : AppCompatActivity() {
         // Restores the state of the calculation and result texts
         tvCalculation.text = savedInstanceState.getString("calculationText")
         tvResult.text = savedInstanceState.getString("resultText")
-        //themeId = savedInstanceState.getInt("themeId")
-        //Log.d("themeId restored", themeId.toString())
+        themeId = savedInstanceState.getInt("themeId")
+        Log.d("themeId restored", themeId.toString())
     }
 
 
