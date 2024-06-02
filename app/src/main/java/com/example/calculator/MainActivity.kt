@@ -8,6 +8,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private var themeId: Int? = null
+    // tracks if recreate is due to theme changes, in which case the configuration does not need to be adjusted
     private var themeChangedRecreated: Boolean? = null
 
     // defines the maximum amount of Chars in the calculation TextView
@@ -1287,8 +1289,8 @@ class MainActivity : AppCompatActivity() {
             defineButtonPanelWidthLand()
             // removes the action bar from the top in land mode
             // todo remove comments from there statements
-            //window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-            //supportActionBar?.hide()
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            supportActionBar?.hide()
         }
     }
 
@@ -1310,10 +1312,12 @@ class MainActivity : AppCompatActivity() {
         Log.d("config", "calculateButtonPanelHeightPortrait()")
 
         displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        windowManager.defaultDisplay.getRealMetrics(displayMetrics)
 
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT) displayMetrics.widthPixels else displayMetrics.heightPixels) * getButtonRowsAmount() / getButtonColumnsAmount()
+        return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+            displayMetrics.widthPixels * getButtonRowsAmount() / getButtonColumnsAmount()
+        else displayMetrics.heightPixels * getButtonRowsAmount() / getButtonColumnsAmount())
     }
 
     private fun defineButtonPanelHeightPortrait() {
@@ -1333,10 +1337,12 @@ class MainActivity : AppCompatActivity() {
     private fun calculateButtonPanelWidthLand(configuration: Configuration): Int {
         Log.d("config", "calculateButtonPanelWithLand()")
         displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        windowManager.defaultDisplay.getRealMetrics(displayMetrics)
 
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT) displayMetrics.widthPixels else displayMetrics.heightPixels) * getButtonColumnsAmount() / getButtonRowsAmount()
+        return (if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            displayMetrics.heightPixels * getButtonColumnsAmount() / getButtonRowsAmount()
+        else displayMetrics.widthPixels * getButtonColumnsAmount() / getButtonRowsAmount())
     }
 
     // sets the button panel width in land mode for each configuration change
