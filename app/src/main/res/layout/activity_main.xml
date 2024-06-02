@@ -31,8 +31,7 @@
             android:layout_weight="10"
             android:text=""
             android:textColor="?attr/expressionColor"
-            android:textSize="40sp"
-            android:textStyle="bold" />
+            android:textSize="40sp" />
 
         <TextView
             android:id="@+id/tvResult"
@@ -43,9 +42,8 @@
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
             android:text=""
-            android:textColor="?attr/expressionColor"
-            android:textSize="55sp"
-            android:textStyle="bold" />
+            android:textColor="?attr/equalsColor"
+            android:textSize="55sp" />
 
 
         <LinearLayout

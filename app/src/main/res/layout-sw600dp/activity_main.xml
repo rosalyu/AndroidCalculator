@@ -419,8 +419,7 @@
                 android:layout_weight="0.5"
                 android:text=""
                 android:textColor="@color/buttonPanel_defaultTheme"
-                android:textSize="70sp"
-                android:textStyle="bold"/>
+                android:textSize="70sp"/>
 
             <TextView
                 android:id="@+id/tvResult"
@@ -431,8 +430,7 @@
                 android:layout_marginBottom="5dp"
                 android:text=""
                 android:textColor="@color/buttonPanel_defaultTheme"
-                android:textSize="70sp"
-                android:textStyle="bold" />
+                android:textSize="70sp"/>
         </LinearLayout>
 
         <LinearLayout

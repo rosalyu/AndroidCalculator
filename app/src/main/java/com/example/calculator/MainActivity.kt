@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var sharedPreferences: SharedPreferences
     private var themeId: Int? = null
+    private var themeChangedRecreated: Boolean? = null
 
     // defines the maximum amount of Chars in the calculation TextView
     private val maxCharAmount = 18
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
     // only runs once to set the default theme
     init {
         themeId = R.style.Theme_Default
+        themeChangedRecreated = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,9 +50,12 @@ class MainActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
 
-        // not the first creation of the activity
-        if(savedInstanceState != null) {
+        // the first creation of the activity
+        if(savedInstanceState == null) {
+            vibrator = ContextCompat.getSystemService(applicationContext, Vibrator::class.java)
+        } else {
             themeId = savedInstanceState.getInt("themeId")
+            themeChangedRecreated = savedInstanceState.getBoolean("themeChangedRecreated")
         }
 
         //Log.d("themeIdIsSaved", themeIdIsSaved.toString())
@@ -61,19 +66,18 @@ class MainActivity : AppCompatActivity() {
         setTheme(themeId!!)
         setSavedTheme(themeId!!)
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
-
 
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
         buttonPanel = findViewById(R.id.buttonPanel)
 
-        vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
-
-        // set the UI buttonPanel proportions
+        // set the UI buttonPanel proportions, but only if onCreate() is not called by recreate to
+        // set the theme, because the theme does not change layout proportions
         // Check if the device is in portrait mode
-        onConfigurationChanged(resources.configuration)
+        if(!themeChangedRecreated!!) {
+            onConfigurationChanged(resources.configuration)
+        }
 
         // set all onClickListeners for the digit buttons 1 - 9
         arrayOf(
@@ -628,7 +632,6 @@ class MainActivity : AppCompatActivity() {
         val resultList: ArrayList<CharSequence>
         try {
             resultList = tokenList.calculate(true)
-
         } catch (e: ArithmeticException) {
             // returns a label so caller function can decide whether to notify the user or not
             return "divisionByZero"
@@ -639,6 +642,7 @@ class MainActivity : AppCompatActivity() {
             // returns a label so caller function can decide whether to notify the user or not
             return "outOfRange"
         }
+
         return if (resultList.isEmpty()) {
             ""
         } else {
@@ -746,20 +750,18 @@ class MainActivity : AppCompatActivity() {
         // percentage has the highest precedence as a unary operator
         // (together with '+' and '-', which we already considered)
 
-        val newTokenList: ArrayList<CharSequence> = tokenList
+        val calculatedTokenList: ArrayList<CharSequence> = tokenList
         while (tokenList.contains("×") || tokenList.contains("÷") || tokenList.contains("^")
-            || newTokenList.contains("+") || newTokenList.contains("-")
-        ) {
+            || tokenList.contains("+") || tokenList.contains("-")) {
 
-            tokenList = newTokenList
+            tokenList = calculatedTokenList
             val operatorIndex: Int =
                 // multiplication, division exponentiation: same precedence (from left to right)
                 if (tokenList.contains("^")) { //"^" has highest precedence
                     tokenList.indexOfFirst { it == "^" }
                 } else if (tokenList.contains("×") || tokenList.contains("÷")) {
                     tokenList.indexOfFirst {
-                        it == "×"
-                                || it == "÷"
+                        it == "×" || it == "÷"
                     }
                 }
 
@@ -781,12 +783,12 @@ class MainActivity : AppCompatActivity() {
                 else -> (operand1).subThrowsException(operand2)
             }
             // remove both operands and operator and insert result
-            repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
-            newTokenList.add(operatorIndex - 1, "$result")
+            repeat(3) { calculatedTokenList.removeAt(operatorIndex - 1) }
+            calculatedTokenList.add(operatorIndex - 1, "$result")
         }
 
         //Log.d("result", newTokenList[0].toString())
-        return newTokenList
+        return calculatedTokenList
     }
 
     // returns true if CharSequence is a negative/positive integer/decimal, else false
@@ -1232,6 +1234,7 @@ class MainActivity : AppCompatActivity() {
         outState.putString("resultText", tvResult.text.toString())
         outState.putInt("themeId", themeId!!)
         Log.d("themeId saved", themeId.toString())
+        outState.putBoolean("themeChangedRestored", themeChangedRecreated!!)
     }
 
     // Called after onStart() when the activity is restored,
@@ -1244,6 +1247,7 @@ class MainActivity : AppCompatActivity() {
         tvResult.text = savedInstanceState.getString("resultText")
         themeId = savedInstanceState.getInt("themeId")
         Log.d("themeId restored", themeId.toString())
+        //themeChangedRecreated = savedInstanceState.getBoolean("themeChangedRecreated")
     }
 
 
