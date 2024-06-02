@@ -20,7 +20,6 @@ import androidx.core.view.children
 import java.util.Locale
 import kotlin.math.pow
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var tvCalculation: TextView
     private lateinit var tvResult: TextView
@@ -29,6 +28,11 @@ class MainActivity : AppCompatActivity() {
     // setting a vibrator to create buttonColor vibrations when a button is pressed
     private var vibrator: Vibrator? = null
     private val vibrationDurationMilliSec = 50L
+    // initialized in onConfigurationChanged()
+    private lateinit var displayMetrics: DisplayMetrics
+
+    private var buttonPanelHeightPortrait: Int? = null
+    private var buttonPanelWidthLand: Int? = null
 
     private lateinit var sharedPreferences: SharedPreferences
     private var themeId: Int? = null
@@ -44,8 +48,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         Log.d("onCreate", "")
 
         sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
@@ -59,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //Log.d("themeIdIsSaved", themeIdIsSaved.toString())
-        Log.d("themeId onCreate", themeId.toString())
+        //Log.d("themeId onCreate", themeId.toString())
 
 
         //theme.applyStyle(themeId!!, true)
@@ -71,6 +73,23 @@ class MainActivity : AppCompatActivity() {
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
         buttonPanel = findViewById(R.id.buttonPanel)
+
+        Log.d("config", "savedInstanceState is null: " + (savedInstanceState == null).toString())
+        if(savedInstanceState == null) {
+            Log.d("config", "before setting height and width")
+            // calculate buttonPanel proportions for portrait and land screen orientations
+            // and sets buttonPanelHeightPortrait and buttonPanelWidthLand
+            Log.d("config", "before calculating proportions")
+            // todo these values remain null if configuration changes (since savedInstanceState is not null)
+            buttonPanelHeightPortrait = calculateButtonPanelHeightPortrait(resources.configuration)
+            Log.d("config", "set buttonPanelHeightPortrait: " + buttonPanelHeightPortrait.toString())
+            buttonPanelWidthLand = calculateButtonPanelWidthLand(resources.configuration)
+            Log.d("config", "set buttonPanelWidthLand: " + buttonPanelWidthLand.toString())
+            Log.d("config", "calling onConfigurationChanged()")
+        } else {
+            buttonPanelHeightPortrait = savedInstanceState.getInt("buttonPanelHeightPortrait")
+            buttonPanelWidthLand = savedInstanceState.getInt("buttonPanelWidthLand")
+        }
 
         // set the UI buttonPanel proportions, but only if onCreate() is not called by recreate to
         // set the theme, because the theme does not change layout proportions
@@ -1233,8 +1252,9 @@ class MainActivity : AppCompatActivity() {
         outState.putString("calculationText", tvCalculation.text.toString())
         outState.putString("resultText", tvResult.text.toString())
         outState.putInt("themeId", themeId!!)
-        Log.d("themeId saved", themeId.toString())
         outState.putBoolean("themeChangedRestored", themeChangedRecreated!!)
+        outState.putInt("buttonPanelHeightPortrait", buttonPanelHeightPortrait!!)
+        outState.putInt("buttonPanelWidthLand", buttonPanelWidthLand!!)
     }
 
     // Called after onStart() when the activity is restored,
@@ -1246,13 +1266,17 @@ class MainActivity : AppCompatActivity() {
         tvCalculation.text = savedInstanceState.getString("calculationText")
         tvResult.text = savedInstanceState.getString("resultText")
         themeId = savedInstanceState.getInt("themeId")
-        Log.d("themeId restored", themeId.toString())
-        //themeChangedRecreated = savedInstanceState.getBoolean("themeChangedRecreated")
+        // todo next line figure out if needed
+        themeChangedRecreated = savedInstanceState.getBoolean("themeChangedRecreated")
+        buttonPanelHeightPortrait = savedInstanceState.getInt("buttonPanelHeightPortrait")
+        buttonPanelWidthLand = savedInstanceState.getInt("buttonPanelWidthLand")
     }
-
 
     // adjust width or height of the buttonPanel depending on the screen orientation
     override fun onConfigurationChanged(newConfig: Configuration) {
+        Log.d("config",
+            "onConfigurationChanged(): " + if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) "portrait" else "land")
+
         super.onConfigurationChanged(newConfig)
 
         // Check if the orientation is portrait
@@ -1263,8 +1287,9 @@ class MainActivity : AppCompatActivity() {
             // land mode: define the width of the buttonPanel
             defineButtonPanelWidthLand()
             // removes the action bar from the top in land mode
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-            supportActionBar?.hide()
+            // todo remove comments from there statements
+            //window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            //supportActionBar?.hide()
         }
     }
 
@@ -1281,42 +1306,57 @@ class MainActivity : AppCompatActivity() {
         return row?.childCount ?: -1
     }
 
-    @Suppress("DEPRECATION")
-    private fun defineButtonPanelHeightPortrait() {
-        // set the UI buttonPanel proportions
-        val buttonPanel = findViewById<ConstraintLayout>(R.id.buttonPanel)
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val screenWidth = displayMetrics.widthPixels
+    // calculates the button panel width in land mode (only once in the app lifecycle)
+    private fun calculateButtonPanelHeightPortrait(configuration: Configuration): Int {
+        Log.d("config", "calculateButtonPanelHeightPortrait()")
 
-        //Log.d("width", screenWidth.toString())
-        //Log.d("oldHeight", buttonPanel.height.toString())
+        displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        val adjustedHeight = screenWidth * getButtonRowsAmount() / getButtonColumnsAmount()
-        //Log.d("adjustedHeight", adjustedHeight.toString())
-        val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.height = adjustedHeight
-        buttonPanel.layoutParams = layoutParams
-        //Log.d("newHeight", buttonPanel.height.toString())
+        return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT) displayMetrics.widthPixels else displayMetrics.heightPixels) * getButtonRowsAmount() / getButtonColumnsAmount()
     }
 
     @Suppress("DEPRECATION")
-    private fun defineButtonPanelWidthLand() {
-        // set the UI buttonPanel proportions
-        val buttonPanel = findViewById<ConstraintLayout>(R.id.buttonPanel)
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        val screenHeight = displayMetrics.heightPixels
+    // todo causes crash except in the first call
+    private fun defineButtonPanelHeightPortrait() {
+        //val buttonPanel = buttonPanel
+        Log.d("config", "defineButtonPanelHeightPortrait()")
 
-        //Log.d("width", screenWidth.toString())
-        //Log.d("oldHeight", buttonPanel.height.toString())
-        // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        val adjustedWidth = screenHeight * getButtonColumnsAmount() / getButtonRowsAmount()
-        //Log.d("adjustedHeight", adjustedHeight.toString())
+        // set the UI buttonPanel proportions
         val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
-        layoutParams.width = adjustedWidth
+        Log.d("config", "layoutParams defined")
+        layoutParams.height = buttonPanelHeightPortrait!!
+        Log.d("config", "height set")
         buttonPanel.layoutParams = layoutParams
-        //Log.d("newHeight", buttonPanel.height.toString())
+        Log.d("config", "layoutParams set")
+    }
+
+    // calculates the button panel width in land mode (only once in the app lifecycle)
+    private fun calculateButtonPanelWidthLand(configuration: Configuration): Int {
+        Log.d("config", "calculateButtonPanelWithLand()")
+        displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        // aspect ratio of 1.2 makes buttons in 4x5 grid circular
+        return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT) displayMetrics.widthPixels else displayMetrics.heightPixels) * getButtonColumnsAmount() / getButtonRowsAmount()
+    }
+
+    // sets the button panel width in land mode for each configuration change
+    @Suppress("DEPRECATION")
+    private fun defineButtonPanelWidthLand() {
+        Log.d("config", "defineButtonPanelWidthLand()")
+
+        // todo ensure buttonPaneWidthLand is not null
+        Log.d("config", "buttonPanelWidthLand: " + buttonPanelWidthLand.toString())
+
+        // set the UI buttonPanel proportions
+        val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
+        Log.d("config", "layoutParams defined")
+        layoutParams.width = buttonPanelWidthLand!!
+        Log.d("config", "width set")
+        buttonPanel.layoutParams = layoutParams
+        Log.d("config", "layoutParams set")
     }
 
     private fun vibrate() {
