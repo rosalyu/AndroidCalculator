@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // the first creation of the activity
         if(savedInstanceState == null) {
-            vibrator = ContextCompat.getSystemService(applicationContext, Vibrator::class.java)
+
         } else {
             themeId = savedInstanceState.getInt("themeId")
             themeChangedRecreated = savedInstanceState.getBoolean("themeChangedRecreated")
@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        vibrator = ContextCompat.getSystemService(applicationContext, Vibrator::class.java)
         tvCalculation = findViewById(R.id.tvCalculation)
         tvResult = findViewById(R.id.tvResult)
         buttonPanel = findViewById(R.id.buttonPanel)
@@ -141,6 +142,10 @@ class MainActivity : AppCompatActivity() {
         setListenerThemes()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
+    }
 
     // set action listeners of the buttons:
 
