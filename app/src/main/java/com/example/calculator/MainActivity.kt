@@ -8,7 +8,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -1317,8 +1316,6 @@ class MainActivity : AppCompatActivity() {
         return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT) displayMetrics.widthPixels else displayMetrics.heightPixels) * getButtonRowsAmount() / getButtonColumnsAmount()
     }
 
-    @Suppress("DEPRECATION")
-    // todo causes crash except in the first call
     private fun defineButtonPanelHeightPortrait() {
         //val buttonPanel = buttonPanel
         Log.d("config", "defineButtonPanelHeightPortrait()")
@@ -1343,11 +1340,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     // sets the button panel width in land mode for each configuration change
-    @Suppress("DEPRECATION")
     private fun defineButtonPanelWidthLand() {
         Log.d("config", "defineButtonPanelWidthLand()")
 
-        // todo ensure buttonPaneWidthLand is not null
         Log.d("config", "buttonPanelWidthLand: " + buttonPanelWidthLand.toString())
 
         // set the UI buttonPanel proportions
