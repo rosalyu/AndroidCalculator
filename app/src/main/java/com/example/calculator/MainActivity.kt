@@ -1277,7 +1277,6 @@ class MainActivity : AppCompatActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         Log.d("config",
             "onConfigurationChanged(): " + if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) "portrait" else "land")
-
         super.onConfigurationChanged(newConfig)
 
         // Check if the orientation is portrait
