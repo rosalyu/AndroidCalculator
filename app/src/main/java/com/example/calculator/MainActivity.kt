@@ -1315,8 +1315,8 @@ class MainActivity : AppCompatActivity() {
 
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
         return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
-            displayMetrics.widthPixels * getButtonRowsAmount() / getButtonColumnsAmount()
-        else displayMetrics.heightPixels * getButtonRowsAmount() / getButtonColumnsAmount())
+            displayMetrics.widthPixels else displayMetrics.heightPixels) *
+                getButtonRowsAmount() / getButtonColumnsAmount()
     }
 
     private fun defineButtonPanelHeightPortrait() {
@@ -1340,8 +1340,8 @@ class MainActivity : AppCompatActivity() {
 
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
         return (if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-            displayMetrics.heightPixels * getButtonColumnsAmount() / getButtonRowsAmount()
-        else displayMetrics.widthPixels * getButtonColumnsAmount() / getButtonRowsAmount())
+            displayMetrics.heightPixels else displayMetrics.widthPixels) *
+                getButtonColumnsAmount() / getButtonRowsAmount()
     }
 
     // sets the button panel width in land mode for each configuration change
