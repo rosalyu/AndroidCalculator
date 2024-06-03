@@ -30,7 +30,7 @@
             android:layout_marginEnd="12dp"
             android:layout_weight="10"
             android:text=""
-            android:textColor="@color/buttonPanel_defaultTheme"
+            android:textColor="?attr/expressionColor"
             android:textSize="40sp"/>
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_marginBottom="5dp"
             android:layout_weight="1"
             android:text=""
-            android:textColor="@color/buttonPanel_defaultTheme"
+            android:textColor="?attr/equalsColor"
             android:textSize="55sp" />
 
 
