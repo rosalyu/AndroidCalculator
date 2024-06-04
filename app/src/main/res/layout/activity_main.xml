@@ -94,7 +94,7 @@
         app:layout_constraintBottom_toTopOf="@id/buttonPanel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:background="?attr/buttonsColor"/>
+        android:background="?attr/buttonBorderColor"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/buttonPanel"

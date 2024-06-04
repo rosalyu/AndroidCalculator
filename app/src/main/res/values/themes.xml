@@ -32,6 +32,21 @@
         <item name="buttonBorderColor">@color/buttonBorders_lavenderTheme</item>
     </style>
 
+    <!-- PinkPeach theme -->
+    <style name="Theme.PinkPeach" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- android:colorPrimaryDark is the color of the action bar -->
+        <item name="android:colorPrimaryDark">@color/background_pinkPeachTheme</item>
+        <item name="backgroundColor">@color/background_pinkPeachTheme</item>
+        <item name="digitColor">@color/digits_pinkPeachTheme</item>
+        <item name="CColor">@color/C_pinkPeachTheme</item>
+        <item name="operatorColor">@color/operators_pinkPeachTheme</item>
+        <item name="equalsColor">@color/equals_pinkPeachTheme</item>
+        <item name="buttonsColor">@color/buttons_pinkPeachTheme</item>
+        <item name="buttonPanelColor">@color/buttonPanel_pinkPeachTheme</item>
+        <item name="expressionColor">@color/expression_pinkPeachTheme</item>
+        <item name="buttonBorderColor">@color/buttonBorders_pinkPeachTheme</item>
+    </style>
+
 </resources>
 
 

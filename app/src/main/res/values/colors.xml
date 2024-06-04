@@ -9,20 +9,31 @@
     <color name="C_defaultTheme">#FF8A80</color>
     <color name="operators_defaultTheme">#81D3F8</color>
     <color name="equals_defaultTheme">#94FD7F</color>
-    <color name="buttons_defaultTheme">#151515</color>
+    <color name="buttons_defaultTheme">#212121</color>
     <color name="buttonPanel_defaultTheme">#000000</color>
     <color name="expression_defaultTheme">#FFFFFF</color>
     <color name="buttonBorders_defaultTheme">#151515</color>
 
     <!-- Theme.Lavender -->
     <color name="background_lavenderTheme">#4252C3</color>
-    <color name="digits_lavenderTheme">#A9FAAB</color>
+    <color name="digits_lavenderTheme">#84FF85</color>
     <color name="C_lavenderTheme">#FB7579</color>
-    <color name="operators_lavenderTheme">#77D9FA</color>
+    <color name="operators_lavenderTheme">#FFFFFF</color>
     <color name="equals_lavenderTheme">#FB76BB</color>
     <color name="buttons_lavenderTheme">#4252C3</color>
     <color name="buttonPanel_lavenderTheme">#13F3FF</color>
     <color name="expression_lavenderTheme">#13F3FF</color>
     <color name="buttonBorders_lavenderTheme">#050090</color>
+
+    <!-- Theme.PinkPeach -->
+    <color name="background_pinkPeachTheme">#000000</color>
+    <color name="digits_pinkPeachTheme">#FFFFFF</color>
+    <color name="C_pinkPeachTheme">#FFF27F</color>
+    <color name="operators_pinkPeachTheme">#96A4FF</color>
+    <color name="equals_pinkPeachTheme">#FF6523</color>
+    <color name="buttons_pinkPeachTheme">#28001C</color>
+    <color name="buttonPanel_pinkPeachTheme">#000000</color>
+    <color name="expression_pinkPeachTheme">#FFFFFF</color>
+    <color name="buttonBorders_pinkPeachTheme">#7F385C</color>
 
 </resources>

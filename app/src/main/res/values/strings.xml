@@ -27,6 +27,8 @@
     <string name="del">⬅</string>
     <string name="themes">themes</string>
     <string name="selectColorTheme">Please select a color theme from below.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
 
 
 </resources>

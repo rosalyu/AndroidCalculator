@@ -1,5 +1,6 @@
 package com.example.calculator
 
+import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -17,6 +18,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.core.view.get
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import kotlin.math.pow
 
@@ -25,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private var tvCalculation: TextView? = null
     private var tvResult: TextView? = null
     private var buttonPanel: ConstraintLayout? = null
+    private var recyclerView: RecyclerView? = null
+    private var dialog: Dialog? = null
 
     // setting a vibrator to create buttonColor vibrations when a button is pressed
     private var vibrator: Vibrator? = null
@@ -32,6 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private var sharedPreferences: SharedPreferences? = null
     private var themeId: Int? = null
+    private var selectedThemeId: Int? =  null
 
     private var displayMetrics: DisplayMetrics? = null
     private var buttonPanelHeightPortrait: Int? = null
@@ -131,9 +138,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        super.onDestroy()
         tvCalculation = null
         tvResult = null
         buttonPanel = null
+        vibrator?.cancel()
         vibrator = null
         vibrationDurationMilliSec = null
         sharedPreferences = null
@@ -142,6 +151,7 @@ class MainActivity : AppCompatActivity() {
         displayMetrics = null
         buttonPanelHeightPortrait = null
         buttonPanelWidthLand = null
+        recyclerView = null
 
         arrayOf(
             R.id.button0,
@@ -168,7 +178,6 @@ class MainActivity : AppCompatActivity() {
             R.id.buttonDel
         )
             .forEach { findViewById<Button>(it).setOnClickListener(null) }
-        super.onDestroy()
     }
 
     // set action listeners of the buttons:
@@ -555,11 +564,59 @@ class MainActivity : AppCompatActivity() {
 
     private fun setListenerThemes() {
         findViewById<Button>(R.id.buttonThemes).setOnClickListener {
-            themeId = R.style.Theme_Lavender
-            Log.d("theme set to", themeId.toString())
+            showThemeDialog()
+        }
+    }
+
+    private fun showThemeDialog() {
+        dialog = Dialog(this)
+        dialog!!.setContentView(R.layout.theme_list)
+
+        // set the button onClickListeners
+        dialog!!.findViewById<Button>(R.id.btnOk).setListenerOkButton()
+        dialog!!.findViewById<Button>(R.id.btnCancel).setListenerCancelButton()
+
+        recyclerView = RecyclerView(this)
+
+        val data: List<ThemeListItemData> = listOf(
+            ThemeListItemData("Default Theme", R.style.Theme_Default),
+            ThemeListItemData("Lavender Theme", R.style.Theme_Lavender)
+        )
+        val recyclerViewAdapter = RecyclerViewAdapter(this, data)
+        recyclerView!!.adapter = recyclerViewAdapter
+        recyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        // todo set background
+        //dialog.window?.setBackgroundDrawableResource(R.drawable.quiz_preview_background)
+        dialog!!.setCanceledOnTouchOutside(false)
+        dialog!!.show()
+    }
+
+    fun setListenerListItem(themeIdSelected: ThemeListItemData, position: Int) {
+        recyclerView!![position].setOnClickListener {
+            selectedThemeId = themeIdSelected.themeId
+        }
+    }
+
+    fun Button.setListenerOkButton() {
+        this.setOnClickListener {
+            if(selectedThemeId != null) {
+                themeId = selectedThemeId
+                //selectedThemeId = null
+            }
+            dialog!!.dismiss()
             recreate()
         }
     }
+
+    fun Button.setListenerCancelButton() {
+        this.setOnClickListener {
+            //selectedThemeId = null
+            dialog!!.dismiss()
+            recreate()
+        }
+    }
+
 
     // sets tvResult!!.text to the result (this) if the result is valid and refreshes the thousand separators
     private fun CharSequence.displayResultIfValid() {
