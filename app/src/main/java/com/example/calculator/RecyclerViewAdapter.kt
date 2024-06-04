@@ -27,10 +27,6 @@ class RecyclerViewAdapter(private val context: Context, private val data: List<T
         val item = data[position]
         holder.tvThemeName.text = item.themeName
 
-        // set onClickListeners for all list elements
-        if(context is MainActivity) {
-            context.setListenerListItem(item, position)
-        }
     }
 
     override fun getItemCount(): Int {

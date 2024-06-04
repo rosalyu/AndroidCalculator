@@ -569,14 +569,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showThemeDialog() {
-        dialog = Dialog(this)
+        dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialog!!.setContentView(R.layout.theme_list)
 
         // set the button onClickListeners
         dialog!!.findViewById<Button>(R.id.btnOk).setListenerOkButton()
         dialog!!.findViewById<Button>(R.id.btnCancel).setListenerCancelButton()
 
-        recyclerView = RecyclerView(this)
+        recyclerView = dialog!!.findViewById(R.id.recyclerView)
 
         val data: List<ThemeListItemData> = listOf(
             ThemeListItemData("Default Theme", R.style.Theme_Default),
@@ -586,19 +586,18 @@ class MainActivity : AppCompatActivity() {
         recyclerView!!.adapter = recyclerViewAdapter
         recyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+        // set all onClickListeners of RecyclerView items
+        recyclerView!!.children.forEachIndexed { index, child ->
+            child.setOnClickListener { selectedThemeId = data[index].themeId }
+        }
         // todo set background
         //dialog.window?.setBackgroundDrawableResource(R.drawable.quiz_preview_background)
         dialog!!.setCanceledOnTouchOutside(false)
+
         dialog!!.show()
     }
 
-    fun setListenerListItem(themeIdSelected: ThemeListItemData, position: Int) {
-        recyclerView!![position].setOnClickListener {
-            selectedThemeId = themeIdSelected.themeId
-        }
-    }
-
-    fun Button.setListenerOkButton() {
+    private fun Button.setListenerOkButton() {
         this.setOnClickListener {
             if(selectedThemeId != null) {
                 themeId = selectedThemeId
@@ -609,7 +608,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun Button.setListenerCancelButton() {
+    private fun Button.setListenerCancelButton() {
         this.setOnClickListener {
             //selectedThemeId = null
             dialog!!.dismiss()
