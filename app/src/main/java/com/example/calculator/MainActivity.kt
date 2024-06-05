@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
-import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
@@ -210,8 +209,9 @@ class MainActivity : AppCompatActivity() {
                 //Log.d("calculationText button", calculationText.toString())
                 //Log.d("refresh", calculationText.toString())
                 // only adds separators to the last token because the previous ones have separators (since calculation)
-                calculationText = calculationText.refreshThousandSeparatorsLastToken()
-                tvCalculation!!.text = calculationText
+                if(calculationText.lastTokenNeedsSeparatorRefresh()) {
+                    calculationText = calculationText.refreshThousandSeparatorsLastToken()
+                }
 
                 //Log.d("refresh", calculationText.toString())
                 //Log.d("refreshed", "1.111.1111".removeThousandSeparatorsLastToken().toString())
@@ -222,6 +222,8 @@ class MainActivity : AppCompatActivity() {
                             .isNumeric()
                     ) "" else calculationText.calculate()
 
+                // set the content of the calculation view
+                tvCalculation!!.text = calculationText
                 // set the content of result to tvResult!!.text if the result is valid
                 result.displayResultIfValid()
             }
@@ -238,7 +240,7 @@ class MainActivity : AppCompatActivity() {
                 val lastChar =
                     if (tvCalculation!!.text.isNotEmpty()) tvCalculation!!.text.last() else null
 
-                val calculationText: CharSequence = when {
+                var calculationText: CharSequence = when {
                     lastChar == null -> "0"
                     lastChar in setOf(
                         ')',
@@ -253,11 +255,17 @@ class MainActivity : AppCompatActivity() {
                     else -> "${tvCalculation!!.text}0"
                 }
                 // only adds separators to the last token because the previous ones have separators (since calculation)
-                tvCalculation!!.text = calculationText.refreshThousandSeparatorsLastToken()
+                // TODO refreshed from other places in the code where not necessary, so include the if statement there
+                if(calculationText.lastTokenNeedsSeparatorRefresh()) {
+                    Log.d("negExponent", "calculationText.lastTokenNeedsSeparatorRefresh(): true")
+                    calculationText = calculationText.refreshThousandSeparatorsLastToken()
+                }
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val resultText =
                     if (calculationText.isNumeric()) "" else calculationText.calculate()
 
+                // set the content of the calculation view
+                tvCalculation!!.text = calculationText
                 // set the content of result to tvResult!!.text if the result is valid
                 resultText.displayResultIfValid()
             }
@@ -468,29 +476,37 @@ class MainActivity : AppCompatActivity() {
     // sets onClick listener for the DEL button
     private fun setListenerDel() {
         findViewById<Button>(R.id.buttonDel).setOnClickListener {
+            Log.d("negExponent", "buttonDel listener entered")
             // set onClick vibration
             vibrate()
 
             if (tvCalculation!!.text.isNotEmpty()) {
                 // if the last Chars are '^' and '(' following, remove both, else remove only one last Char
-                tvCalculation!!.text = when {
+                var calculationText = when {
                     tvCalculation!!.text.length > 1 && tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == '^'
                             && tvCalculation!!.text.last() == '('
                     -> tvCalculation!!.text.subSequence(0, tvCalculation!!.text.lastIndex - 1)
-                        .refreshThousandSeparatorsLastToken()
                     // else remove only the last Char
-                    else -> tvCalculation!!.text.dropLast(1).refreshThousandSeparatorsLastToken()
+                    else -> tvCalculation!!.text.dropLast(1)
                 }
+
+                Log.d("negExponent", "E- at end: " + (calculationText.length > 1
+                        && (calculationText[calculationText.lastIndex - 1] == 'E')
+                       ).toString())
+
                 // invalid scientific number in calculation view
-                val invalidExpression = if (tvCalculation!!.text.isNotEmpty()) {
-                    tvCalculation!!.text.last() == 'E' || tvCalculation!!.text.length > 1
-                            && (tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == 'E')
-                            && tvCalculation!!.text.last() == '-'
+                if (calculationText.isNotEmpty() && (calculationText.last() == 'E' || (calculationText.length > 1
+                    && calculationText[calculationText.lastIndex - 1] == 'E'
+                    && calculationText.last() == '-'))) {
+                    tvCalculation!!.text = calculationText
+                    calculationText = "invalid"
                 } else {
-                    false
+                    // valid expression, set update calculation view
+                    tvCalculation!!.text = calculationText.refreshThousandSeparatorsLastToken()
                 }
+                Log.d("negExponent", "invalidExpression: ${(calculationText == "invalid")}")
                 // if the calculation text is empty, invalid or already the result (numeric without a %-operator), set the result as empty
-                val result = if (tvCalculation!!.text.isEmpty() || invalidExpression ||
+                val result = if (calculationText.isEmpty() || calculationText == "invalid" ||
                     (tvCalculation!!.text.isNumeric() && !tvCalculation!!.text.contains('%'))
                 ) "" else tvCalculation!!.text.calculate()
 
@@ -517,47 +533,54 @@ class MainActivity : AppCompatActivity() {
             // set onClick vibration
             vibrate()
 
+            // result is numeric so there is no input/arithmetic error
+            if(tvResult!!.text.isNumeric()) {
+                tvCalculation!!.text = tvResult!!.text
+                tvResult!!.text = ""
+                return@setOnClickListener
+            }
+
+            // the result is empty, due to an input/arithmetic error or an empty expression,
+            // so first rule out the case of an empty calculation
             if (tvCalculation!!.text.isNotEmpty()) {
                 val result: CharSequence
 
                 // invalid scientific number in calculation view
-                val invalidExpression =
-                    tvCalculation!!.text.last() == 'E' || tvCalculation!!.text.length > 1
+                val invalidExponentExpression =
+                    tvCalculation!!.text.last() == 'E' || (tvCalculation!!.text.length > 1
                             && (tvCalculation!!.text[tvCalculation!!.text.lastIndex - 1] == 'E')
-                            && tvCalculation!!.text.last() == '-'
-                if (invalidExpression) {
-                    result = tvCalculation!!.text
-                    Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
-                } else {
-                    result = tvCalculation!!.text.calculate()
-                }
+                            && tvCalculation!!.text.last() == '-')
 
-                // if the result is out of range, empty everything and notify the user
-                when (result) {
-                    "outOfRange" -> apply {
-                        tvCalculation!!.text = ""
-                        Toast.makeText(
+                if (invalidExponentExpression) { // todo should be true for E- at end
+                    Log.d("negExponent", "invalidExponentExpression: true")
+                    Toast.makeText(this, "Invalid expression.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                } else {
+                    // calculate expression to find the type of arithmetic error
+                    result = tvCalculation!!.text.calculate()
+
+                    when (result) {
+                        "outOfRange" ->
+                            Toast.makeText(
+                                this,
+                                "Cannot calculate outside of the allowed range.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                        "divisionByZero" -> Toast.makeText(
                             this,
-                            "Cannot calculate outside of the allowed range.",
+                            "Cannot divide by zero.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        // "imaginaryNumber"
+                        else -> Toast.makeText(
+                            this,
+                            "Imaginary numbers are not allowed.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-
-                    "divisionByZero" -> Toast.makeText(
-                        this,
-                        "Cannot divide by zero.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    "imaginaryNumber" -> Toast.makeText(
-                        this,
-                        "Imaginary numbers are not allowed.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    else -> tvCalculation!!.text = result.refreshThousandSeparatorsLastToken()
                 }
-                tvResult!!.text = ""
             }
         }
     }
@@ -624,6 +647,14 @@ class MainActivity : AppCompatActivity() {
         } else {
             tvResult!!.text = this.refreshThousandSeparatorsLastToken()
         }
+    }
+
+    private fun CharSequence.lastTokenNeedsSeparatorRefresh(): Boolean {
+        return this.length >= 4 &&
+                this.subSequence(this.lastIndex - 3).all {
+                    it.isDigit() || it == '.'
+                }
+
     }
 
     // groups three digits separated by a dot in a CharSequence expression
@@ -711,7 +742,7 @@ class MainActivity : AppCompatActivity() {
 
     // removes and adds the thousand separators correctly
     private fun CharSequence.refreshThousandSeparatorsLastToken(): String {
-        //Log.d("BEFORE", this.toString())
+        Log.d("negExponent", "this of refreshThousandSeparators: ${this.toString()}")
         //Log.d("AFTER", removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken())
         return removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken()
     }
@@ -834,13 +865,12 @@ class MainActivity : AppCompatActivity() {
 
             val innerExpression = tokenList.subListExtension(startIndex + 1, endIndex)
 
+            // merge left, right and the calculated inner bracket expression
             val resultList = ArrayList<CharSequence>().apply {
-                // no brackets here, but expression ends with an operator likely
                 if (leftExpression.isNotEmpty()) {
                     addAll(leftExpression)
                 }
                 addAll(innerExpression.calculate(false)) // more brackets may be there
-                // no brackets here, but expression ends with an operator likely
                 if (rightExpression.isNotEmpty()) {
                     addAll(rightExpression)
                 }
@@ -849,15 +879,17 @@ class MainActivity : AppCompatActivity() {
             innerExpression.clear()
             leftExpression.clear()
 
-            // if resultList still contains brackets (that were not all nested), keep resolving the brackets
+            // if resultList still contains brackets (can be both nested or non-nested), keep resolving the brackets
+            // -> nested means for example: "(7-(9*(3-4)+0)-8)" and non-nested means: "(6-1)*(9%+2)"
             if (resultList.contains("(")) {
                 return resultList.calculate(false)
             }
-            // no brackets, so directly continue with operators
+            // no brackets left, so directly continue with operators
             else {
                 tokenList = resultList.mergePercentages().mergePlusMinus()
             }
         }
+
         // operations, no more brackets
         // percentage has the highest precedence as a unary operator
         // (together with '+' and '-', which we already considered)
@@ -878,7 +910,6 @@ class MainActivity : AppCompatActivity() {
                                 || it == "÷"
                     }
                 }
-
                 // add and sub (binary) have lower precedence
                 else {
                     tokenList.indexOfFirst { it == "+" || it == "-" }
@@ -900,7 +931,6 @@ class MainActivity : AppCompatActivity() {
             repeat(3) { newTokenList.removeAt(operatorIndex - 1) }
             newTokenList.add(operatorIndex - 1, "$result")
         }
-
         //Log.d("result", newTokenList[0].toString())
         return newTokenList
     }
@@ -1320,6 +1350,7 @@ class MainActivity : AppCompatActivity() {
 
     // returns true if the CharSequence (the expression) is already a single numerical value
     // and does not require calculation
+    // todo redundant function: use isNumeric() instead and remove the percent operator if needed at the end
     private fun CharSequence.isSingleNumericalValue(): Boolean {
         var firstNumberFinished = false
         val currentNumber: StringBuilder = StringBuilder()
