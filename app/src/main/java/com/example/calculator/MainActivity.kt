@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
-        Log.d("onCreate", "")
+        Log.d("themes", "onCreate")
 
         sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
 
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //Log.d("themeIdIsSaved", themeIdIsSaved.toString())
-        Log.d("themeId onCreate", themeId.toString())
+        //Log.d("themeId onCreate", themeId.toString())
 
 
         //theme.applyStyle(themeId!!, true)
@@ -616,40 +616,41 @@ class MainActivity : AppCompatActivity() {
 
         // define the onClickListener for a list item
         val clickItemListener: (Int) -> Unit = { position ->
-            Log.d("themes", "setting Listener for listItem $position")
             selectedThemeId = data[position].themeId
-
+            Log.d("themes", "set selectedThemeId: $selectedThemeId")
             // remove all previous colors from clicking the list elements
             // by resetting the color of recyclerView
-
 
             // todo add themeSelectionColor and buttonPressedColor
 
         }
-        // set all onClickListeners of RecyclerView items
-        recyclerViewAdapter.onItemClickListener?.let { clickItemListener }
+        Log.d("themes", "onItemClickListener is null: ${recyclerViewAdapter.onItemClickListener == null}")
+
+        // set the clickItemListener as a listener for the adapter onItemClickListener
+        recyclerViewAdapter.onItemClickListener = clickItemListener
 
         dialog!!.setCanceledOnTouchOutside(false)
-
         dialog!!.show()
     }
 
     private fun Button.setListenerOkButton() {
         this.setOnClickListener {
-            if(selectedThemeId != null) {
-                themeId = selectedThemeId
-                //selectedThemeId = null
+            // is true when a new theme was selected from the list and it is not the current theme
+            when (
+                selectedThemeId) {
+                // todo ensure the activity is not recreate in these cases, test with logging
+                // do nothing if no theme is selected or the selected theme is the current theme
+                null, themeId
+                    -> dialog!!.dismiss()
+                else // set the new themeId and recreate the activity
+                    -> apply { themeId = selectedThemeId; dialog!!.dismiss(); recreate()}
             }
-            dialog!!.dismiss()
-            recreate()
         }
     }
 
     private fun Button.setListenerCancelButton() {
         this.setOnClickListener {
-            //selectedThemeId = null
             dialog!!.dismiss()
-            recreate()
         }
     }
 

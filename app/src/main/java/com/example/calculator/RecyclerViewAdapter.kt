@@ -53,7 +53,7 @@ class RecyclerViewAdapter(private val context: Context,
                 // reset the color of the last selected list item to the initial color when a new
                 // item is selected
                 if(lastSelectedItem != null) {
-                    Log.d("themes", "lastSelectedItem id: ${lastSelectedItem!!}")
+                    //Log.d("themes", "lastSelectedItem id: ${lastSelectedItem!!}")
                     lastSelectedItem!!.setBackgroundColor(initialItemColor!!)
                 }
                 // calls the lambda function with position as the Int argument
