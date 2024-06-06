@@ -649,10 +649,15 @@ class MainActivity : AppCompatActivity() {
                 // todo ensure the activity is not recreate in these cases, test with logging
                 // do nothing if no theme is selected or the selected theme is the current theme
                 null, themeId
-                    -> apply { selectedThemeId = null; dialog!!.dismiss() }
+                    -> apply {
+                        selectedThemeId = null
+                        dialog!!.dismiss() }
                 else // set the new themeId and recreate the activity
-                    -> apply { themeId = selectedThemeId; selectedThemeId = null;
-                    dialog!!.dismiss(); recreate()}
+                    -> apply {
+                        themeId = selectedThemeId
+                        selectedThemeId = null
+                        dialog!!.dismiss()
+                        recreate()}
             }
         }
     }
