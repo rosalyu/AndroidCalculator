@@ -2,9 +2,9 @@
     <!-- Base application theme. -->
     <style name="Theme.Calculator" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/buttonPanel_defaultTheme</item>
-        <item name="colorPrimaryDark">@color/background_defaultTheme</item>
-        <item name="colorAccent">@color/digits_defaultTheme</item>
+        <item name="colorPrimary">@color/buttonPanel_defaultDarkTheme</item>
+        <item name="colorPrimaryDark">@color/background_defaultDarkTheme</item>
+        <item name="colorAccent">@color/digits_defaultDarkTheme</item>
     </style>
 </resources>
 

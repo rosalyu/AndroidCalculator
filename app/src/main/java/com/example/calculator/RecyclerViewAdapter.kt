@@ -41,7 +41,7 @@ class RecyclerViewAdapter(private val context: Context,
             // initializing selectedItemColor
             typedValue = TypedValue()
             // todo add a new attribute and color for each theme for a selected item of the theme list
-            context.theme.resolveAttribute(R.attr.buttonsColor, typedValue, true)
+            context.theme.resolveAttribute(R.attr.themeSelectedColor, typedValue, true)
             selectedItemColor = ContextCompat.getColor(context, typedValue.resourceId)
         }
 

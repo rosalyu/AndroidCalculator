@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     // only runs once to set the default theme
     init {
-        themeId = R.style.Theme_Default
+        themeId = R.style.Theme_DefaultDark
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -613,8 +613,9 @@ class MainActivity : AppCompatActivity() {
         recyclerView = dialog!!.findViewById(R.id.recyclerView)
 
         val data: List<ThemeListItemData> = listOf(
-            ThemeListItemData("Default Theme", R.style.Theme_Default),
-            ThemeListItemData("Lavender Theme", R.style.Theme_Lavender)
+            ThemeListItemData("Default Dark Theme", R.style.Theme_DefaultDark),
+            ThemeListItemData("Lavender Light Theme", R.style.Theme_LavenderLight),
+            ThemeListItemData("Red Blue Dark Theme", R.style.Theme_BlueRedDark),
         )
         val recyclerViewAdapter = RecyclerViewAdapter(this, data)
         recyclerView!!.adapter = recyclerViewAdapter

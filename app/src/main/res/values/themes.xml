@@ -3,48 +3,54 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme Theme.AppCompat.Light.NoActionBar -->
-    <style name="Theme.Default" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.DefaultDark" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- android:colorPrimaryDark is the color of the action bar -->
-        <item name="android:colorPrimaryDark">@color/background_defaultTheme</item>
-        <item name="backgroundColor">@color/background_defaultTheme</item>
-        <item name="digitColor">@color/digits_defaultTheme</item>
-        <item name="CColor">@color/C_defaultTheme</item>
-        <item name="operatorColor">@color/operators_defaultTheme</item>
-        <item name="equalsColor">@color/equals_defaultTheme</item>
-        <item name="buttonsColor">@color/buttons_defaultTheme</item>
-        <item name="buttonPanelColor">@color/buttonPanel_defaultTheme</item>
-        <item name="expressionColor">@color/expression_defaultTheme</item>
-        <item name="buttonBorderColor">@color/buttonBorders_defaultTheme</item>
+        <item name="android:colorPrimaryDark">@color/background_defaultDarkTheme</item>
+        <item name="backgroundColor">@color/background_defaultDarkTheme</item>
+        <item name="digitColor">@color/digits_defaultDarkTheme</item>
+        <item name="CColor">@color/C_defaultDarkTheme</item>
+        <item name="operatorColor">@color/operators_defaultDarkTheme</item>
+        <item name="equalsColor">@color/equals_defaultDarkTheme</item>
+        <item name="buttonsColor">@color/buttons_defaultDarkTheme</item>
+        <item name="buttonPanelColor">@color/buttonPanel_defaultDarkTheme</item>
+        <item name="expressionColor">@color/expression_defaultDarkTheme</item>
+        <item name="buttonBorderColor">@color/buttonBorders_defaultDarkTheme</item>
+        <item name="buttonPressedColor">@color/buttonPressed_defaultDarkTheme</item>
+        <item name="themeSelectedColor">@color/themeSelected_defaultDarkTheme</item>
     </style>
 
     <!-- Lavender theme -->
-    <style name="Theme.Lavender" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.LavenderLight" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- android:colorPrimaryDark is the color of the action bar -->
-        <item name="android:colorPrimaryDark">@color/background_defaultTheme</item>
-        <item name="backgroundColor">@color/background_lavenderTheme</item>
-        <item name="digitColor">@color/digits_lavenderTheme</item>
-        <item name="CColor">@color/C_lavenderTheme</item>
-        <item name="operatorColor">@color/operators_lavenderTheme</item>
-        <item name="equalsColor">@color/equals_lavenderTheme</item>
-        <item name="buttonsColor">@color/buttons_lavenderTheme</item>
-        <item name="buttonPanelColor">@color/buttonPanel_lavenderTheme</item>
-        <item name="expressionColor">@color/expression_lavenderTheme</item>
-        <item name="buttonBorderColor">@color/buttonBorders_lavenderTheme</item>
+        <item name="android:colorPrimaryDark">@color/background_defaultDarkTheme</item>
+        <item name="backgroundColor">@color/background_lavenderLightTheme</item>
+        <item name="digitColor">@color/digits_lavenderLightTheme</item>
+        <item name="CColor">@color/C_lavenderLightTheme</item>
+        <item name="operatorColor">@color/operators_lavenderLightTheme</item>
+        <item name="equalsColor">@color/equals_lavenderLightTheme</item>
+        <item name="buttonsColor">@color/buttons_lavenderLightTheme</item>
+        <item name="buttonPanelColor">@color/buttonPanel_lavenderLightTheme</item>
+        <item name="expressionColor">@color/expression_lavenderLightTheme</item>
+        <item name="buttonBorderColor">@color/buttonBorders_lavenderLightTheme</item>
+        <item name="buttonPressedColor">@color/buttonPressed_lavenderLightTheme</item>
+        <item name="themeSelectedColor">@color/themeSelected_lavenderLightTheme</item>
     </style>
 
-    <!-- PinkPeach theme -->
-    <style name="Theme.PinkPeach" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- BlueRedDark theme -->
+    <style name="Theme.BlueRedDark" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- android:colorPrimaryDark is the color of the action bar -->
-        <item name="android:colorPrimaryDark">@color/background_pinkPeachTheme</item>
-        <item name="backgroundColor">@color/background_pinkPeachTheme</item>
-        <item name="digitColor">@color/digits_pinkPeachTheme</item>
-        <item name="CColor">@color/C_pinkPeachTheme</item>
-        <item name="operatorColor">@color/operators_pinkPeachTheme</item>
-        <item name="equalsColor">@color/equals_pinkPeachTheme</item>
-        <item name="buttonsColor">@color/buttons_pinkPeachTheme</item>
-        <item name="buttonPanelColor">@color/buttonPanel_pinkPeachTheme</item>
-        <item name="expressionColor">@color/expression_pinkPeachTheme</item>
-        <item name="buttonBorderColor">@color/buttonBorders_pinkPeachTheme</item>
+        <item name="android:colorPrimaryDark">@color/background_blueRedDarkTheme</item>
+        <item name="backgroundColor">@color/background_blueRedDarkTheme</item>
+        <item name="digitColor">@color/digits_blueRedDarkTheme</item>
+        <item name="CColor">@color/C_blueRedDarkTheme</item>
+        <item name="operatorColor">@color/operators_blueRedDarkTheme</item>
+        <item name="equalsColor">@color/equals_blueRedDarkTheme</item>
+        <item name="buttonsColor">@color/buttons_blueRedDarkTheme</item>
+        <item name="buttonPanelColor">@color/buttonPanel_blueRedDarkTheme</item>
+        <item name="expressionColor">@color/expression_blueRedDarkTheme</item>
+        <item name="buttonBorderColor">@color/buttonBorders_blueRedDarkTheme</item>
+        <item name="buttonPressedColor">@color/buttonPressed_blueRedDarkTheme</item>
+        <item name="themeSelectedColor">@color/themeSelected_blueRedDarkTheme</item>
     </style>
 
 </resources>

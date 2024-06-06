@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/recyclerView"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="10dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="17dp"
         android:gravity="center"
         android:text="@string/selectColorTheme"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textColor="?attr/digitColor"
-        android:background="?attr/backgroundColor"/>
+        android:background="?attr/buttonsColor"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -39,10 +40,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="7dp"
-        android:layout_marginBottom="7dp"
-        android:layout_marginStart="7dp"
-        android:layout_marginEnd="7dp">
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp">
         <Button
             android:id="@+id/btnOk"
             android:layout_width="0dp"
@@ -51,7 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnCancel"
-            android:layout_marginEnd="7dp"
+            android:layout_marginEnd="6dp"
             android:text="@string/ok"
             android:textSize="25sp"
             android:textColor="?attr/digitColor"
@@ -65,6 +66,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/btnOk"
             app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="6dp"
             android:text="@string/cancel"
             android:textSize="25sp"
             android:textColor="?attr/digitColor"
