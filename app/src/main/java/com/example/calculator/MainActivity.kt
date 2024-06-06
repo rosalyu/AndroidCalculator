@@ -9,7 +9,6 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.DisplayMetrics
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -757,7 +756,7 @@ class MainActivity : AppCompatActivity() {
 
     // removes and adds the thousand separators correctly
     private fun CharSequence.refreshThousandSeparatorsLastToken(): String {
-        Log.d("negExponent", "this of refreshThousandSeparators: ${this.toString()}")
+        Log.d("negExponent", "this of refreshThousandSeparators: $this")
         //Log.d("AFTER", removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken())
         return removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken()
     }
