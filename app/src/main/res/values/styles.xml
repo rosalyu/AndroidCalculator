@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dialog theme for portrait orientation: fullscreen, but has action bar -->
+    <style name="FullScreenDialogWithActionBar" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowNoTitle">false</item> <!-- Show title bar (action bar) -->
+        <item name="android:windowActionBar">true</item> <!-- Show action bar -->
+        <item name="android:windowFullscreen">true</item> <!-- Full screen -->
+    </style>
+</resources>
+

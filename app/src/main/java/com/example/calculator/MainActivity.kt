@@ -71,7 +71,6 @@ class MainActivity : AppCompatActivity() {
         setTheme(themeId!!)
         setSavedTheme(themeId!!)
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
         tvCalculation = findViewById(R.id.tvCalculation)
@@ -85,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         if(savedInstanceState == null) {
             buttonPanelHeightPortrait = calculateButtonPanelHeightPortrait(resources.configuration)
             buttonPanelWidthLand = calculateButtonPanelWidthLand(resources.configuration)
+
         } else {
             buttonPanelHeightPortrait = savedInstanceState.getInt("buttonPanelHeightPortrait")
             buttonPanelWidthLand = savedInstanceState.getInt("buttonPanelWidthLand")
@@ -594,7 +594,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showThemeDialog() {
-        dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        // todo handle configuration changes
+        dialog = Dialog(this,
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                Log.d("themes", "about to set dialog in portrait mode")
+               R.style.FullScreenDialogWithActionBar
+                Log.d("themes", "finished setting dialog in portrait mode")
+            } else {
+                android.R.style.Theme_Black_NoTitleBar_Fullscreen
+            }
+        )
         dialog!!.setContentView(R.layout.theme_list)
 
         // set the button onClickListeners
@@ -640,15 +649,17 @@ class MainActivity : AppCompatActivity() {
                 // todo ensure the activity is not recreate in these cases, test with logging
                 // do nothing if no theme is selected or the selected theme is the current theme
                 null, themeId
-                    -> dialog!!.dismiss()
+                    -> apply { selectedThemeId = null; dialog!!.dismiss() }
                 else // set the new themeId and recreate the activity
-                    -> apply { themeId = selectedThemeId; dialog!!.dismiss(); recreate()}
+                    -> apply { themeId = selectedThemeId; selectedThemeId = null;
+                    dialog!!.dismiss(); recreate()}
             }
         }
     }
 
     private fun Button.setListenerCancelButton() {
         this.setOnClickListener {
+            selectedThemeId = null
             dialog!!.dismiss()
         }
     }
