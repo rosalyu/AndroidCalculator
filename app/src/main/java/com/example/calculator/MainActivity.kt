@@ -145,6 +145,7 @@ class MainActivity : AppCompatActivity() {
         vibrator = null
         vibrationDurationMilliSec = null
         sharedPreferences = null
+        dialog = null
         themeId = null
         maxCharAmount = null
         displayMetrics = null
