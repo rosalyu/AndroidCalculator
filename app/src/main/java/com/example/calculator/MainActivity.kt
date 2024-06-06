@@ -9,6 +9,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.DisplayMetrics
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -611,12 +612,23 @@ class MainActivity : AppCompatActivity() {
         recyclerView!!.adapter = recyclerViewAdapter
         recyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-        // set all onClickListeners of RecyclerView items
-        recyclerView!!.children.forEachIndexed { index, child ->
-            child.setOnClickListener { selectedThemeId = data[index].themeId }
+        Log.d("themes", "finished with recyclerView initialization")
+
+        // define the onClickListener for a list item
+        val clickItemListener: (Int) -> Unit = { position ->
+            Log.d("themes", "setting Listener for listItem $position")
+            selectedThemeId = data[position].themeId
+
+            // remove all previous colors from clicking the list elements
+            // by resetting the color of recyclerView
+
+
+            // todo add themeSelectionColor and buttonPressedColor
+
         }
-        // todo set background
-        //dialog.window?.setBackgroundDrawableResource(R.drawable.quiz_preview_background)
+        // set all onClickListeners of RecyclerView items
+        recyclerViewAdapter.onItemClickListener?.let { clickItemListener }
+
         dialog!!.setCanceledOnTouchOutside(false)
 
         dialog!!.show()
