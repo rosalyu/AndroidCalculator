@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private var sharedPreferences: SharedPreferences? = null
     private var themeId: Int? = null
-    private var selectedThemeId: Int? =  null
+    private var selectedThemeId: Int? = null
 
     private var displayMetrics: DisplayMetrics? = null
     private var buttonPanelHeightPortrait: Int? = null
@@ -52,8 +52,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         Log.d("themes", "onCreate")
 
         sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
@@ -63,11 +61,6 @@ class MainActivity : AppCompatActivity() {
             themeId = savedInstanceState.getInt("themeId")
         }
 
-        //Log.d("themeIdIsSaved", themeIdIsSaved.toString())
-        //Log.d("themeId onCreate", themeId.toString())
-
-
-        //theme.applyStyle(themeId!!, true)
         setTheme(themeId!!)
         setSavedTheme(themeId!!)
         super.onCreate(savedInstanceState)
@@ -81,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         maxCharAmount = 18
         vibrationDurationMilliSec = 50L
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             buttonPanelHeightPortrait = calculateButtonPanelHeightPortrait(resources.configuration)
             buttonPanelWidthLand = calculateButtonPanelWidthLand(resources.configuration)
 
@@ -207,15 +200,11 @@ class MainActivity : AppCompatActivity() {
 
                     else -> "${tvCalculation!!.text}${button.text}"
                 }
-                //Log.d("calculationText button", calculationText.toString())
-                //Log.d("refresh", calculationText.toString())
+
                 // only adds separators to the last token because the previous ones have separators (since calculation)
-                if(calculationText.lastTokenNeedsSeparatorRefresh()) {
+                if (calculationText.lastTokenNeedsSeparatorRefresh()) {
                     calculationText = calculationText.refreshThousandSeparatorsLastToken()
                 }
-
-                //Log.d("refresh", calculationText.toString())
-                //Log.d("refreshed", "1.111.1111".removeThousandSeparatorsLastToken().toString())
 
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val result =
@@ -257,7 +246,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 // only adds separators to the last token because the previous ones have separators (since calculation)
                 // TODO refreshed from other places in the code where not necessary, so include the if statement there
-                if(calculationText.lastTokenNeedsSeparatorRefresh()) {
+                if (calculationText.lastTokenNeedsSeparatorRefresh()) {
                     Log.d("negExponent", "calculationText.lastTokenNeedsSeparatorRefresh(): true")
                     calculationText = calculationText.refreshThousandSeparatorsLastToken()
                 }
@@ -492,14 +481,17 @@ class MainActivity : AppCompatActivity() {
                     else -> tvCalculation!!.text.dropLast(1)
                 }
 
-                Log.d("negExponent", "E- at end: " + (calculationText.length > 1
-                        && (calculationText[calculationText.lastIndex - 1] == 'E')
-                       ).toString())
+                Log.d(
+                    "negExponent", "E- at end: " + (calculationText.length > 1
+                            && (calculationText[calculationText.lastIndex - 1] == 'E')
+                            ).toString()
+                )
 
                 // invalid scientific number in calculation view
                 if (calculationText.isNotEmpty() && (calculationText.last() == 'E' || (calculationText.length > 1
-                    && calculationText[calculationText.lastIndex - 1] == 'E'
-                    && calculationText.last() == '-'))) {
+                            && calculationText[calculationText.lastIndex - 1] == 'E'
+                            && calculationText.last() == '-'))
+                ) {
                     tvCalculation!!.text = calculationText
                     calculationText = "invalid"
                 } else {
@@ -536,7 +528,7 @@ class MainActivity : AppCompatActivity() {
             vibrate()
 
             // result is numeric so there is no input/arithmetic error
-            if(tvResult!!.text.isNotEmpty() && tvResult!!.text.isNumeric()) {
+            if (tvResult!!.text.isNotEmpty() && tvResult!!.text.isNumeric()) {
                 Log.d("negExponent", "resultText is numeric")
                 tvCalculation!!.text = tvResult!!.text
                 tvResult!!.text = ""
@@ -596,10 +588,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showThemeDialog() {
         // todo handle configuration changes
-        dialog = Dialog(this,
+        dialog = Dialog(
+            this,
             if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                 Log.d("themes", "about to set dialog in portrait mode")
-               R.style.FullScreenDialogWithActionBar
+                R.style.FullScreenDialogWithActionBar
                 Log.d("themes", "finished setting dialog in portrait mode")
             } else {
                 android.R.style.Theme_Black_NoTitleBar_Fullscreen
@@ -618,9 +611,11 @@ class MainActivity : AppCompatActivity() {
             ThemeListItemData("Lavender Light Theme", R.style.Theme_LavenderLight),
             ThemeListItemData("Red Blue Dark Theme", R.style.Theme_BlueRedDark),
         )
+
         val recyclerViewAdapter = RecyclerViewAdapter(this, data)
         recyclerView!!.adapter = recyclerViewAdapter
-        recyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView!!.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         Log.d("themes", "finished with recyclerView initialization")
 
@@ -630,11 +625,12 @@ class MainActivity : AppCompatActivity() {
             Log.d("themes", "set selectedThemeId: $selectedThemeId")
             // remove all previous colors from clicking the list elements
             // by resetting the color of recyclerView
-
-            // todo add themeSelectionColor and buttonPressedColor
-
         }
-        Log.d("themes", "onItemClickListener is null: ${recyclerViewAdapter.onItemClickListener == null}")
+
+        Log.d(
+            "themes",
+            "onItemClickListener is null: ${recyclerViewAdapter.onItemClickListener == null}"
+        )
 
         // set the clickItemListener as a listener for the adapter onItemClickListener
         recyclerViewAdapter.onItemClickListener = clickItemListener
@@ -651,15 +647,18 @@ class MainActivity : AppCompatActivity() {
                 // todo ensure the activity is not recreate in these cases, test with logging
                 // do nothing if no theme is selected or the selected theme is the current theme
                 null, themeId
-                    -> apply {
-                        selectedThemeId = null
-                        dialog!!.dismiss() }
+                -> apply {
+                    selectedThemeId = null
+                    dialog!!.dismiss()
+                }
+
                 else // set the new themeId and recreate the activity
-                    -> apply {
-                        themeId = selectedThemeId
-                        selectedThemeId = null
-                        dialog!!.dismiss()
-                        recreate()}
+                -> apply {
+                    themeId = selectedThemeId
+                    selectedThemeId = null
+                    dialog!!.dismiss()
+                    recreate()
+                }
             }
         }
     }
@@ -696,7 +695,6 @@ class MainActivity : AppCompatActivity() {
         // only the last token is altered here because this function is called each time a digit is added,
         // so the previous tokens already have separators
         val tokenList = this.tokenList(false)
-        //Log.d("tokenList() result", tokenList.toString())
 
         var lastToken: CharSequence
         try {
@@ -741,18 +739,15 @@ class MainActivity : AppCompatActivity() {
         }
         tokenList.add(separatorsAddedToken)
 
-        //Log.d("tokenList added", tokenList.joinToString())
         return tokenList.joinToString("")
     }
 
     // remove the added thousand separators to process the result in the calculation view (with equals)
     private fun CharSequence.removeThousandSeparatorsLastToken(): String {
-        //val removedSeparatorsString = StringBuilder()
 
         // only the last token is altered here because this function is called each time a digit is added,
         // so the previous tokens already have separators
         val tokenList = this.tokenList(false)
-        //Log.d("tokenList() result", tokenList.toString())
 
         var lastToken: CharSequence
         try {
@@ -768,14 +763,11 @@ class MainActivity : AppCompatActivity() {
         lastToken = lastToken.filter { it != '.' }
         tokenList.add(lastToken)
 
-        //Log.d("tokenList removed", tokenList.joinToString())
         return tokenList.joinToString("")
     }
 
     // removes and adds the thousand separators correctly
     private fun CharSequence.refreshThousandSeparatorsLastToken(): String {
-        Log.d("negExponent", "this of refreshThousandSeparators: $this")
-        //Log.d("AFTER", removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken())
         return removeThousandSeparatorsLastToken().addThousandSeparatorsLastToken()
     }
 
@@ -1389,7 +1381,7 @@ class MainActivity : AppCompatActivity() {
 
     // returns true if the CharSequence (the expression) is already a single numerical value
     // and does not require calculation
-    // todo redundant function: use isNumeric() instead and remove the percent operator if needed at the end
+    // todo redundant function? maybe use isNumeric() instead and remove the percent operator if needed at the end
     private fun CharSequence.isSingleNumericalValue(): Boolean {
         var firstNumberFinished = false
         val currentNumber: StringBuilder = StringBuilder()
@@ -1417,7 +1409,6 @@ class MainActivity : AppCompatActivity() {
         outState.putString("calculationText", tvCalculation!!.text.toString())
         outState.putString("resultText", tvResult!!.text.toString())
         outState.putInt("themeId", themeId!!)
-        //Log.d("themeId saved", themeId.toString())
         outState.putInt("buttonPanelHeightPortrait", buttonPanelHeightPortrait!!)
         outState.putInt("buttonPanelWidthLand", buttonPanelWidthLand!!)
     }
@@ -1431,7 +1422,6 @@ class MainActivity : AppCompatActivity() {
         tvCalculation!!.text = savedInstanceState.getString("calculationText")
         tvResult!!.text = savedInstanceState.getString("resultText")
         themeId = savedInstanceState.getInt("themeId")
-        //Log.d("themeId restored", themeId.toString())
         buttonPanelHeightPortrait = savedInstanceState.getInt("buttonPanelHeightPortrait")
         buttonPanelWidthLand = savedInstanceState.getInt("buttonPanelWidthLand")
     }
@@ -1473,10 +1463,8 @@ class MainActivity : AppCompatActivity() {
         displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getRealMetrics(displayMetrics)
 
-        //Log.d("width", screenWidth.toString())
-        //Log.d("oldHeight", buttonPanel.height.toString())
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        return (if(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        return (if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             displayMetrics!!.heightPixels else displayMetrics!!.widthPixels) *
                 getButtonColumnsAmount() / getButtonRowsAmount()
     }
@@ -1489,7 +1477,7 @@ class MainActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getRealMetrics(displayMetrics)
 
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
-        return (if(configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
+        return (if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT)
             displayMetrics!!.widthPixels else displayMetrics!!.heightPixels) *
                 getButtonRowsAmount() / getButtonColumnsAmount()
     }
@@ -1502,15 +1490,11 @@ class MainActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels
 
-        //Log.d("width", screenWidth.toString())
-        //Log.d("oldHeight", buttonPanel.height.toString())
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
         val adjustedHeight = screenWidth * getButtonRowsAmount() / getButtonColumnsAmount()
-        //Log.d("adjustedHeight", adjustedHeight.toString())
         val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.height = adjustedHeight
         buttonPanel.layoutParams = layoutParams
-        //Log.d("newHeight", buttonPanel.height.toString())
     }
 
     @Suppress("DEPRECATION")
@@ -1521,15 +1505,11 @@ class MainActivity : AppCompatActivity() {
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenHeight = displayMetrics.heightPixels
 
-        //Log.d("width", screenWidth.toString())
-        //Log.d("oldHeight", buttonPanel.height.toString())
         // aspect ratio of 1.2 makes buttons in 4x5 grid circular
         val adjustedWidth = screenHeight * getButtonColumnsAmount() / getButtonRowsAmount()
-        //Log.d("adjustedHeight", adjustedHeight.toString())
         val layoutParams = buttonPanel.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.width = adjustedWidth
         buttonPanel.layoutParams = layoutParams
-        //Log.d("newHeight", buttonPanel.height.toString())
     }
 
     private fun vibrate() {
@@ -1542,6 +1522,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    // todo fix
     // saves themes
     private fun setSavedTheme(themeId: Int) {
         val editor = sharedPreferences!!.edit()
