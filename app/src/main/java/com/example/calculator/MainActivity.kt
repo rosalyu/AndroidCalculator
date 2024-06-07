@@ -1339,24 +1339,14 @@ class MainActivity : AppCompatActivity() {
     // returns true if the last value/operand in the expression has the scientific notation form
     // false if the last Char is a bracket, as we only consider the raw sequence (not the formatted expression)
     private fun CharSequence.lastNumberHasExponent(): Boolean {
-        if (this.isEmpty() || !this.contains('E')) {
-            return false
-        }
-        var result = true
-        var hasMinus = false
-        for (char in this.last() downTo this.first()) {
-            if (char == 'E') {
-                break
-            }
-            if ((char != '-' && !char.isDigit()) || (char == '-' && hasMinus)) {
-                result = false
-                break
-            }
-            if (char == '-') {
-                hasMinus = true
-            }
-        }
-        return result
+        val expCharIndex = this.lastIndexOf('E')
+
+        if (expCharIndex == -1) return false
+        if (expCharIndex == this.lastIndex) return true
+        return this.subSequence(expCharIndex + 1)
+            .filterIndexed { index, c -> !(index == 0 && c == '-') && !c.isDigit() }.isEmpty()
+
+
     }
 
     // true if the CharSequence has an invalid exponent expression at the end
@@ -1369,7 +1359,7 @@ class MainActivity : AppCompatActivity() {
     // returns true if the CharSequence (the expression) is already a single numerical value
     // and does not require calculation
     private fun CharSequence.isSingleNumericalValue(): Boolean {
-        return this.filter { it != '.' }.isNumeric()
+        return this.formatExpression().filter { it != '.' }.isNumeric()
     }
 
     // Called when the activity is about to get destroyed (which happens during configuration changes
@@ -1501,6 +1491,9 @@ class MainActivity : AppCompatActivity() {
 
     // gets themes from sharedPreferences
     private fun getSavedTheme(): Int {
-        return sharedPreferences!!.getInt("current_theme", R.style.Theme_DefaultDark) // default to dark theme if not set
+        return sharedPreferences!!.getInt(
+            "current_theme",
+            R.style.Theme_DefaultDark
+        ) // default to dark theme if not set
     }
 }
