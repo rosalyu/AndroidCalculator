@@ -42,7 +42,7 @@
     <color name="expression_blueRedDarkTheme">#FFFFFF</color>
     <color name="buttonBorders_blueRedDarkTheme">#8B4568</color>
     <color name="buttonPressed_blueRedDarkTheme">#9D2261</color>
-    <color name="themeSelected_blueRedDarkTheme">#565656</color>
-    <color name="themeListSecondary_blueRedDarkTheme">#E69E81</color>
+    <color name="themeSelected_blueRedDarkTheme">#8D4B6D</color>
+    <color name="themeListSecondary_blueRedDarkTheme">#A23C6A</color>
 
 </resources>

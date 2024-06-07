@@ -52,6 +52,7 @@
         <item name="expressionColor">@color/expression_blueRedDarkTheme</item>
         <item name="buttonBorderColor">@color/buttonBorders_blueRedDarkTheme</item>
         <item name="buttonPressedColor">@color/buttonPressed_blueRedDarkTheme</item>
+        <item name="themeSelectedColor">@color/themeSelected_blueRedDarkTheme</item>
         <item name="themeListSecondaryColor">@color/themeListSecondary_blueRedDarkTheme</item>
     </style>
 

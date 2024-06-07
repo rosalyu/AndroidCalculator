@@ -19,7 +19,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="18dp"
         android:layout_marginBottom="18dp"
-        android:textColor="?attr/themeListSecondaryColor"
+        android:textColor="?attr/digitColor"
         android:textSize="20sp"
         />
 
