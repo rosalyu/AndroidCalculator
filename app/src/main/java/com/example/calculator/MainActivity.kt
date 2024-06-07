@@ -382,7 +382,7 @@ class MainActivity : AppCompatActivity() {
                 // (there is something to calculate), this can be the case if '%' has not been appended
                 // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
                 // a '('
- // todo isSingleNumericalValue() has to consider thoudand separators
+                // todo isSingleNumericalValue() has to consider thoudand separators
                 if (tvCalculation!!.text.isNotEmpty() && (tvCalculation!!.text.last() == '%' ||
                             !tvCalculation!!.text.isSingleNumericalValue() &&
                             !(tvCalculation!!.text.lastNumberHasInvalidExponent()))
@@ -591,7 +591,7 @@ class MainActivity : AppCompatActivity() {
         dialog!!.findViewById<Button>(R.id.btnOk).setListenerOkButton()
         dialog!!.findViewById<Button>(R.id.btnCancel).setListenerCancelButton()
 
-        recyclerView = dialog!!.findViewById(R.id.recyclerView)
+        val recyclerView = dialog!!.findViewById<RecyclerView>(R.id.recyclerView)
 
         val data: List<ThemeListItemData> = listOf(
             ThemeListItemData("Default Dark Theme", R.style.Theme_DefaultDark),
@@ -601,7 +601,7 @@ class MainActivity : AppCompatActivity() {
 
         val recyclerViewAdapter = RecyclerViewAdapter(this, data)
         recyclerView!!.adapter = recyclerViewAdapter
-        recyclerView!!.layoutManager =
+        recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
         Log.d("themes", "finished with recyclerView initialization")
@@ -1368,23 +1368,8 @@ class MainActivity : AppCompatActivity() {
 
     // returns true if the CharSequence (the expression) is already a single numerical value
     // and does not require calculation
-    // todo redundant function? maybe use isNumeric() instead and remove the percent operator if needed at the end
     private fun CharSequence.isSingleNumericalValue(): Boolean {
-        var firstNumberFinished = false
-        val currentNumber: StringBuilder = StringBuilder()
-        for (index in indices) {
-            if (this[index].isDigit()) {
-                if (firstNumberFinished) {
-                    return false
-                }
-                currentNumber.append(this[index])
-            } else {
-                if (currentNumber.isNotEmpty()) {
-                    firstNumberFinished = true
-                }
-            }
-        }
-        return true
+        return this.filter { it != '.' }.isNumeric()
     }
 
     // Called when the activity is about to get destroyed (which happens during configuration changes
