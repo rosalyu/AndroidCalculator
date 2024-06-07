@@ -17,6 +17,7 @@
         <item name="buttonBorderColor">@color/buttonBorders_defaultDarkTheme</item>
         <item name="buttonPressedColor">@color/buttonPressed_defaultDarkTheme</item>
         <item name="themeSelectedColor">@color/themeSelected_defaultDarkTheme</item>
+        <item name="themeListSecondaryColor">@color/themeListSecondary_defaultDarkTheme</item>
     </style>
 
     <!-- Lavender theme -->
@@ -34,6 +35,7 @@
         <item name="buttonBorderColor">@color/buttonBorders_lavenderLightTheme</item>
         <item name="buttonPressedColor">@color/buttonPressed_lavenderLightTheme</item>
         <item name="themeSelectedColor">@color/themeSelected_lavenderLightTheme</item>
+        <item name="themeListSecondaryColor">@color/themeListSecondary_lavenderLightTheme</item>
     </style>
 
     <!-- BlueRedDark theme -->
@@ -50,7 +52,7 @@
         <item name="expressionColor">@color/expression_blueRedDarkTheme</item>
         <item name="buttonBorderColor">@color/buttonBorders_blueRedDarkTheme</item>
         <item name="buttonPressedColor">@color/buttonPressed_blueRedDarkTheme</item>
-        <item name="themeSelectedColor">@color/themeSelected_blueRedDarkTheme</item>
+        <item name="themeListSecondaryColor">@color/themeListSecondary_blueRedDarkTheme</item>
     </style>
 
 </resources>

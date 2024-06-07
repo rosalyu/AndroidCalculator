@@ -19,11 +19,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginTop="18dp"
         android:layout_marginBottom="18dp"
-        android:textColor="?attr/digitColor"
+        android:textColor="?attr/themeListSecondaryColor"
         android:textSize="20sp"
         />
 
-    <!-- digit color -->
+    <!-- digit color or buttons color -->
     <View
         android:id="@+id/vColorCircle1"
         android:layout_width="15dp"
@@ -39,7 +39,7 @@
         android:background="@drawable/round_button"
         />
 
-    <!-- operator color -->
+    <!-- operators color -->
     <View
         android:id="@+id/vColorCircle2"
         android:layout_width="15dp"

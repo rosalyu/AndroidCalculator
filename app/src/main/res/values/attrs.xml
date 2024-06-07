@@ -13,5 +13,6 @@
         <attr name="buttonBorderColor" format="color" />
         <attr name="buttonPressedColor" format="color" />
         <attr name="themeSelectedColor" format="color" />
+        <attr name="themeListSecondaryColor" format="color" />
     </declare-styleable>
 </resources>

@@ -19,8 +19,8 @@
         android:gravity="center"
         android:text="@string/selectColorTheme"
         android:textSize="20sp"
-        android:textColor="?attr/digitColor"
-        android:background="?attr/buttonsColor"/>
+        android:textColor="?attr/buttonsColor"
+        android:background="?attr/themeListSecondaryColor"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -40,11 +40,11 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp">
-        <Button
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp">
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnOk"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -52,13 +52,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnCancel"
-            android:layout_marginEnd="6dp"
+            android:layout_marginEnd="4dp"
             android:text="@string/ok"
             android:textSize="25sp"
-            android:textColor="?attr/digitColor"
-            android:background="?attr/buttonsColor"/>
+            android:textColor="?attr/buttonsColor"
+            android:foreground="@drawable/dialog_buttons"
+            android:backgroundTint="?attr/themeListSecondaryColor"/>
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCancel"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -66,11 +67,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/btnOk"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="4dp"
+            android:shadowRadius="0"
             android:text="@string/cancel"
             android:textSize="25sp"
-            android:textColor="?attr/digitColor"
-            android:background="?attr/buttonsColor"/>
+            android:textColor="?attr/buttonsColor"
+            android:foreground="@drawable/dialog_buttons"
+            android:backgroundTint="?attr/themeListSecondaryColor"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

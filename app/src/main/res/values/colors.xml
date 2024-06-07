@@ -14,7 +14,8 @@
     <color name="expression_defaultDarkTheme">#FFFFFF</color>
     <color name="buttonBorders_defaultDarkTheme">#151515</color>
     <color name="buttonPressed_defaultDarkTheme">#3E3E3E</color>
-    <color name="themeSelected_defaultDarkTheme">#252525</color>
+    <color name="themeSelected_defaultDarkTheme">#3E3E3E</color>
+    <color name="themeListSecondary_defaultDarkTheme">#FFFFFF</color>
 
     <!-- Theme.LavenderLight -->
     <color name="background_lavenderLightTheme">#4252C3</color>
@@ -28,6 +29,7 @@
     <color name="buttonBorders_lavenderLightTheme">#050090</color>
     <color name="buttonPressed_lavenderLightTheme">#202FA2</color>
     <color name="themeSelected_lavenderLightTheme">#202FA2</color>
+    <color name="themeListSecondary_lavenderLightTheme">#59F5FD</color>
 
     <!-- Theme.BlueRedDark -->
     <color name="background_blueRedDarkTheme">#070046</color>
@@ -40,6 +42,7 @@
     <color name="expression_blueRedDarkTheme">#FFFFFF</color>
     <color name="buttonBorders_blueRedDarkTheme">#8B4568</color>
     <color name="buttonPressed_blueRedDarkTheme">#9D2261</color>
-    <color name="themeSelected_blueRedDarkTheme">#AB4D27</color>
+    <color name="themeSelected_blueRedDarkTheme">#565656</color>
+    <color name="themeListSecondary_blueRedDarkTheme">#E69E81</color>
 
 </resources>
