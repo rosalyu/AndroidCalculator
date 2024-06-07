@@ -19,7 +19,7 @@
 
     <!-- Theme.LavenderLight -->
     <color name="background_lavenderLightTheme">#4252C3</color>
-    <color name="digits_lavenderLightTheme">#84FF85</color>
+    <color name="digits_lavenderLightTheme">#A1FBA2</color>
     <color name="C_lavenderLightTheme">#FB7579</color>
     <color name="operators_lavenderLightTheme">#FFFFFF</color>
     <color name="equals_lavenderLightTheme">#FB76BB</color>
