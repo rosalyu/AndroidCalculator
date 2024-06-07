@@ -395,7 +395,7 @@ class MainActivity : AppCompatActivity() {
                 // (there is something to calculate), this can be the case if '%' has not been appended
                 // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
                 // a '('
-
+ // todo isSingleNumericalValue() has to consider thoudand separators
                 if (tvCalculation!!.text.isNotEmpty() && (tvCalculation!!.text.last() == '%' ||
                             !tvCalculation!!.text.isSingleNumericalValue() &&
                             !(tvCalculation!!.text.lastNumberHasInvalidExponent()))
@@ -527,8 +527,8 @@ class MainActivity : AppCompatActivity() {
             // set onClick vibration
             vibrate()
 
-            // result is numeric so there is no input/arithmetic error
-            if (tvResult!!.text.isNotEmpty() && tvResult!!.text.isNumeric()) {
+            // result is not empty so there is no input/arithmetic error
+            if (tvResult!!.text.isNotEmpty()) {
                 Log.d("negExponent", "resultText is numeric")
                 tvCalculation!!.text = tvResult!!.text
                 tvResult!!.text = ""
