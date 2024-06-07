@@ -35,8 +35,6 @@ class MainActivity : AppCompatActivity() {
     private var vibrator: Vibrator? = null
     private var vibrationDurationMilliSec: Long? = null
 
-    private var sharedPreferences: SharedPreferences? = null
-    private var themeId: Int? = null
     private var selectedThemeId: Int? = null
 
     private var displayMetrics: DisplayMetrics? = null
@@ -46,23 +44,14 @@ class MainActivity : AppCompatActivity() {
     // defines the maximum amount of Chars in the calculation TextView
     private var maxCharAmount: Int? = null
 
-    // only runs once to set the default theme
-    init {
-        themeId = R.style.Theme_DefaultDark
+    private val sharedPreferences: SharedPreferences? by lazy {
+        getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("themes", "onCreate")
 
-        sharedPreferences = getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
-
-        // not the first creation of the activity
-        if (savedInstanceState != null) {
-            themeId = savedInstanceState.getInt("themeId")
-        }
-
-        setTheme(themeId!!)
-        setSavedTheme(themeId!!)
+        setTheme(getSavedTheme())
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -137,9 +126,7 @@ class MainActivity : AppCompatActivity() {
         vibrator?.cancel()
         vibrator = null
         vibrationDurationMilliSec = null
-        sharedPreferences = null
         dialog = null
-        themeId = null
         maxCharAmount = null
         displayMetrics = null
         buttonPanelHeightPortrait = null
@@ -646,7 +633,7 @@ class MainActivity : AppCompatActivity() {
                 selectedThemeId) {
                 // todo ensure the activity is not recreate in these cases, test with logging
                 // do nothing if no theme is selected or the selected theme is the current theme
-                null, themeId
+                null, getSavedTheme()
                 -> apply {
                     selectedThemeId = null
                     dialog!!.dismiss()
@@ -654,7 +641,7 @@ class MainActivity : AppCompatActivity() {
 
                 else // set the new themeId and recreate the activity
                 -> apply {
-                    themeId = selectedThemeId
+                    setSavedTheme(selectedThemeId!!)
                     selectedThemeId = null
                     dialog!!.dismiss()
                     recreate()
@@ -1408,7 +1395,6 @@ class MainActivity : AppCompatActivity() {
         // Saves the state of the calculation and result texts
         outState.putString("calculationText", tvCalculation!!.text.toString())
         outState.putString("resultText", tvResult!!.text.toString())
-        outState.putInt("themeId", themeId!!)
         outState.putInt("buttonPanelHeightPortrait", buttonPanelHeightPortrait!!)
         outState.putInt("buttonPanelWidthLand", buttonPanelWidthLand!!)
     }
@@ -1421,7 +1407,6 @@ class MainActivity : AppCompatActivity() {
         // Restores the state of the calculation and result texts
         tvCalculation!!.text = savedInstanceState.getString("calculationText")
         tvResult!!.text = savedInstanceState.getString("resultText")
-        themeId = savedInstanceState.getInt("themeId")
         buttonPanelHeightPortrait = savedInstanceState.getInt("buttonPanelHeightPortrait")
         buttonPanelWidthLand = savedInstanceState.getInt("buttonPanelWidthLand")
     }
@@ -1522,11 +1507,15 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    // todo fix
-    // saves themes
+    // saves themes to sharedPreferences
     private fun setSavedTheme(themeId: Int) {
         val editor = sharedPreferences!!.edit()
         editor.putInt("current_theme", themeId).apply()
         editor.commit()
+    }
+
+    // gets themes from sharedPreferences
+    private fun getSavedTheme(): Int {
+        return sharedPreferences!!.getInt("current_theme", R.style.Theme_DefaultDark) // default to dark theme if not set
     }
 }
