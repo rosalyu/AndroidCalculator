@@ -52,10 +52,10 @@ class MainActivity : AppCompatActivity() {
         setTheme(getSavedTheme())
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
-        maxCharAmount = 18
+        maxCharAmount = 500
         vibrationDurationMilliSec = 50L
 
         if (savedInstanceState == null) {
@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val result =
                     if (calculationText.removeThousandSeparatorsLastToken()
-                            .isNumeric()
+                            .isSingleNumericalValue()
                     ) "" else calculationText.calculate()
 
                 // set the content of the calculation view
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 // if the sequence in the calculation text is a number that does not need to be calculated, do not display a result
                 val resultText =
-                    if (calculationText.isNumeric()) "" else calculationText.calculate()
+                    if (calculationText.isSingleNumericalValue()) "" else calculationText.calculate()
 
                 // set the content of the calculation view
                 binding.tvCalculation.text = calculationText
