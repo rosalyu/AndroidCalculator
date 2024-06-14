@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -53,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         setTheme(getSavedTheme())
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
 
         vibrator = ContextCompat.getSystemService(this, Vibrator::class.java)
         maxCharAmount = 18
@@ -374,7 +373,7 @@ class MainActivity : AppCompatActivity() {
                 // (there is something to calculate), this can be the case if '%' has not been appended
                 // to the expression (i.e. 5 -> () -> % leads to 5 * ( because '%' cannot be added after
                 // a '('
-                // todo isSingleNumericalValue() has to consider thoudand separators
+                // todo isSingleNumericalValue() has to consider thousand separators
                 if (binding.tvCalculation.text.isNotEmpty() && (binding.tvCalculation.text.last() == '%' ||
                             !binding.tvCalculation.text.isSingleNumericalValue() &&
                             !(binding.tvCalculation.text.lastNumberHasInvalidExponent()))
